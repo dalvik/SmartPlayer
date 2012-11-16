@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/root">
+    
+    <VideoView android:id="@+id/surface_view" 
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"/>
+	<!-- 
+	
+	 <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/status_bar"
+        android:visibility="gone">
+        
+       <TextView 
+	       android:id="@+id/video_name"
+	       android:textSize="@dimen/textSizeSmall" 
+	       android:textStyle="bold" 
+	       android:textColor="#ffffffff" 
+	       android:ellipsize="end" 
+	       android:gravity="center" 
+	       android:background="@drawable/cer_shape_status_bkgnd" 
+	       android:layout_width="wrap_content" 
+	       android:layout_height="wrap_content" 
+	       android:singleLine="true" 
+	       android:shadowColor="#ff000000" 
+	       android:shadowDx="2.0" 
+	       android:shadowDy="2.0"
+	       android:shadowRadius="2.0" 
+	       android:layout_alignParentTop="true"
+	       android:layout_marginTop="20dip"
+	       android:layout_centerHorizontal="true" />
+	       
+       <TextView  
+	       android:id="@+id/seek_time_display" 
+	       android:textSize="@dimen/textSizeSmall" 
+	       android:textStyle="bold" 
+	       android:textColor="#ffffffff" 
+	       android:ellipsize="end" 
+	       android:gravity="center" 
+	       android:background="@drawable/cer_shape_status_bkgnd" 
+	       android:layout_width="wrap_content" 
+	       android:layout_height="wrap_content" 
+	       android:singleLine="true" 
+	       android:shadowColor="#ff000000" 
+	       android:shadowDx="2.0" 
+	       android:shadowDy="2.0"
+	       android:shadowRadius="2.0" 
+	       android:layout_above="@+id/video_seekbar" 
+	       android:layout_centerHorizontal="true" />
+   
+	 	<SeekBar 
+	          android:id="@+id/video_seekbar" 
+	          android:layout_width="fill_parent" 
+	          android:layout_height="wrap_content"
+	          android:layout_marginLeft="20dip"
+        	  android:layout_marginRight="20dip"
+	          android:paddingBottom="2dip" 
+	          android:layout_alignParentBottom="true"/>
+     </RelativeLayout>
+      -->
+</RelativeLayout>

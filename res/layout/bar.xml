@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:camera="http://schemas.android.com/apk/res/com.android.camera"
+        android:id="@+id/bar_control_bar"
+        android:background="@android:color/transparent">
+        
+  <ImageButton
+  		android:id="@+id/bar_vol_up"
+  		android:layout_alignParentRight="true" 
+  		android:layout_marginTop="5dp" 
+		style="@android:style/MediaButton"
+		android:src="@drawable/ic_vol_up"
+   />     
+  <ImageButton
+  		android:id="@+id/bar_vol_down"
+  		android:layout_alignParentLeft="true"	
+  		android:layout_marginTop="5dp" 
+		style="@android:style/MediaButton"
+		android:src="@drawable/ic_vol_down"
+   />  
+</RelativeLayout>
