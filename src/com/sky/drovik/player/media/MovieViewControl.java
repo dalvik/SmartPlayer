@@ -61,7 +61,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     private static final String CMDPAUSE = "pause";
 
     private final VideoView mVideoView;
-    //private final View mProgressView;
+    private final View mProgressView;
     private final Uri mUri;
     private final ContentResolver mContentResolver;
     Handler mHandler = new Handler();
@@ -69,17 +69,18 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     Runnable mPlayingChecker = new Runnable() {
         public void run() {
             if (mVideoView.isPlaying()) {
-                //mProgressView.setVisibility(View.GONE);
+                mProgressView.setVisibility(View.GONE);
             } else {
                 mHandler.postDelayed(mPlayingChecker, 250);
             }
         }
     };
     
-        static class MyMediaController extends MediaController {
+      static class MyMediaController extends MediaController {
 
-        AudioManager internalAm;
-        View.OnClickListener mClickListenerInternal = new View.OnClickListener() {
+      AudioManager internalAm;
+      
+      View.OnClickListener mClickListenerInternal = new View.OnClickListener() {
                         
             public void onClick(View v) {
                 // TODO Auto-generated method stub
@@ -90,6 +91,8 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
                     case R.id.bar_vol_down:
                         sendMessage(2);
                         break;
+                        default:
+                        	break;
                 }
                 show(3000);              
             }
@@ -105,7 +108,6 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
 
             @Override
             public void handleMessage(Message msg) {
-                // TODO Auto-generated method stub
                 switch(msg.arg1) {
                     case 1:
                         internalAm.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_RAISE, 1);
@@ -130,19 +132,17 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
         public void setAnchorView(View view) {
             // TODO Auto-generated method stub
             super.setAnchorView(view);
-            
-            LayoutInflater inflate = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            /*LayoutInflater inflate = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View newView = inflate.inflate(R.layout.bar, null);
             DisplayMetrics outDm = new DisplayMetrics();
             ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(outDm);
-            FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(
-                    (int)outDm.density * 355,
+            FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
                     ViewGroup.LayoutParams.FILL_PARENT,
                     Gravity.CENTER_HORIZONTAL
             );
             addView(newView, frameParams);
             newView.findViewById(R.id.bar_vol_up).setOnClickListener(mClickListenerInternal);
-            newView.findViewById(R.id.bar_vol_down).setOnClickListener(mClickListenerInternal);
+            newView.findViewById(R.id.bar_vol_down).setOnClickListener(mClickListenerInternal);*/
         }        
     }
     
@@ -163,7 +163,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     public MovieViewControl(View rootView, Context context, Uri videoUri) {
         mContentResolver = context.getContentResolver();
         mVideoView = (VideoView) rootView.findViewById(Res.id.surface_view);
-        //mProgressView = rootView.findViewById(Res.id.progress_indicator);
+        mProgressView = rootView.findViewById(Res.id.progress_indicator);
 
         mUri = videoUri;
 
@@ -173,7 +173,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
         if ("http".equalsIgnoreCase(scheme) || "rtsp".equalsIgnoreCase(scheme)) {
             mHandler.postDelayed(mPlayingChecker, 250);
         } else {
-            //mProgressView.setVisibility(View.GONE);
+            mProgressView.setVisibility(View.GONE);
         }
 
         mVideoView.setOnErrorListener(this);
@@ -303,7 +303,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
 
     public boolean onError(MediaPlayer player, int arg1, int arg2) {
         mHandler.removeCallbacksAndMessages(null);
-        //mProgressView.setVisibility(View.GONE);
+        mProgressView.setVisibility(View.GONE);
         return false;
     }
 
