@@ -8,6 +8,7 @@ import com.sky.drovik.player.media.MovieList;
 import com.sky.drovik.player.pojo.MovieInfo;
 
 import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
 import android.provider.MediaStore.Images.Thumbnails;
 import android.util.Log;

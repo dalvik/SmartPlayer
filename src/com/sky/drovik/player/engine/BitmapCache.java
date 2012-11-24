@@ -1,15 +1,11 @@
 package com.sky.drovik.player.engine;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.Hashtable;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 /**
  * 防止溢出
  *
@@ -73,9 +69,9 @@ public class BitmapCache {
 		// 如果没有软引用，或者从软引用中得到的实例是null，重新构建一个实例，
 		// 并保存对这个新建实例的软引用
 		if (bitmapImage == null) {
-			BitmapFactory.Options options = new BitmapFactory.Options();
+			bitmapImage = ThumbnailUtils.createVideoThumbnail(filename, android.provider.MediaStore.Video.Thumbnails.MICRO_KIND);
+			/*BitmapFactory.Options options = new BitmapFactory.Options();
 			options.inTempStorage = new byte[16 * 1024];
-
 			// bitmapImage = BitmapFactory.decodeFile(filename, options);
 			BufferedInputStream buf = null;
 			InputStream is = null;
@@ -102,7 +98,7 @@ public class BitmapCache {
 						e.printStackTrace();
 					}
 				}
-			}
+			}*/
 
 		}
 

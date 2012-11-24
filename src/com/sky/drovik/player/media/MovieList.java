@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -135,14 +136,12 @@ public class MovieList extends Activity implements OnClickListener {
 		waterFallItems.get(columnIndex).addView(textView);
 		imageViewItem.setTag(index);
 		imageViewItem.setOnClickListener(this);
-		System.out.println(imageInfo.toString());
-		//System.out.println(Uri.parse(imageInfo.thumbnailPath));
 		imageInfo.imageView = imageViewItem;
-		if(imageInfo.thumbnailPath != null) {
-			imageViewItem.setImageURI(Uri.parse(imageInfo.thumbnailPath));
-		}
-		//ImageLoaderTask imageLoaderTask = new ImageLoaderTask(imageViewItem);
-		//imageLoaderTask.execute(imageInfo);
+		/*if(imageInfo.thumbnailPath != null) {
+			imageViewItem.setImageBitmap(ThumbnailUtils.createVideoThumbnail(imageInfo.thumbnailPath, android.provider.MediaStore.Video.Thumbnails.MICRO_KIND));
+		}	*/	
+		ImageLoaderTask imageLoaderTask = new ImageLoaderTask(imageViewItem);
+		imageLoaderTask.execute(imageInfo);
 
 	}
 

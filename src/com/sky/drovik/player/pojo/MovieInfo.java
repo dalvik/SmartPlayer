@@ -39,13 +39,13 @@ public class MovieInfo {
      * The application icon.
      */
     //public Bitmap icon;
-    public String path;
+    public String path= "";
 
     public String mimeType;
     
-    public String size;
+    public String size = "";
     
-    public String thumbnailPath;
+    public String thumbnailPath = "";
     
     public ImageView imageView;
     

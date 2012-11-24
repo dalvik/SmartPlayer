@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 
@@ -55,7 +56,6 @@ public class MediaList {
 				Cursor thumbCursor = rs.query(MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI, thumbColumns, selection, selectionArgs, null);
 				if(thumbCursor.moveToFirst()){
 					info.thumbnailPath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Thumbnails.DATA));
-					System.out.println(info.thumbnailPath);
 				}
 				Uri uri = Uri.parse("file://" + cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)));
 				info.setActivity(uri, Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
