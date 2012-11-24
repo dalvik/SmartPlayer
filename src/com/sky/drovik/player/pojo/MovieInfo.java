@@ -41,6 +41,12 @@ public class MovieInfo {
     //public Bitmap icon;
     public String path;
 
+    public String mimeType;
+    
+    public String size;
+    
+    public String thumbnailPath;
+    
     public ImageView imageView;
     
     /**
@@ -86,9 +92,11 @@ public class MovieInfo {
 
 	@Override
 	public String toString() {
-		return "ImageInfo [title=" + title + ", intent=" + intent + ", path="
-				+ path + ", filtered=" + filtered + "]";
+		return "MovieInfo [title=" + title + ", intent=" + intent + ", path="
+				+ path + ", mimeType=" + mimeType + ", size=" + size
+				+ ", thumbnailPath=" + thumbnailPath + ", imageView="
+				+ imageView + ", filtered=" + filtered + "]";
 	}
-    
+
     
 }

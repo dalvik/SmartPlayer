@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -57,6 +58,7 @@ public class MovieList extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_movie_list);
+		context = this;
 		Display display = this.getWindowManager().getDefaultDisplay();
 		itemWidth = display.getWidth() / column_count;// 根据屏幕大小计算每列大小
 		initLayout();
@@ -105,15 +107,9 @@ public class MovieList extends Activity implements OnClickListener {
 	
 	
 	private void loadImageFiles() {// 分页装载视频信息
-		//for(int i = 0; i < files.length; i++){
-			//paths[i] = files[i].getPath();
-			MovieInfo movieInfo = new MovieInfo();
-			movieInfo.path = "/mnt/sdcard/03.avi";//files[i].getPath();
-			movieInfo.title = "abcd";
-			Uri uri = Uri.parse("file://" + "/mnt/sdcard/03.avi");
-			movieInfo.setActivity(uri, Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-			movieList.add(movieInfo);
-		//}
+		MediaList media = new MediaList(this);
+		List<MovieInfo> videoList = media.getVideoListByPage(0);
+		movieList.addAll(videoList);
 	}
 	
 	private void addItemToContainer(int pageindex, int pagecount) {
@@ -130,27 +126,35 @@ public class MovieList extends Activity implements OnClickListener {
 		ImageView imageViewItem = (ImageView) LayoutInflater.from(this).inflate(
 				R.layout.layout_movie_list_item, null);
 		waterFallItems.get(columnIndex).addView(imageViewItem);
+		TextView textView = new TextView(context);
+		LinearLayout.LayoutParams itemParam = new LinearLayout.LayoutParams(itemWidth, LayoutParams.WRAP_CONTENT);
+		textView.setGravity(Gravity.CENTER);
+		textView.setLayoutParams(itemParam);
+		textView.setSingleLine();
+		textView.setText(imageInfo.title);
+		waterFallItems.get(columnIndex).addView(textView);
 		imageViewItem.setTag(index);
 		imageViewItem.setOnClickListener(this);
+		System.out.println(imageInfo.toString());
+		//System.out.println(Uri.parse(imageInfo.thumbnailPath));
 		imageInfo.imageView = imageViewItem;
-		ImageLoaderTask imageLoaderTask = new ImageLoaderTask(imageViewItem);
-		imageLoaderTask.execute(imageInfo);
+		if(imageInfo.thumbnailPath != null) {
+			imageViewItem.setImageURI(Uri.parse(imageInfo.thumbnailPath));
+		}
+		//ImageLoaderTask imageLoaderTask = new ImageLoaderTask(imageViewItem);
+		//imageLoaderTask.execute(imageInfo);
 
 	}
 
 	
 	@Override
 	public void onClick(View v) {
-		/*Integer index = (Integer) v.getTag();
+		Integer index = (Integer) v.getTag();
 		startActivity(movieList.get(index).intent);
-		i.setClass(this, MovieView.class);*/
-		Intent intent = new Intent(this, MovieView.class);
+		/*i.setClass(this, MovieView.class);*/
+		/*Intent intent = new Intent(this, MovieView.class);
 		intent.setData(Uri.parse("/mnt/sdcard/03.avi"));
-		startActivity(intent);
+		startActivity(intent);*/
 	}
 	
-	static class ViewHolder {
-		public ImageView icon;
-		public TextView name;
-	}
 }

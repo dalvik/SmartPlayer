@@ -28,28 +28,4 @@
     </LinearLayout>
 
 </com.sky.drovik.player.views.LazyScrollView>
-
-<!-- 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@color/lightdark"
-    android:orientation="vertical" >
-
-    <GridView
-        android:id="@+id/movie_list"
-        android:layout_width="55dip"
-        android:layout_height="fill_parent"
-        android:alwaysDrawnWithCache="true"
-        android:columnWidth="50dp"
-        android:drawSelectorOnTop="false"
-        android:numColumns="1"
-        android:persistentDrawingCache="animation|scrolling"
-        android:scrollbars="vertical"
-        android:stretchMode="spacingWidth"
-        android:verticalSpacing="6dip"
-        android:visibility="visible" />
-
-</LinearLayout>
- -->
  
