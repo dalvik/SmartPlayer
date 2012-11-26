@@ -21,7 +21,6 @@ public class MovieView extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.layout_video_list);
         setContentView(R.layout.layout_movie_view);
         View rootView = findViewById(Res.id.root);
         Intent intent = getIntent();
@@ -29,8 +28,8 @@ public class MovieView extends Activity {
             @Override
             public void onCompletion() {
             	System.out.println("play over exit");
-            	finish();
                 if (finishOnCompletion) {
+                	finish();
                 }
             }
         };

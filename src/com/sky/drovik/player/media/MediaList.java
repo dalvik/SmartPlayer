@@ -1,5 +1,6 @@
 package com.sky.drovik.player.media;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 
@@ -46,6 +46,7 @@ public class MediaList {
 				info.mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.MIME_TYPE));
 				info.title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.TITLE));
 				info.size = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE));
+				info.path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));
 				//获取当前Video对应的Id，然后根据该ID获取其Thumb
 				int id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID));
 				String selection = MediaStore.Video.Thumbnails.VIDEO_ID +"=?";
@@ -57,8 +58,7 @@ public class MediaList {
 				if(thumbCursor.moveToFirst()){
 					info.thumbnailPath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Thumbnails.DATA));
 				}
-				Uri uri = Uri.parse("file://" + cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)));
-				info.setActivity(uri, Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+				info.setActivity(Uri.fromFile(new File(info.path)), info.mimeType, Intent.FLAG_ACTIVITY_NEW_TASK );
 				videoList.add(info);
 				thumbCursor.close();
 			}while(cursor.moveToNext());

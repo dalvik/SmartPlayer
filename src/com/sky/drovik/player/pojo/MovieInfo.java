@@ -60,9 +60,9 @@ public class MovieInfo {
      * @param className the class name of the component representing the intent
      * @param launchFlags the launch flags
      */
-    public final void setActivity(Uri uri, int launchFlags) {
-        intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(uri, "video/*"); 
+    public final void setActivity(Uri uri,String mimeType, int launchFlags) {
+        intent = new Intent("com.sky.drovik.action.PLAYVER_VIEW");
+        intent.setDataAndType(uri, mimeType); 
         intent.setFlags(launchFlags);
     }
 

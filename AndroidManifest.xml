@@ -25,17 +25,19 @@
             android:screenOrientation="landscape"
             android:label="@string/playing_title"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
-	        <intent-filter>
-	                <action android:name="android.intent.action.VIEW" />
-                	<category android:name="android.intent.category.DEFAULT" />
-	                <data android:mimeType="video/*" />
-            </intent-filter>
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
             <intent-filter>
-                	<action android:name="android.intent.action.VIEW" />
-	                <category android:name="android.intent.category.DEFAULT" />
-	                <data android:mimeType="video/*" />
+                	<action android:name="com.sky.drovik.action.PLAYVER_VIEW" />
+                	<category android:name="android.intent.category.DEFAULT" />
+                	<data  android:mimeType="video/*" />
             </intent-filter>
+            
+	        <intent-filter>
+                	<action android:name="android.intent.action.VIEW" />
+                	<category android:name="android.intent.category.DEFAULT" />
+                	<data  android:mimeType="video/*" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

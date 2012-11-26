@@ -58,7 +58,9 @@ public class BitmapCache {
 	 * 依据所指定的文件名获取图片
 	 */
 	public Bitmap getBitmap(String filename) {
-
+		if(filename == null) {
+			return null;
+		}
 		Bitmap bitmapImage = null;
 		// 缓存中是否有该Bitmap实例的软引用，如果有，从软引用中取得。
 		if (bitmapRefs.containsKey(filename)) {

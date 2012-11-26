@@ -135,10 +135,6 @@ public class MovieList extends Activity implements OnClickListener {
 		waterFallItems.get(columnIndex).addView(textView);
 		imageViewItem.setTag(index);
 		imageViewItem.setOnClickListener(this);
-		imageInfo.imageView = imageViewItem;
-		/*if(imageInfo.thumbnailPath != null) {
-			imageViewItem.setImageBitmap(ThumbnailUtils.createVideoThumbnail(imageInfo.thumbnailPath, android.provider.MediaStore.Video.Thumbnails.MICRO_KIND));
-		}	*/	
 		ImageLoaderTask imageLoaderTask = new ImageLoaderTask(imageViewItem);
 		imageLoaderTask.execute(imageInfo);
 
@@ -148,6 +144,7 @@ public class MovieList extends Activity implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		Integer index = (Integer) v.getTag();
+		System.out.println(movieList.get(index).intent);
 		startActivity(movieList.get(index).intent);
 		/*i.setClass(this, MovieView.class);*/
 		/*Intent intent = new Intent(this, MovieView.class);

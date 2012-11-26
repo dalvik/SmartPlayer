@@ -1,7 +1,5 @@
 package com.sky.drovik.player.engine;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.ref.WeakReference;
 
 import android.graphics.Bitmap;
@@ -29,19 +27,11 @@ public class ImageLoaderTask extends AsyncTask<MovieInfo, Void, Bitmap> {
 	}
 
 	private Bitmap loadImageFile(final String filename) {
-		InputStream is = null;
 		try {
 			Bitmap bmp = BitmapCache.getInstance().getBitmap(filename);
 			return bmp;
 		} catch (Exception e) {
 			Log.e(this.getClass().getSimpleName(), "fetchDrawable failed", e);
-		} finally {
-			try {
-				if (is != null)
-					is.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 		return null;
 	}
