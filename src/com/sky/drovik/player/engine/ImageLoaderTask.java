@@ -4,16 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 
-import com.sky.drovik.player.media.MovieList;
-import com.sky.drovik.player.pojo.MovieInfo;
-
 import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
-import android.provider.MediaStore.Images.Thumbnails;
 import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
+
+import com.sky.drovik.player.pojo.MovieInfo;
 
 public class ImageLoaderTask extends AsyncTask<MovieInfo, Void, Bitmap> {
 
@@ -28,7 +25,7 @@ public class ImageLoaderTask extends AsyncTask<MovieInfo, Void, Bitmap> {
 	@Override
 	protected Bitmap doInBackground(MovieInfo... params) {
 		imageInfo = params[0];
-		return loadImageFile(imageInfo.path);
+		return loadImageFile(imageInfo.thumbnailPath);
 	}
 
 	private Bitmap loadImageFile(final String filename) {
@@ -58,10 +55,10 @@ public class ImageLoaderTask extends AsyncTask<MovieInfo, Void, Bitmap> {
 			ImageView imageView = imageViewReference.get();
 			if (imageView != null) {
 				if (bitmap != null) {
-					int width = bitmap.getWidth(); // 获取真实宽高
-					int height = bitmap.getHeight();
+					//int width = bitmap.getWidth(); // 获取真实宽高
+					//int height = bitmap.getHeight();
 					LayoutParams lp = imageView.getLayoutParams();
-					lp.height = (height * MovieList.itemWidth) / width;//调整高度
+					//lp.height = (height * MovieList.itemWidth) / width;//调整高度
 					imageView.setLayoutParams(lp);
 					imageView.setImageBitmap(bitmap);
 				}

@@ -5,7 +5,6 @@ import java.lang.ref.SoftReference;
 import java.util.Hashtable;
 
 import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
 /**
  * 防止溢出
  *
@@ -70,6 +69,7 @@ public class BitmapCache {
 		// 并保存对这个新建实例的软引用
 		if (bitmapImage == null) {
 			bitmapImage = ThumbnailUtils.createVideoThumbnail(filename, android.provider.MediaStore.Video.Thumbnails.MICRO_KIND);
+			this.addCacheBitmap(bitmapImage, filename);
 			/*BitmapFactory.Options options = new BitmapFactory.Options();
 			options.inTempStorage = new byte[16 * 1024];
 			// bitmapImage = BitmapFactory.decodeFile(filename, options);
@@ -101,7 +101,6 @@ public class BitmapCache {
 			}*/
 
 		}
-
 		return bitmapImage;
 	}
 
