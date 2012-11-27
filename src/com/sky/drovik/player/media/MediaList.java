@@ -35,10 +35,10 @@ public class MediaList {
 		this.context = context;
 	}
 	
-	public List<MovieInfo> getVideoListByPage(int page) {
+	public List<MovieInfo> getVideoListByPage(int index, int perPageNum) {
 		
 		ContentResolver crs =  context.getContentResolver();
-		cursor = crs.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Video.Media.DATE_ADDED + " DESC");
+		cursor = crs.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, mediaColumns, null, null,  MediaStore.Video.Media.DATE_ADDED + " DESC ");// + " LIMIT " + (index * perPageNum) + " , "+ perPageNum);
 		List<MovieInfo> videoList = new ArrayList<MovieInfo>();
 		if(cursor.moveToFirst()){
 			do{

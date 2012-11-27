@@ -45,6 +45,7 @@ import android.widget.VideoView;
 
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.app.Res;
+import com.sky.drovik.player.utils.StringUtils;
 
 public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
 
@@ -146,20 +147,6 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
         }        
     }
     
-    public static String formatDuration(final Context context, int durationMs) {
-        int duration = durationMs / 1000;
-        int h = duration / 3600;
-        int m = (duration - h * 3600) / 60;
-        int s = duration - (h * 3600 + m * 60);
-        String durationValue;
-        if (h == 0) {
-            durationValue = String.format(context.getString(Res.string.details_ms), m, s);
-        } else {
-            durationValue = String.format(context.getString(Res.string.details_hms), h, m, s);
-        }
-        return durationValue;
-    }
-
     public MovieViewControl(View rootView, Context context, Uri videoUri) {
         mContentResolver = context.getContentResolver();
         mVideoView = (VideoView) rootView.findViewById(Res.id.surface_view);
@@ -194,7 +181,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
             builder.setTitle(Res.string.resume_playing_title);
             builder
                     .setMessage(String
-                            .format(context.getString(Res.string.resume_playing_message), formatDuration(context, bookmark)));
+                            .format(context.getString(Res.string.resume_playing_message), StringUtils.formatDuration(context, bookmark)));
             builder.setOnCancelListener(new OnCancelListener() {
                 public void onCancel(DialogInterface dialog) {
                     onCompletion();
@@ -294,7 +281,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     }
 
     public void onResume() {
-       // mVideoView.resume();
+        //mVideoView.resume();
     }
 
     public void onDestroy() {
@@ -304,7 +291,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     public boolean onError(MediaPlayer player, int arg1, int arg2) {
         mHandler.removeCallbacksAndMessages(null);
         mProgressView.setVisibility(View.GONE);
-        return false;
+        return true;
     }
 
     public void onCompletion(MediaPlayer mp) {

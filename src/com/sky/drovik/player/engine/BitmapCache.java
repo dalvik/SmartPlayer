@@ -5,6 +5,8 @@ import java.lang.ref.SoftReference;
 import java.util.Hashtable;
 
 import android.graphics.Bitmap;
+
+import com.sky.drovik.player.utils.BitmapUtil;
 /**
  * 防止溢出
  *
@@ -58,9 +60,7 @@ public class BitmapCache {
 	 * 依据所指定的文件名获取图片
 	 */
 	public Bitmap getBitmap(String filename) {
-		if(filename == null) {
-			return null;
-		}
+		System.out.println(filename);
 		Bitmap bitmapImage = null;
 		// 缓存中是否有该Bitmap实例的软引用，如果有，从软引用中取得。
 		if (bitmapRefs.containsKey(filename)) {
@@ -70,8 +70,18 @@ public class BitmapCache {
 		// 如果没有软引用，或者从软引用中得到的实例是null，重新构建一个实例，
 		// 并保存对这个新建实例的软引用
 		if (bitmapImage == null) {
-			bitmapImage = ThumbnailUtils.createVideoThumbnail(filename, android.provider.MediaStore.Video.Thumbnails.MICRO_KIND);
-			this.addCacheBitmap(bitmapImage, filename);
+			Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(filename, android.provider.MediaStore.Video.Thumbnails.MICRO_KIND);
+			if(bitmap == null) {
+				//bitmapImage = BitmapUtil.getRoundedCornerBitmap(BitmapFactory.decodeResource(, id), 10.0f);
+				this.addCacheBitmap(bitmapImage, filename);
+			}else {
+				bitmapImage = BitmapUtil.getRoundedCornerBitmap(bitmap, 10.0f);
+				this.addCacheBitmap(bitmapImage, filename);
+				if(bitmap != null && !bitmap.isRecycled()) {
+					bitmap.recycle();
+					bitmap = null;
+				}
+			}
 			/*BitmapFactory.Options options = new BitmapFactory.Options();
 			options.inTempStorage = new byte[16 * 1024];
 			// bitmapImage = BitmapFactory.decodeFile(filename, options);

@@ -45,7 +45,7 @@ public class MovieInfo {
     
     public String size = "";
     
-    public String thumbnailPath = "";
+    public String thumbnailPath = "default";
     
     public ImageView imageView;
     

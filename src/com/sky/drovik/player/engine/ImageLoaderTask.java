@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
+import com.sky.drovik.player.R;
 import com.sky.drovik.player.pojo.MovieInfo;
 
 public class ImageLoaderTask extends AsyncTask<MovieInfo, Void, Bitmap> {
@@ -44,13 +45,15 @@ public class ImageLoaderTask extends AsyncTask<MovieInfo, Void, Bitmap> {
 		if (imageViewReference != null) {
 			ImageView imageView = imageViewReference.get();
 			if (imageView != null) {
+				//int width = bitmap.getWidth(); // 获取真实宽高
+				//int height = bitmap.getHeight();
+				LayoutParams lp = imageView.getLayoutParams();
+				//lp.height = (height * MovieList.itemWidth) / width;//调整高度
+				imageView.setLayoutParams(lp);
 				if (bitmap != null) {
-					//int width = bitmap.getWidth(); // 获取真实宽高
-					//int height = bitmap.getHeight();
-					LayoutParams lp = imageView.getLayoutParams();
-					//lp.height = (height * MovieList.itemWidth) / width;//调整高度
-					imageView.setLayoutParams(lp);
 					imageView.setImageBitmap(bitmap);
+				} else {
+					imageView.setImageResource(R.drawable.videooverlay);
 				}
 			}
 		}

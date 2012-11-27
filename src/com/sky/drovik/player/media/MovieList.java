@@ -6,8 +6,6 @@ import java.util.List;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -40,9 +38,9 @@ public class MovieList extends Activity implements OnClickListener {
 	
 	private ProgressDialog progressDialog = null;
 
-	private int column_count = 3;// 显示列数
+	private int column_count = 5;// 显示列数
 	
-	private int page_count = 15;// 每次加载15张图片
+	private int page_count = column_count * 4;// 每次加载15张图片
 
 	private int current_page = 0;
 	
@@ -62,9 +60,6 @@ public class MovieList extends Activity implements OnClickListener {
 		Display display = this.getWindowManager().getDefaultDisplay();
 		itemWidth = display.getWidth() / column_count;// 根据屏幕大小计算每列大小
 		initLayout();
-		/*Intent intent = new Intent(this, MovieView.class);
-		intent.setData(Uri.parse("/mnt/sdcard/03.avi"));
-		startActivity(intent);*/
 	}
 	
 	private void initLayout() {
@@ -108,7 +103,7 @@ public class MovieList extends Activity implements OnClickListener {
 	
 	private void loadImageFiles() {// 分页装载视频信息
 		MediaList media = new MediaList(this);
-		List<MovieInfo> videoList = media.getVideoListByPage(0);
+		List<MovieInfo> videoList = media.getVideoListByPage(current_page * page_count, page_count);
 		movieList.addAll(videoList);
 	}
 	
@@ -126,6 +121,9 @@ public class MovieList extends Activity implements OnClickListener {
 		ImageView imageViewItem = (ImageView) LayoutInflater.from(this).inflate(
 				R.layout.layout_movie_list_item, null);
 		waterFallItems.get(columnIndex).addView(imageViewItem);
+		LinearLayout.LayoutParams ig = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		ig.gravity = Gravity.CENTER;
+		imageViewItem.setLayoutParams(ig);
 		TextView textView = new TextView(context);
 		LinearLayout.LayoutParams itemParam = new LinearLayout.LayoutParams(itemWidth, LayoutParams.WRAP_CONTENT);
 		textView.setGravity(Gravity.CENTER);
@@ -137,19 +135,13 @@ public class MovieList extends Activity implements OnClickListener {
 		imageViewItem.setOnClickListener(this);
 		ImageLoaderTask imageLoaderTask = new ImageLoaderTask(imageViewItem);
 		imageLoaderTask.execute(imageInfo);
-
 	}
 
 	
 	@Override
 	public void onClick(View v) {
 		Integer index = (Integer) v.getTag();
-		System.out.println(movieList.get(index).intent);
 		startActivity(movieList.get(index).intent);
-		/*i.setClass(this, MovieView.class);*/
-		/*Intent intent = new Intent(this, MovieView.class);
-		intent.setData(Uri.parse("/mnt/sdcard/03.avi"));
-		startActivity(intent);*/
 	}
 	
 }
