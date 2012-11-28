@@ -17,10 +17,7 @@
 package com.sky.drovik.player.engine;
 
 import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.io.IOException;
-
-
 
 import android.content.ContentResolver;
 import android.graphics.Bitmap;

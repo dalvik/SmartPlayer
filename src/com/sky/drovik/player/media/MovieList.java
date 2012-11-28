@@ -21,10 +21,11 @@ import android.widget.TextView;
 
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.engine.ImageLoaderTask;
+import com.sky.drovik.player.engine.UpdateManager;
 import com.sky.drovik.player.pojo.MovieInfo;
-import com.sky.drovik.player.views.ControlPanel;
-import com.sky.drovik.player.views.LazyScrollView;
-import com.sky.drovik.player.views.LazyScrollView.OnScrollListener;
+import com.sky.drovik.views.ControlPanel;
+import com.sky.drovik.views.LazyScrollView;
+import com.sky.drovik.views.LazyScrollView.OnScrollListener;
 
 public class MovieList extends Activity implements OnClickListener {
 
@@ -68,6 +69,7 @@ public class MovieList extends Activity implements OnClickListener {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 		itemWidth = dm.widthPixels / column_count;// 根据屏幕大小计算每列大小
 		initLayout(layout);
+		UpdateManager.getUpdateManager().checkAppUpdate(this, false);
 	}
 	
 	private void initLayout(LinearLayout layout) {

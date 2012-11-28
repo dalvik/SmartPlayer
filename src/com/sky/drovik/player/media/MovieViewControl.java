@@ -33,19 +33,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Video;
-import android.util.DisplayMetrics;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import com.drovik.utils.StringUtils;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.app.Res;
-import com.sky.drovik.player.utils.StringUtils;
 
 public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
 

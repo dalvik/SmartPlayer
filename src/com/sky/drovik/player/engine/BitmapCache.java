@@ -4,9 +4,11 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.Hashtable;
 
+import com.drovik.utils.BitmapUtil;
+
 import android.graphics.Bitmap;
 
-import com.sky.drovik.player.utils.BitmapUtil;
+
 /**
  * ·ÀÖ¹Òç³ö
  *

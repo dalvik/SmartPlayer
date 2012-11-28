@@ -1,4 +1,4 @@
-package com.sky.drovik.player.views;
+package com.sky.drovik.views;
 
 import android.content.Context;
 import android.os.Handler;

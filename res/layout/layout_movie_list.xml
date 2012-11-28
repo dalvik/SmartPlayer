@@ -32,7 +32,7 @@
         android:paddingLeft="1dip"
         android:paddingTop="1dip" >
 
-        <com.sky.drovik.player.views.LazyScrollView
+        <com.sky.drovik.views.LazyScrollView
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/lazyScrollView"
             android:layout_width="fill_parent"
@@ -43,7 +43,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" >
             </LinearLayout>
-        </com.sky.drovik.player.views.LazyScrollView>
+        </com.sky.drovik.views.LazyScrollView>
     </LinearLayout>
 
 </LinearLayout>
