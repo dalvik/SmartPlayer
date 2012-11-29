@@ -6,7 +6,6 @@ import java.util.List;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -56,6 +55,8 @@ public class MovieList extends Activity implements OnClickListener {
 	private ControlPanel rightControlPanel = null;
 	
 	private View rightView = null;
+	
+
 	
 	private String TAG = "MovieList";
 	
@@ -156,8 +157,11 @@ public class MovieList extends Activity implements OnClickListener {
 		waterFallItems.get(columnIndex).addView(textView);
 		imageViewItem.setTag(index);
 		imageViewItem.setOnClickListener(this);
-		ImageLoaderTask imageLoaderTask = new ImageLoaderTask(imageViewItem);
-		imageLoaderTask.execute(imageInfo);
+		imageInfo.imageView = imageViewItem;
+		if(imageInfo.thumbnailPath != null && imageInfo.magic_id != 0) {
+			ImageLoaderTask imageLoaderTask = new ImageLoaderTask(this, imageViewItem);
+			imageLoaderTask.execute(imageInfo);
+		}
 	}
 
 	

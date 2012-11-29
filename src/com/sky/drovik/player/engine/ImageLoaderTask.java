@@ -2,13 +2,13 @@ package com.sky.drovik.player.engine;
 
 import java.lang.ref.WeakReference;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
-import com.sky.drovik.player.R;
 import com.sky.drovik.player.pojo.MovieInfo;
 
 public class ImageLoaderTask extends AsyncTask<MovieInfo, Void, Bitmap> {
@@ -17,20 +17,22 @@ public class ImageLoaderTask extends AsyncTask<MovieInfo, Void, Bitmap> {
 	
 	private final WeakReference<ImageView> imageViewReference; // 防止内存溢出
 
-	public ImageLoaderTask(ImageView imageView) {
+	private Context context;
+	
+	public ImageLoaderTask(Context context, ImageView imageView) {
+		this.context = context;
 		imageViewReference = new WeakReference<ImageView>(imageView);
 	}
 
 	@Override
 	protected Bitmap doInBackground(MovieInfo... params) {
 		imageInfo = params[0];
-		return loadImageFile(imageInfo.thumbnailPath);
+		return loadImageFile();
 	}
 
-	private Bitmap loadImageFile(final String filename) {
+	private Bitmap loadImageFile() {
 		try {
-			Bitmap bmp = BitmapCache.getInstance().getBitmap(filename);
-			return bmp;
+			return BitmapCache.getInstance().getBitmap(context,imageInfo);
 		} catch (Exception e) {
 			Log.e(this.getClass().getSimpleName(), "fetchDrawable failed", e);
 		}
@@ -39,6 +41,9 @@ public class ImageLoaderTask extends AsyncTask<MovieInfo, Void, Bitmap> {
 
 	@Override
 	protected void onPostExecute(Bitmap bitmap) {
+		if(bitmap == null) {
+			return;
+		}
 		if (isCancelled()) {
 			bitmap = null;
 		}
@@ -50,11 +55,7 @@ public class ImageLoaderTask extends AsyncTask<MovieInfo, Void, Bitmap> {
 				LayoutParams lp = imageView.getLayoutParams();
 				//lp.height = (height * MovieList.itemWidth) / width;//调整高度
 				imageView.setLayoutParams(lp);
-				if (bitmap != null) {
-					imageView.setImageBitmap(bitmap);
-				} else {
-					imageView.setImageResource(R.drawable.videooverlay);
-				}
+				imageView.setImageBitmap(bitmap);
 			}
 		}
 	}

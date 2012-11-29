@@ -45,9 +45,11 @@ public class MovieInfo {
     
     public String size = "";
     
-    public String thumbnailPath = "default";
+    public String thumbnailPath = "";
     
     public ImageView imageView;
+    
+    public long magic_id;
     
     /**
      * When set to true, indicates that the icon has been resized.

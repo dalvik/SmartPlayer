@@ -56,6 +56,7 @@ public class MediaList {
 				ContentResolver rs =  context.getContentResolver();
 				Cursor thumbCursor = rs.query(MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI, thumbColumns, selection, selectionArgs, null);
 				if(thumbCursor.moveToFirst()){
+					info.magic_id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Video.Thumbnails._ID));
 					info.thumbnailPath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Thumbnails.DATA));
 				}
 				info.setActivity(Uri.fromFile(new File(info.path)), info.mimeType, Intent.FLAG_ACTIVITY_NEW_TASK );

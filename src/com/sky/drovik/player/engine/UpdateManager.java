@@ -45,7 +45,7 @@ import com.sky.drovik.views.DownLoadProgressBar;
 
 public class UpdateManager {
 
-	private boolean DEBUG = false;
+	private boolean DEBUG = true;
 	
 	private static final int DOWN_NOSDCARD = 0;
 	
