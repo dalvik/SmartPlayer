@@ -157,6 +157,7 @@ public class MovieList extends Activity implements OnClickListener {
 		textView.setShadowLayer(1.5f, 1.5f, 1.5f, 0xff000000);
 		textView.setTextColor(0xffffffff);
 		textView.setBackgroundResource(R.drawable.cer_shape_status_bkgnd);
+		textView.setMaxWidth(itemWidth);
 		textView.setSingleLine();
 		textView.setText(imageInfo.title);
 		waterFallItems.get(columnIndex).addView(textView);

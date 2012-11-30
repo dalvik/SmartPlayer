@@ -55,7 +55,7 @@ public class Guide extends Activity implements OnClickListener,
 		if(settings.getBoolean("IS_INIT", true)) {
         	settings.edit().putBoolean("IS_INIT", false).commit();
         }else {
-        	startActivity(new Intent(this, MovieList.class));
+        	startActivity(new Intent(this, Welcome.class));
         	Guide.this.finish();
         }
 		setContentView(R.layout.layout_guide);
@@ -139,10 +139,10 @@ public class Guide extends Activity implements OnClickListener,
 			if(startFlag && (lastX - event.getX()) >100 && (currentIndex == views.size() -1)){
 				startFlag = false;
 				boolean shutCutFlag = settings.getBoolean("CREATE_SHUT_CUT", false);
-				createShutcut(this, "com.sky.drovik.player", ".media.Guide");
 				if(!shutCutFlag) {
-					startActivity(new Intent(this, MovieList.class));
+					createShutcut(this, "com.sky.drovik.player", ".media.Guide");
 		        }
+				startActivity(new Intent(this, Welcome.class));
 				this.finish();
 			}
 			break;
