@@ -54,29 +54,29 @@ public class Guide extends Activity implements OnClickListener,
 		settings = getSharedPreferences(MovieList.class.getName(), 0);
 		if(settings.getBoolean("IS_INIT", true)) {
         	settings.edit().putBoolean("IS_INIT", false).commit();
+        	setContentView(R.layout.layout_guide);
+        	views = new ArrayList<View>();
+        	LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams(
+        			LinearLayout.LayoutParams.WRAP_CONTENT,
+        			LinearLayout.LayoutParams.FILL_PARENT);
+        	
+        	for (int i = 0; i < pics.length; i++) {
+        		ImageView iv = new ImageView(this);
+        		iv.setLayoutParams(mParams);
+        		iv.setImageResource(pics[i]);
+        		views.add(iv);
+        	}
+        	viewPager = (ViewPager) findViewById(R.id.viewpager);
+        	viewPagerAdapter = new ViewPagerAdapter(views);
+        	viewPager.setOnTouchListener(this);
+        	viewPager.setAdapter(viewPagerAdapter);
+        	viewPager.setOnPageChangeListener(this);
+        	
+        	initBottomDots();
         }else {
         	startActivity(new Intent(this, Welcome.class));
         	Guide.this.finish();
         }
-		setContentView(R.layout.layout_guide);
-		views = new ArrayList<View>();
-		LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.WRAP_CONTENT,
-				LinearLayout.LayoutParams.FILL_PARENT);
-
-		for (int i = 0; i < pics.length; i++) {
-			ImageView iv = new ImageView(this);
-			iv.setLayoutParams(mParams);
-			iv.setImageResource(pics[i]);
-			views.add(iv);
-		}
-		viewPager = (ViewPager) findViewById(R.id.viewpager);
-		viewPagerAdapter = new ViewPagerAdapter(views);
-		viewPager.setOnTouchListener(this);
-		viewPager.setAdapter(viewPagerAdapter);
-		viewPager.setOnPageChangeListener(this);
-
-		initBottomDots();
 
 	}
 

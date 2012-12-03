@@ -1,17 +1,26 @@
 package com.sky.drovik.player.media;
 
 
-import com.sky.drovik.player.R;
-
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
-public class Welcome extends Activity {
+import com.sky.drovik.player.R;
+
+public class Welcome extends Activity implements OnClickListener {
 
 	private int[] welcom_bg = {R.drawable.welcome_one, R.drawable.welcome_two};
 	
@@ -23,14 +32,20 @@ public class Welcome extends Activity {
 	
 	private int num = welcom_bg.length;
 	
-	private LinearLayout layout = null;
+	private RelativeLayout layout = null;
+	
+	private int delay = 50;
+	
+	private boolean flag = true;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_welcome);
-		layout = (LinearLayout) findViewById(R.id.welcom_bg_layout);
+		layout = (RelativeLayout) findViewById(R.id.welcom_bg_layout);
+		layout.setOnClickListener(this);
 		imageView = (ImageView) findViewById(R.id.welcom_bg);
+		imageView.setAnimation(AnimationUtils.loadAnimation(this, R.anim.background_rotate));
 		handler = new Handler(){
 			@Override
 			public void handleMessage(Message msg) {
@@ -38,11 +53,12 @@ public class Welcome extends Activity {
 				switch (msg.what) {
 				case 1:
 					layout.setBackgroundResource(welcom_bg[count++%num]);
-					if(count>30) {
+					if(count * delay >= 2.5* 1000 && flag) {
+						flag = false;
 						startActivity(new Intent(Welcome.this, MovieList.class));
 						Welcome.this.finish();
 					}else {
-						handler.sendEmptyMessageDelayed(1, 100);
+						handler.sendEmptyMessageDelayed(1, delay);
 					}
 					break;
 
@@ -53,5 +69,22 @@ public class Welcome extends Activity {
 			}
 		};
 		handler.sendEmptyMessage(1);
+	}
+	
+	@Override
+	public void onClick(View v) {
+		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getText(R.string.welcome_bottom_tips_str).toString())));
+	}
+	
+	public static Bitmap createTxtImage(String txt, int txtSize) {
+		Bitmap mbmpTest = Bitmap.createBitmap(txt.length() * txtSize + 4,
+				txtSize + 4, Config.ARGB_8888);
+		Canvas canvasTemp = new Canvas(mbmpTest);
+		Paint p = new Paint();
+		p.setAntiAlias(true);
+		p.setColor(Color.BLACK);
+		p.setTextSize(txtSize);
+		canvasTemp.drawText(txt, 2, txtSize - 2, p);
+		return mbmpTest;
 	}
 }

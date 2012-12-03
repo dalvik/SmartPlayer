@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
@@ -8,8 +8,16 @@
 
     <ImageView
         android:id="@+id/welcom_bg"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:background="@drawable/start_anima"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         />
 
-</LinearLayout>
+     <com.sky.drovik.views.ReflectTextView
+        style="@style/style_welcome_bottom_tips"
+        android:id="@+id/welcom_bottom_info"
+        android:text="@string/welcome_bottom_tips_str"
+        android:layout_below="@+id/welcom_bg"
+        />
+</RelativeLayout>

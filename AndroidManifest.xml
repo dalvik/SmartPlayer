@@ -35,6 +35,7 @@
         
         <activity
             android:name=".media.MovieList"
+            android:screenOrientation="landscape"
             android:label="@string/title_activity_video_list" />
         
         <activity android:name=".media.MovieView"

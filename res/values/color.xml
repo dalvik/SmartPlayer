@@ -9,4 +9,5 @@
     <color name="lightdark">#666666</color>
     <color name="blue">#0606eb</color>
     <color name="gray">#e2c5f2</color>
+    <color name="welcome_bottom_tips">#a0a0a0</color>
 </resources>

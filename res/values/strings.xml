@@ -28,5 +28,8 @@
      <string name="_loading_new_str">正在下载新版本</string>
      <string name="_loading_new_cancle_str">取消</string>
      <string name="_loading_str">下载</string>
+     
+     <!-- welcome   -->
+     <string name="welcome_bottom_tips_str">www.drovik.com</string>
         
 </resources>
