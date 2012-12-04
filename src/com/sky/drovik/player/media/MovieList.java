@@ -15,8 +15,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
 import com.sky.drovik.player.R;
@@ -58,6 +60,7 @@ public class MovieList extends Activity implements OnClickListener {
 	private View rightView = null;
 	
 
+	private ExpandableListView expandableListView = null;
 	
 	private String TAG = "MovieList";
 	
@@ -79,6 +82,9 @@ public class MovieList extends Activity implements OnClickListener {
 		waterFallContainer = (LinearLayout) layout.findViewById(R.id.waterFallContainer);
 		LayoutInflater factory = LayoutInflater.from(this);
         rightView = factory.inflate(R.layout.reight_menu, null);
+        expandableListView = (ExpandableListView) rightView.findViewById(R.id.history_list);
+        //expandableListView.seta
+        //SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(context, groupData, expandedGroupLayout, collapsedGroupLayout, groupFrom, groupTo, childData, childLayout, childFrom, childTo)
         int w = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
         int h = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
         System.out.println("w=" + w + "h=" + h);
