@@ -1,7 +1,9 @@
 package com.sky.drovik.player.media;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -18,10 +20,10 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
 import com.sky.drovik.player.R;
+import com.sky.drovik.player.engine.HistoryListAdpater;
 import com.sky.drovik.player.engine.ImageLoaderTask;
 import com.sky.drovik.player.engine.UpdateManager;
 import com.sky.drovik.player.pojo.MovieInfo;
@@ -59,8 +61,21 @@ public class MovieList extends Activity implements OnClickListener {
 	
 	private View rightView = null;
 	
+	private List<Map<String,Object>> parentList=new ArrayList<Map<String,Object>>();   
+	       
+	private List<List<Map<String,Object>>> childList = new ArrayList<List<Map<String,Object>>>();
+	
+	private String[] listName = new String[]{"我的好友","高中同学","大学同学","移动开发","网站建设","普通朋友"  
+    };   
+    private String[] childTitle= new String[]{"丫宁","王八锐","小鸟","连超","董二丫"};
+    
+   // private String[] childMood= new String[]{"我喜欢王锐","我就是王八","我也喜欢王锐","上边一群傻帽","同楼上"  };   
+private int[] headImage=new int[]{ R.drawable.d1,R.drawable.d1,R.drawable.d1,R.drawable.d1,R.drawable.d1     
+   };  
 
 	private ExpandableListView expandableListView = null;
+	
+	HistoryListAdpater adapter;   
 	
 	private String TAG = "MovieList";
 	
@@ -73,8 +88,8 @@ public class MovieList extends Activity implements OnClickListener {
 		DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 		itemWidth = dm.widthPixels / column_count;// 根据屏幕大小计算每列大小
+		//UpdateManager.getUpdateManager().checkAppUpdate(this, false);
 		initLayout(layout);
-		UpdateManager.getUpdateManager().checkAppUpdate(this, false);
 	}
 	
 	private void initLayout(LinearLayout layout) {
@@ -83,8 +98,12 @@ public class MovieList extends Activity implements OnClickListener {
 		LayoutInflater factory = LayoutInflater.from(this);
         rightView = factory.inflate(R.layout.reight_menu, null);
         expandableListView = (ExpandableListView) rightView.findViewById(R.id.history_list);
-        //expandableListView.seta
-        //SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(context, groupData, expandedGroupLayout, collapsedGroupLayout, groupFrom, groupTo, childData, childLayout, childFrom, childTo)
+        parentList =getParentList(); 
+        childList = getChildList();   
+        adapter = new HistoryListAdpater(this, parentList, childList);   
+        expandableListView.setAdapter(adapter);
+        expandableListView.setGroupIndicator(null);   
+        expandableListView.setDivider(null); 
         int w = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
         int h = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
         System.out.println("w=" + w + "h=" + h);
@@ -129,6 +148,32 @@ public class MovieList extends Activity implements OnClickListener {
 		addItemToContainer(current_page, page_count);
 	}
 	
+	public List<Map<String,Object>> getParentList(){   
+		        List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();   
+		        for(int i=0;i<listName.length;i++){   
+		             Map<String, Object> curGroupMap = new HashMap<String, Object>();   
+		             list.add(curGroupMap);   
+		             curGroupMap.put("list", listName[i]);   
+		       }   
+		        return list;   
+		   }   
+	
+	public List<List<Map<String,Object>>> getChildList(){   
+        List<List<Map<String,Object>>> list1 = new ArrayList<List<Map<String,Object>>>();   
+         for (int i = 0; i < listName.length; i++) {   
+             List<Map<String, Object>> children = new ArrayList<Map<String, Object>>();   
+             for (int j = 0; j <childTitle.length; j++) {   
+                 Map<String, Object> curChildMap = new HashMap<String, Object>();   
+                 children.add(curChildMap);   
+                 curChildMap.put("title", childTitle[j]);   
+                 //curChildMap.put("Mood", childMood[j]);   
+                 curChildMap.put("head", headImage[j]);   
+             }   
+             list1.add(children);   
+        }   
+        return list1;   
+           
+    }   
 	
 	private void loadImageFiles() {// 分页装载视频信息
 		MediaList media = new MediaList(this);
