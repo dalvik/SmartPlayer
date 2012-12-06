@@ -30,6 +30,6 @@
      <string name="_loading_str">下载</string>
      
      <!-- welcome   -->
-     <string name="welcome_bottom_tips_str">www.drovik.com</string>
+     <string name="welcome_bottom_tips_str">http://www.drovik.com</string>
         
 </resources>

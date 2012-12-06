@@ -36,8 +36,6 @@ public class Welcome extends Activity implements OnClickListener {
 	
 	private int delay = 50;
 	
-	private boolean flag = true;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -53,8 +51,7 @@ public class Welcome extends Activity implements OnClickListener {
 				switch (msg.what) {
 				case 1:
 					layout.setBackgroundResource(welcom_bg[count++%num]);
-					if(count * delay >= 2.5* 1000 && flag) {
-						flag = false;
+					if(count == 45) {
 						startActivity(new Intent(Welcome.this, MovieList.class));
 						Welcome.this.finish();
 					}else {
@@ -73,7 +70,8 @@ public class Welcome extends Activity implements OnClickListener {
 	
 	@Override
 	public void onClick(View v) {
-		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getText(R.string.welcome_bottom_tips_str).toString())));
+		Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(getText(R.string.welcome_bottom_tips_str).toString()));
+		startActivity(intent);
 	}
 	
 	public static Bitmap createTxtImage(String txt, int txtSize) {
