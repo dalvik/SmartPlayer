@@ -72,7 +72,7 @@ public class HistoryListAdpater extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	public View getGroupView(int groupPosition, boolean arg1, View convertView, ViewGroup parent) {
+	public View getGroupView(int groupPosition, boolean isExpand, View convertView, ViewGroup parent) {
 		ViewHolder view = new ViewHolder();
 		if(convertView == null) {
 			convertView = inflater.inflate(R.layout.layout_histroy_label_item, null);

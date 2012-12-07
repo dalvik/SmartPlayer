@@ -1,5 +1,6 @@
 package com.sky.drovik.player.media;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,31 +9,51 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils.TruncateAt;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.engine.HistoryListAdpater;
 import com.sky.drovik.player.engine.ImageLoaderTask;
-import com.sky.drovik.player.engine.UpdateManager;
+import com.sky.drovik.player.pojo.FileUtil;
+import com.sky.drovik.player.pojo.HisInfo;
 import com.sky.drovik.player.pojo.MovieInfo;
 import com.sky.drovik.views.ControlPanel;
 import com.sky.drovik.views.LazyScrollView;
 import com.sky.drovik.views.LazyScrollView.OnScrollListener;
 
-public class MovieList extends Activity implements OnClickListener {
+public class MovieList extends Activity implements OnClickListener, OnChildClickListener, OnCreateContextMenuListener {
 
+	private final int MENU_DELETE = Menu.FIRST;
+	
+	private final int MENU_CLEAR = Menu.FIRST + 1;
+	
+	private final int MENU_CANCLE = Menu.FIRST + 2;
+	
+	private int group = 0;
+	
+	private int child = 0;
+	
 	private LazyScrollView waterFallScrollView;
 	
 	private LinearLayout waterFallContainer;
@@ -65,17 +86,11 @@ public class MovieList extends Activity implements OnClickListener {
 	       
 	private List<List<Map<String,Object>>> childList = new ArrayList<List<Map<String,Object>>>();
 	
-	private String[] listName = new String[]{"我的好友","高中同学","大学同学","移动开发","网站建设","普通朋友"  
-    };   
-    private String[] childTitle= new String[]{"丫宁","王八锐","小鸟","连超","董二丫"};
-    
-   // private String[] childMood= new String[]{"我喜欢王锐","我就是王八","我也喜欢王锐","上边一群傻帽","同楼上"  };   
-private int[] headImage=new int[]{ R.drawable.d1,R.drawable.d1,R.drawable.d1,R.drawable.d1,R.drawable.d1     
-   };  
-
+	private int[] listName = {R.string.drovik_view_history_str};
+	
 	private ExpandableListView expandableListView = null;
 	
-	HistoryListAdpater adapter;   
+	private HistoryListAdpater adapter;   
 	
 	private String TAG = "MovieList";
 	
@@ -92,18 +107,28 @@ private int[] headImage=new int[]{ R.drawable.d1,R.drawable.d1,R.drawable.d1,R.d
 		initLayout(layout);
 	}
 	
+	@Override
+	protected void onResume() {
+		super.onResume();
+        childList = getChildList();  
+		adapter.notifyDataSetChanged();
+	}
+	
 	private void initLayout(LinearLayout layout) {
 		waterFallScrollView = (LazyScrollView) layout.findViewById(R.id.lazyScrollView);
 		waterFallContainer = (LinearLayout) layout.findViewById(R.id.waterFallContainer);
 		LayoutInflater factory = LayoutInflater.from(this);
         rightView = factory.inflate(R.layout.reight_menu, null);
         expandableListView = (ExpandableListView) rightView.findViewById(R.id.history_list);
-        parentList =getParentList(); 
-        childList = getChildList();   
+		parentList =getParentList(); 
+		childList = getChildList();  
         adapter = new HistoryListAdpater(this, parentList, childList);   
         expandableListView.setAdapter(adapter);
+        expandableListView.expandGroup(0);
         expandableListView.setGroupIndicator(null);   
         expandableListView.setDivider(null); 
+        expandableListView.setOnChildClickListener(this);
+        registerForContextMenu(expandableListView);
         int w = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
         int h = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
         System.out.println("w=" + w + "h=" + h);
@@ -119,17 +144,23 @@ private int[] headImage=new int[]{ R.drawable.d1,R.drawable.d1,R.drawable.d1,R.d
 			
 			@Override
 			public void onTop() {
-				Log.d(TAG, "### onTop");
+				if(BuildConfig.DEBUG) {
+					Log.d(TAG, "### onTop");
+				}
 			}
 			
 			@Override
 			public void onScroll() {
-				Log.d(TAG, "### onScroll");
+				if(BuildConfig.DEBUG) {
+					Log.d(TAG, "### onScroll");
+				}
 			}
 			
 			@Override
 			public void onBottom() {
-				Log.d(TAG, "### onBottom");
+				if(BuildConfig.DEBUG) {
+					Log.d(TAG, "### onBottom");
+				}
 				addItemToContainer(++current_page, page_count);
 			}
 		});
@@ -153,25 +184,25 @@ private int[] headImage=new int[]{ R.drawable.d1,R.drawable.d1,R.drawable.d1,R.d
 		        for(int i=0;i<listName.length;i++){   
 		             Map<String, Object> curGroupMap = new HashMap<String, Object>();   
 		             list.add(curGroupMap);   
-		             curGroupMap.put("list", listName[i]);   
+		             curGroupMap.put("list", getText(listName[i]));   
 		       }   
 		        return list;   
 		   }   
 	
 	public List<List<Map<String,Object>>> getChildList(){   
-        List<List<Map<String,Object>>> list1 = new ArrayList<List<Map<String,Object>>>();   
+		childList.clear();
+        List<HisInfo> list = FileUtil.fetchDeviceFromFile(this);
          for (int i = 0; i < listName.length; i++) {   
-             List<Map<String, Object>> children = new ArrayList<Map<String, Object>>();   
-             for (int j = 0; j <childTitle.length; j++) {   
-                 Map<String, Object> curChildMap = new HashMap<String, Object>();   
-                 children.add(curChildMap);   
-                 curChildMap.put("title", childTitle[j]);   
-                 //curChildMap.put("Mood", childMood[j]);   
-                 curChildMap.put("head", headImage[j]);   
-             }   
-             list1.add(children);   
+             List<Map<String, Object>> children = new ArrayList<Map<String, Object>>(); 
+             for(HisInfo h:list) {
+            	 Map<String, Object> curChildMap = new HashMap<String, Object>();   
+            	 children.add(curChildMap);   
+            	 curChildMap.put("title", h.getName());
+            	 curChildMap.put("path", h.getPath());
+             }
+             childList.add(children);   
         }   
-        return list1;   
+        return childList;   
            
     }   
 	
@@ -221,11 +252,75 @@ private int[] headImage=new int[]{ R.drawable.d1,R.drawable.d1,R.drawable.d1,R.d
 		}
 	}
 
+	@Override
+	public boolean onChildClick(ExpandableListView parent, View v,
+			int groupPosition, int childPosition, long id) {
+		String title = childList.get(groupPosition).get(childPosition).get("title").toString();
+		String path = childList.get(groupPosition).get(childPosition).get("path").toString();
+		HisInfo hisInfo = new HisInfo(System.currentTimeMillis(), title, path);
+		List<HisInfo> list = FileUtil.fetchDeviceFromFile(this);
+		FileUtil.addNewHisInfo(list, hisInfo);
+		FileUtil.persistentDevice(this, list);
+		
+		Intent intent = new Intent("com.sky.drovik.action.PLAYVER_VIEW");
+        intent.setDataAndType(Uri.fromFile(new File(path)), "video/*"); 
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+		return true;
+	}
+	
+	
 	
 	@Override
 	public void onClick(View v) {
 		Integer index = (Integer) v.getTag();
-		startActivity(movieList.get(index).intent);
+		MovieInfo info = movieList.get(index);
+		HisInfo hisInfo = new HisInfo(System.currentTimeMillis(), info.title.toString(), info.path);
+		List<HisInfo> list = FileUtil.fetchDeviceFromFile(this);
+		FileUtil.addNewHisInfo(list, hisInfo);
+		FileUtil.persistentDevice(this, list);
+		startActivity(info.intent);
 	}
 	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
+		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
+		group = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+		child = ExpandableListView.getPackedPositionChild(info.packedPosition);
+		if(type == 0) {
+			menu.setHeaderTitle(parentList.get(group).get("list").toString());
+			menu.add(0, MENU_CLEAR, 2, getString(R.string.drovik_context_menu_clear_str));
+			menu.add(0, MENU_CANCLE, 3, getString(R.string.drovik_context_menu_cancle_str));
+		}else {
+			menu.setHeaderTitle(childList.get(group).get(child).get("title").toString());
+			menu.add(0, MENU_DELETE, 1, getString(R.string.drovik_context_menu_delete_str));
+			menu.add(0, MENU_CANCLE, 3, getString(R.string.drovik_context_menu_cancle_str));
+		}
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		switch(item.getItemId()) {
+		case MENU_DELETE:
+			List<HisInfo> list1 = FileUtil.fetchDeviceFromFile(this);
+			FileUtil.removeHisInfo(list1, childList.get(group).get(child).get("path").toString());
+			FileUtil.persistentDevice(this, list1);
+			childList = getChildList();
+			adapter.notifyDataSetChanged();
+			break;
+		case MENU_CLEAR:
+			List<HisInfo> list = FileUtil.fetchDeviceFromFile(this);
+			list.clear();
+			FileUtil.persistentDevice(this, list);
+			childList = getChildList();
+			adapter.notifyDataSetChanged();
+			break;
+			default:
+				break;
+		}
+		return super.onContextItemSelected(item);
+	}
 }
