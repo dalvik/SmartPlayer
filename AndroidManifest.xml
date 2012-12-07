@@ -20,6 +20,7 @@
         <activity
             android:name=".media.Guide"
             android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
             android:label="@string/title_activity_video_list" >
             <intent-filter>
@@ -29,8 +30,9 @@
             </intent-filter>
         </activity>
         
-        <activity
+        <activity 
             android:name=".media.Welcome"
+            android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
             android:label="@string/title_activity_video_list" />

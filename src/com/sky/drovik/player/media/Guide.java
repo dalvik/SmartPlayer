@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.Intent.ShortcutIconResource;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -196,4 +197,8 @@ public class Guide extends Activity implements OnClickListener,
 	   settings.edit().putBoolean("CREATE_SHUT_CUT", true).commit();
 	}
 	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+	}
 }
