@@ -45,9 +45,11 @@ public class ControlPanel extends LinearLayout implements OnClickListener{
 		
 		buttonHandle = new Button(context);
 		buttonHandle.setText("<");
-		LayoutParams textParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT);
+		//buttonHandle.setBackgroundResource(R.drawable.spiner_close);
+		LayoutParams textParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		textParams.gravity = Gravity.CENTER;
 		buttonHandle.setLayoutParams(textParams);
-		buttonHandle.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER);
+		buttonHandle.setGravity(Gravity.CENTER);
 		buttonHandle.setOnClickListener(this);
 		this.addView(buttonHandle);
 		panelContainer = new LinearLayout(context);
@@ -68,10 +70,12 @@ public class ControlPanel extends LinearLayout implements OnClickListener{
 		LayoutParams lp = (LayoutParams)ControlPanel.this.getLayoutParams();
 		if(lp.rightMargin<0) {// close status
 			new AsynMove().execute(new Integer[]{ MOVE_WIDTH });
-			buttonHandle.setText(">");
+			//buttonHandle.setBackgroundResource(R.drawable.spiner_open);
+			//buttonHandle.setText(">");
 		} else { //open status
 			new AsynMove().execute(new Integer[]{ -MOVE_WIDTH });
-			buttonHandle.setText("<");
+ 			//buttonHandle.setText("<");
+			//buttonHandle.setBackgroundResource(R.drawable.spiner_close);
 		}
 	}
 

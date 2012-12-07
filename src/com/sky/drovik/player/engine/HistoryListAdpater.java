@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sky.drovik.player.R;
@@ -41,7 +42,7 @@ public class HistoryListAdpater extends BaseExpandableListAdapter {
 			ViewGroup parent) {
 		ViewHolder view = new ViewHolder();
 		if(convertView == null) {
-			convertView = inflater.inflate(R.layout.layout_histroy_list_item, null);
+			convertView = inflater.inflate(R.layout.layout_histroy_list_child, null);
 			view.path = (TextView) convertView.findViewById(R.id.movie_path);
 		}else {
 			view = (ViewHolder)convertView.getTag();
@@ -75,12 +76,20 @@ public class HistoryListAdpater extends BaseExpandableListAdapter {
 	public View getGroupView(int groupPosition, boolean isExpand, View convertView, ViewGroup parent) {
 		ViewHolder view = new ViewHolder();
 		if(convertView == null) {
-			convertView = inflater.inflate(R.layout.layout_histroy_label_item, null);
+			convertView = inflater.inflate(R.layout.layout_histroy_list_parent, null);
 			view.path = (TextView) convertView.findViewById(R.id.movie_history_group_label);
+			//view.image = (ImageView) convertView.findViewById(R.id.movie_history_group_image);
 		}else {
 			view = (ViewHolder)convertView.getTag();
 		}
 		view.path.setText(parentList.get(groupPosition).get("list").toString());
+		if(isExpand) {
+			//view.image.setImageResource(R.drawable.history_open);
+			//view.image.setPadding(0, 5, 0, 0);
+		}else {
+			//view.image.setImageResource(R.drawable.history_close);
+			//view.image.setPadding(0, 5, 0, 0);
+		}
 		convertView.setTag(view);
 		return convertView;
 	}
@@ -98,6 +107,8 @@ public class HistoryListAdpater extends BaseExpandableListAdapter {
 	static class ViewHolder {
 		
 		public TextView path;
+		
+		public ImageView image;
 
 	}
 }

@@ -131,10 +131,10 @@ public class MovieList extends Activity implements OnClickListener, OnChildClick
         registerForContextMenu(expandableListView);
         int w = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
         int h = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
-        System.out.println("w=" + w + "h=" + h);
         rightView.measure(w, h);
-        int width =rightView.getMeasuredWidth(); //
-        rightControlPanel = new ControlPanel(this, waterFallScrollView,  width + ControlPanel.HANDLE_WIDTH, LayoutParams.FILL_PARENT);
+        int width = rightView.getMeasuredWidth(); //
+        System.out.println("getMeasuredWidth=" + width);
+        rightControlPanel = new ControlPanel(this, waterFallScrollView,  3 + width + ControlPanel.HANDLE_WIDTH, LayoutParams.FILL_PARENT);
 		layout.addView(rightControlPanel);
 		rightControlPanel.fillPanelContainer(rightView);
 		
