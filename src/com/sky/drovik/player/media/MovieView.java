@@ -27,10 +27,14 @@ public class MovieView extends Activity {
         movieViewControl = new MovieViewControl(rootView, this, intent.getData()) {
             @Override
             public void onCompletion() {
-            	System.out.println("play over exit");
                 if (finishOnCompletion) {
-                	finish();
+                	MovieView.this.finish();
                 }
+            }
+            
+            @Override
+            public void onPlayError() {
+            	MovieView.this.finish();
             }
         };
         

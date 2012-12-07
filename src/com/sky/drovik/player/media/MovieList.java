@@ -66,7 +66,7 @@ public class MovieList extends Activity implements OnClickListener, OnChildClick
 	
 	private ProgressDialog progressDialog = null;
 
-	private int column_count = 5;// 显示列数
+	private int column_count = 4;// 显示列数
 	
 	private int page_count = column_count * 4;// 每次加载15张图片
 
@@ -134,7 +134,7 @@ public class MovieList extends Activity implements OnClickListener, OnChildClick
         rightView.measure(w, h);
         int width = rightView.getMeasuredWidth(); //
         System.out.println("getMeasuredWidth=" + width);
-        rightControlPanel = new ControlPanel(this, waterFallScrollView,  3 + width + ControlPanel.HANDLE_WIDTH, LayoutParams.FILL_PARENT);
+        rightControlPanel = new ControlPanel(this, waterFallScrollView,  width + ControlPanel.HANDLE_WIDTH, LayoutParams.FILL_PARENT);
 		layout.addView(rightControlPanel);
 		rightControlPanel.fillPanelContainer(rightView);
 		

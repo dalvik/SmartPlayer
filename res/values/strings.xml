@@ -15,6 +15,11 @@
     
     <string name="playing_title">卓维影音</string>
     
+    <!-- error tips -->
+    <string name="drovik_play_error_tips_str">友情提示</string>
+    <string name="drovik_play_error_unsupport_format_str">试用版暂不支持此格式的播放</string>
+    <string name="drovik_play_goto_regester_str">去激活</string>
+    <string name="drovik_play_cancle_regester_str">下次再说～</string>
     
 
     <!-- view history list -->

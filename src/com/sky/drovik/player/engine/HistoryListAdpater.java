@@ -78,17 +78,15 @@ public class HistoryListAdpater extends BaseExpandableListAdapter {
 		if(convertView == null) {
 			convertView = inflater.inflate(R.layout.layout_histroy_list_parent, null);
 			view.path = (TextView) convertView.findViewById(R.id.movie_history_group_label);
-			//view.image = (ImageView) convertView.findViewById(R.id.movie_history_group_image);
+			view.image = (ImageView) convertView.findViewById(R.id.movie_history_group_image);
 		}else {
 			view = (ViewHolder)convertView.getTag();
 		}
 		view.path.setText(parentList.get(groupPosition).get("list").toString());
 		if(isExpand) {
-			//view.image.setImageResource(R.drawable.history_open);
-			//view.image.setPadding(0, 5, 0, 0);
+			view.image.setImageResource(R.drawable.history_open);
 		}else {
-			//view.image.setImageResource(R.drawable.history_close);
-			//view.image.setPadding(0, 5, 0, 0);
+			view.image.setImageResource(R.drawable.history_close);
 		}
 		convertView.setTag(view);
 		return convertView;

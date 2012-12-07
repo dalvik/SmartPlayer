@@ -59,6 +59,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     private final View mProgressView;
     private final Uri mUri;
     private final ContentResolver mContentResolver;
+    private Context context;
     Handler mHandler = new Handler();
 
     Runnable mPlayingChecker = new Runnable() {
@@ -142,6 +143,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     }
     
     public MovieViewControl(View rootView, Context context, Uri videoUri) {
+    	this.context = context;
         mContentResolver = context.getContentResolver();
         mVideoView = (VideoView) rootView.findViewById(Res.id.surface_view);
         mProgressView = rootView.findViewById(Res.id.progress_indicator);
@@ -173,9 +175,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
         if (bookmark != null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle(Res.string.resume_playing_title);
-            builder
-                    .setMessage(String
-                            .format(context.getString(Res.string.resume_playing_message), StringUtils.formatDuration(context, bookmark)));
+            builder.setMessage(String.format(context.getString(Res.string.resume_playing_message), StringUtils.formatDuration(context, bookmark)));
             builder.setOnCancelListener(new OnCancelListener() {
                 public void onCancel(DialogInterface dialog) {
                     onCompletion();
@@ -285,14 +285,49 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     public boolean onError(MediaPlayer player, int arg1, int arg2) {
         mHandler.removeCallbacksAndMessages(null);
         mProgressView.setVisibility(View.GONE);
+        showErrDialog();
         return true;
     }
 
-    public void onCompletion(MediaPlayer mp) {
+	public void onCompletion(MediaPlayer mp) {
         onCompletion();
     }
 
-    public void onCompletion() {
+	public void onCompletion() {
+		
+	}
+	
+	public void onPlayError() {
+		
+	}
+/**/
+    /*public void onCompletion() {
         
+    }
+    
+    public void onCompn() {
+        
+    }*/
+
+    private void showErrDialog() {
+    	AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(Res.string.drovik_play_error_tips_str);
+        builder.setMessage(context.getString(Res.string.drovik_play_error_unsupport_format_str));
+        builder.setOnCancelListener(new OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+                onCompletion();
+            }
+        });
+        builder.setPositiveButton(Res.string.drovik_play_goto_regester_str, new OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+            	onPlayError();
+            }
+        });
+        builder.setNegativeButton(Res.string.drovik_play_cancle_regester_str, new OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+            	onPlayError();
+            }
+        });
+        builder.show();
     }
 }

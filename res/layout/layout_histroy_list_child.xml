@@ -8,9 +8,9 @@
         android:id="@+id/movie_path"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" 
-        android:paddingLeft="5dip"
         android:paddingTop="3dip"
         android:paddingBottom="3dip"
+        android:paddingLeft="10dip"
         android:text="@string/drovik_view_history_empty_str"
         android:singleLine="true"/>
 

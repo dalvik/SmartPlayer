@@ -8,6 +8,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.sky.drovik.player.R;
+
 public class ControlPanel extends LinearLayout implements OnClickListener{
 
 	private LayoutParams lp = null;
@@ -44,8 +46,8 @@ public class ControlPanel extends LinearLayout implements OnClickListener{
 		this.setOrientation(LinearLayout.HORIZONTAL);
 		
 		buttonHandle = new Button(context);
-		buttonHandle.setText("<");
-		//buttonHandle.setBackgroundResource(R.drawable.spiner_close);
+		//buttonHandle.setText("<");
+		buttonHandle.setBackgroundResource(R.drawable.spiner_close);
 		LayoutParams textParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		textParams.gravity = Gravity.CENTER;
 		buttonHandle.setLayoutParams(textParams);
@@ -53,7 +55,9 @@ public class ControlPanel extends LinearLayout implements OnClickListener{
 		buttonHandle.setOnClickListener(this);
 		this.addView(buttonHandle);
 		panelContainer = new LinearLayout(context);
-		panelContainer.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		LayoutParams params = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+		params.weight = 1;
+		panelContainer.setLayoutParams(params);
 		this.addView(panelContainer);
 		this.setPanelOpenedEvent(panelOpenedEvent);
 		/*if(lp.rightMargin<0) {// close status
@@ -70,12 +74,12 @@ public class ControlPanel extends LinearLayout implements OnClickListener{
 		LayoutParams lp = (LayoutParams)ControlPanel.this.getLayoutParams();
 		if(lp.rightMargin<0) {// close status
 			new AsynMove().execute(new Integer[]{ MOVE_WIDTH });
-			//buttonHandle.setBackgroundResource(R.drawable.spiner_open);
+			buttonHandle.setBackgroundResource(R.drawable.spiner_open);
 			//buttonHandle.setText(">");
 		} else { //open status
 			new AsynMove().execute(new Integer[]{ -MOVE_WIDTH });
+			buttonHandle.setBackgroundResource(R.drawable.spiner_close);
  			//buttonHandle.setText("<");
-			//buttonHandle.setBackgroundResource(R.drawable.spiner_close);
 		}
 	}
 
