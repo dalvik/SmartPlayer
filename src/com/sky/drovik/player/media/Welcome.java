@@ -18,6 +18,7 @@ import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.sky.drovik.player.R;
 
@@ -27,6 +28,11 @@ public class Welcome extends Activity implements OnClickListener {
 	
 	private ImageView imageView = null;
 	
+	private TextView bottomInfo = null;
+	
+	private String showText = null;
+	
+	private int showTextLength = 0;
 	
 	private int count = 0;
 	
@@ -38,6 +44,12 @@ public class Welcome extends Activity implements OnClickListener {
 	
 	private boolean flag = true;
 	
+    int temp = 0;
+
+    boolean control = true;
+
+    private final static int FADE_IN = 0x02;
+    
 	private Handler handler = new Handler(){
 		@Override
 		public void handleMessage(Message msg) {
@@ -57,6 +69,13 @@ public class Welcome extends Activity implements OnClickListener {
 				}
 				break;
 
+			case FADE_IN:
+				if(temp<showTextLength){
+                    temp++;
+                    bottomInfo.setText(showText.subSequence(0, temp));
+                    handler.sendEmptyMessageDelayed(FADE_IN, 100);
+                }
+				break;
 			default:
 				break;
 			}
@@ -68,11 +87,16 @@ public class Welcome extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_welcome);
+		showText = getText(R.string.welcome_bottom_tips_str).toString();
+		showTextLength = showText.length();
 		layout = (RelativeLayout) findViewById(R.id.welcom_bg_layout);
 		layout.setOnClickListener(this);
-		imageView = (ImageView) findViewById(R.id.welcom_bg);
+		imageView = (ImageView) findViewById(R.id.welcome_bg);
 		imageView.setAnimation(AnimationUtils.loadAnimation(this, R.anim.background_rotate));
+		findViewById(R.id.welcome_top_info).setAnimation(AnimationUtils.loadAnimation(this, R.anim.welcome_toptext_rotate));
+		bottomInfo = (TextView) findViewById(R.id.welcom_bottom_info);
 		handler.sendEmptyMessage(1);
+		//handler.sendEmptyMessageDelayed(FADE_IN, 10);
 	}
 	
 	@Override
@@ -98,4 +122,5 @@ public class Welcome extends Activity implements OnClickListener {
 		canvasTemp.drawText(txt, 2, txtSize - 2, p);
 		return mbmpTest;
 	}
+	
 }

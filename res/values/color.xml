@@ -10,4 +10,53 @@
     <color name="blue">#0606eb</color>
     <color name="gray">#e2c5f2</color>
     <color name="welcome_bottom_tips">#a0a0a0</color>
+    
+    <!-- button select -->
+    <color name="highlight_button_start_color">#0606eb</color>
+    <color name="highlight_button_middle_color">#e2c5f2</color>
+    <color name="highlight_button_end_color">#a0a0a0</color>
+    
+    <color name="tencent_video_color">#7B5521</color>
+    
+   	<!-- 透明 -->
+	<color name="transparent">#00000000</color>
+	<color name="popnoselectedfontcolor">#ff734908</color>
+
+    <drawable name="nofocus">#363533</drawable>
+    <drawable name="ic_category_select">#22211F</drawable>
+	<!-- 白色 -->
+	<drawable name="white">#FFFFFF</drawable>
+	<!-- 红色 -->
+	<drawable name="red">#FF0000</drawable>
+	<!-- 橙色 -->
+	<drawable name="orange">#FFA500</drawable>
+	<!-- 黑色 -->
+	<drawable name="black">#000000</drawable>
+	<!-- 深粉红色 -->
+	<drawable name="deeppink">#FF1493</drawable>
+	<!-- 雪白色 -->
+	<drawable name="snow">#FFFAFA</drawable>
+	<!-- 桔黄色 -->
+	<drawable name="bisque">#FFE4C4</drawable>
+	<!-- 热粉红色 --> 
+	<drawable name="hotpink">#FF69B4</drawable>
+	<!-- 淡灰色 -->
+	<drawable name="gainsboro">#DCDCDC</drawable>
+	<!-- 草绿色 -->
+	<drawable name="lawngreen">#7CFC00</drawable>
+	
+	<drawable name="lightyellow">#FFFFE0</drawable>
+	
+	<drawable name="azure">#F0FFFF</drawable>
+	
+	<drawable name="violet">#EE82EE</drawable><!-- 紫罗兰色  -->
+	
+	<drawable name="powderblue">#B0E0E6</drawable><!-- 粉蓝色 -->
+	
+	<drawable name="aliceblue">#F0F8FF</drawable><!-- 艾利斯兰 -->
+	
+	<drawable name="lightcoral">#F08080</drawable><!-- 亮珊瑚色 -->
+	
+	<drawable name="lightgreen">#90EE90</drawable><!-- 亮绿色 -->
+    
 </resources>

@@ -47,7 +47,8 @@ public class ControlPanel extends LinearLayout implements OnClickListener{
 		
 		buttonHandle = new Button(context);
 		//buttonHandle.setText("<");
-		buttonHandle.setBackgroundResource(R.drawable.spiner_close);
+		//buttonHandle.setBackgroundResource(R.drawable.spiner_close);
+		buttonHandle.setBackgroundResource(R.drawable.history_list_close_selector);
 		LayoutParams textParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		textParams.gravity = Gravity.CENTER;
 		buttonHandle.setLayoutParams(textParams);
@@ -56,7 +57,6 @@ public class ControlPanel extends LinearLayout implements OnClickListener{
 		this.addView(buttonHandle);
 		panelContainer = new LinearLayout(context);
 		LayoutParams params = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
-		params.weight = 1;
 		panelContainer.setLayoutParams(params);
 		this.addView(panelContainer);
 		this.setPanelOpenedEvent(panelOpenedEvent);
@@ -74,11 +74,13 @@ public class ControlPanel extends LinearLayout implements OnClickListener{
 		LayoutParams lp = (LayoutParams)ControlPanel.this.getLayoutParams();
 		if(lp.rightMargin<0) {// close status
 			new AsynMove().execute(new Integer[]{ MOVE_WIDTH });
-			buttonHandle.setBackgroundResource(R.drawable.spiner_open);
+			buttonHandle.setBackgroundResource(R.drawable.history_list_open_selector);
+			//buttonHandle.setBackgroundResource(R.drawable.spiner_open);
 			//buttonHandle.setText(">");
 		} else { //open status
 			new AsynMove().execute(new Integer[]{ -MOVE_WIDTH });
-			buttonHandle.setBackgroundResource(R.drawable.spiner_close);
+			buttonHandle.setBackgroundResource(R.drawable.history_list_close_selector);
+			//buttonHandle.setBackgroundResource(R.drawable.spiner_close);
  			//buttonHandle.setText("<");
 		}
 	}

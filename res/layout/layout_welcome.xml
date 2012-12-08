@@ -6,18 +6,35 @@
     android:id="@+id/welcom_bg_layout"
     android:background="@drawable/welcome_two" >
 
+    <TextView  
+		android:id="@+id/welcome_top_info"
+	    android:layout_width="wrap_content" 
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentTop="true" 
+	    android:layout_marginTop="27dip"
+	    android:layout_marginLeft="27dip"
+        android:text="@string/welcome_top_tips_str"
+	    android:textSize="35sp"
+	    android:shadowRadius="1.0"
+	    android:shadowColor="#000000"
+	    android:shadowDx="9.0"
+	    android:shadowDy="9.0"
+	    android:textColor="@drawable/lawngreen"/>
+    
     <ImageView
-        android:id="@+id/welcom_bg"
+        android:id="@+id/welcome_bg"
         android:background="@drawable/start_anima"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        
         />
 
      <com.sky.drovik.views.ReflectTextView
         style="@style/style_welcome_bottom_tips"
         android:id="@+id/welcom_bottom_info"
+        android:layout_marginBottom="50dip"
+        android:layout_below="@+id/welcome_bg"
         android:text="@string/welcome_bottom_tips_str"
-        android:layout_below="@+id/welcom_bg"
         />
 </RelativeLayout>

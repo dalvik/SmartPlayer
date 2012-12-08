@@ -45,6 +45,7 @@
     <string name="_loading_str">下载</string>
     
     <!-- welcome   -->
+    <string name="welcome_top_tips_str">卓维影音</string>
     <string name="welcome_bottom_tips_str">http://www.drovik.com</string>
         
 </resources>
