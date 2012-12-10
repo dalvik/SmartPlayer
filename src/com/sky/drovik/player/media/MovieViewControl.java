@@ -24,6 +24,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.media.AudioManager;
@@ -285,6 +286,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     public boolean onError(MediaPlayer player, int arg1, int arg2) {
         mHandler.removeCallbacksAndMessages(null);
         mProgressView.setVisibility(View.GONE);
+       
         showErrDialog();
         return true;
     }
