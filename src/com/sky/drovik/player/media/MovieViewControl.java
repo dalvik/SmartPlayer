@@ -16,6 +16,7 @@
 
 package com.sky.drovik.player.media;
 
+import net.youmi.android.appoffers.CheckStatusNotifier;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -24,7 +25,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.media.AudioManager;
@@ -34,15 +34,20 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Video;
+import android.util.Log;
 import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
 import com.drovik.utils.StringUtils;
+import com.drovik.utils.ToastUtils;
+import com.sky.drovik.factory.DrovikRegisterFactory;
+import com.sky.drovik.factory.IRegisterFoctory;
+import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.app.Res;
 
-public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
+public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener , CheckStatusNotifier {
 
     @SuppressWarnings("unused")
     private static final String TAG = "MovieViewControl";
@@ -61,6 +66,11 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     private final Uri mUri;
     private final ContentResolver mContentResolver;
     private Context context;
+    private IRegisterFoctory foctory = null;
+    private boolean isDeviceInvalid;
+    
+    private static final boolean DEBUG = true;
+    
     Handler mHandler = new Handler();
 
     Runnable mPlayingChecker = new Runnable() {
@@ -141,7 +151,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
             newView.findViewById(R.id.bar_vol_up).setOnClickListener(mClickListenerInternal);
             newView.findViewById(R.id.bar_vol_down).setOnClickListener(mClickListenerInternal);*/
         }        
-    }
+ }
     
     public MovieViewControl(View rootView, Context context, Uri videoUri) {
     	this.context = context;
@@ -286,8 +296,9 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     public boolean onError(MediaPlayer player, int arg1, int arg2) {
         mHandler.removeCallbacksAndMessages(null);
         mProgressView.setVisibility(View.GONE);
-       
-        showErrDialog();
+       //获取注册状态 未注册提示注册 已注册  提示暂无法解码
+        foctory = new DrovikRegisterFactory();
+        showErrDialog(foctory.isRegister(context));
         return true;
     }
 
@@ -311,25 +322,41 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
         
     }*/
 
-    private void showErrDialog() {
+    private void showErrDialog(boolean status) {
     	AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(Res.string.drovik_play_error_tips_str);
-        builder.setMessage(context.getString(Res.string.drovik_play_error_unsupport_format_str));
-        builder.setOnCancelListener(new OnCancelListener() {
-            public void onCancel(DialogInterface dialog) {
-                onCompletion();
-            }
-        });
-        builder.setPositiveButton(Res.string.drovik_play_goto_regester_str, new OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-            	onPlayError();
-            }
-        });
-        builder.setNegativeButton(Res.string.drovik_play_cancle_regester_str, new OnClickListener() {
+        builder.setMessage(status?context.getString(Res.string.drovik_play_error_developer_str):context.getString(Res.string.drovik_play_error_unsupport_format_str));
+        if(!status){
+        	builder.setPositiveButton(Res.string.drovik_play_goto_regester_str, new OnClickListener() {
+        		public void onClick(DialogInterface dialog, int which) {
+        			onPlayError();
+        			if(!isDeviceInvalid) {
+        				foctory.gotoRegister(context);
+        			} else {
+        				ToastUtils.showToast(context, Res.string.drovik_play_invalid_device_str);
+        			}
+        		}
+        	});
+        }
+        builder.setNegativeButton(status?context.getString(Res.string.drovik_play_waitting_for_update_str):context.getString(Res.string.drovik_play_cancle_regester_str), new OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
             	onPlayError();
             }
         });
         builder.show();
     }
+    
+    @Override
+	public void onCheckStatusConnectionFailed(Context arg0) {
+		
+	}
+	
+	@Override
+	public void onCheckStatusResponse(Context context, boolean isAppInvalid,
+			boolean isInTestMode, boolean isDeviceInvalid) {
+		this.isDeviceInvalid = isDeviceInvalid;
+		if(BuildConfig.DEBUG && DEBUG) {
+			Log.d(TAG, "isAppInvalid = " + isAppInvalid + "  isInTestMode = " + isInTestMode + "  isDeviceInvalid = " + isDeviceInvalid);
+		}
+	}
 }
