@@ -13,7 +13,7 @@ public class DrovikRegisterFactory extends IRegisterFoctory {
 	@Override
 	public boolean isRegister(Context context) {
 		SharedPreferences settings = context.getSharedPreferences(MovieList.class.getName(), 0);
-        return settings.getInt(MyPointsManager.KEY_POINTS, 0)>=100;
+        return true;//settings.getInt(MyPointsManager.KEY_POINTS, 0)>=100;
 	}
 
 	@Override
