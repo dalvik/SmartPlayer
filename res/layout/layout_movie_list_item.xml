@@ -37,5 +37,6 @@
     android:layout_height="wrap_content"
     android:layout_weight="1"
     android:background="@drawable/video_thumbnail_selector"
+    android:focusable="true"
     android:src="@drawable/ic_videooverlay" >
 </ImageView>
