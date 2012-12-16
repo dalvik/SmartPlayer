@@ -7,8 +7,8 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.Intent.ShortcutIconResource;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
@@ -45,7 +45,7 @@ public class Guide extends Activity implements OnClickListener,
 	
 	private SharedPreferences settings = null;
 
-	private static final int[] pics = {R.drawable.g2,	R.drawable.g3, R.drawable.g4 };
+	private static final int[] pics = {R.drawable.drovik_four_guide_one, R.drawable.drovik_four_guide_two, R.drawable.drovik_four_guide_three };
 
 	private String TAG = "Guide";
 	
