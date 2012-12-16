@@ -4,16 +4,14 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.Hashtable;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.provider.MediaStore;
+import android.util.Log;
+
 import com.drovik.utils.BitmapUtil;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.pojo.MovieInfo;
-
-import android.content.ContentResolver;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.os.Build;
-import android.provider.MediaStore;
-import android.util.Log;
 
 /**
  * ·ÀÖ¹Òç³ö

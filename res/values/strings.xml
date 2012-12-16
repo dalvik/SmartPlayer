@@ -1,4 +1,5 @@
-<resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="app_name">SmartPlayer</string>
     <string name="hello_world">Hello world!</string>
@@ -16,12 +17,18 @@
     <string name="playing_title">卓维影音</string>
     
     <!-- error tips -->
+    <!-- unresiger -->
     <string name="drovik_play_error_tips_str">友情提示</string>
     <string name="drovik_play_error_unsupport_format_str">试用版暂不支持此格式的播放</string>
-    <string name="drovik_play_goto_regester_str">去激活</string>
+    <string name="drovik_play_goto_regester_str">免费激活</string>
+    <string name="drovik_play_regester_success_str">恭喜！您已经激活成功，永久使用！^_^</string>
+    <string name="drovik_play_regester_uncommplete_str">恭喜，还差 <xliff:g id="number">%1$s</xliff:g>分就永久激活啦，加油！</string>
+    <string name="drovik_play_invalid_device_str">你的设备异常暂无法激活</string>
     <string name="drovik_play_cancle_regester_str">下次再说～</string>
+    <!-- resiger -->
+	<string name="drovik_play_error_developer_str">支持该视频格式的软件即将发布，敬请期待！</string>
+    <string name="drovik_play_waitting_for_update_str">耐心等待中~</string>
     
-
     <!-- view history list -->
     <string name="drovik_view_history_str">观看记录</string>
     <string name="drovik_view_history_empty_str">暂无记录</string>
