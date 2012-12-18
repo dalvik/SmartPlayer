@@ -15,6 +15,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -48,11 +49,19 @@ public class Guide extends Activity implements OnClickListener,
 	private static final int[] pics = {R.drawable.drovik_four_guide_one, R.drawable.drovik_four_guide_two, R.drawable.drovik_four_guide_three };
 
 	private String TAG = "Guide";
+
+	private int width = 0;
+	
+	private int height = 0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		settings = getSharedPreferences(MovieList.class.getName(), 0);
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindow().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		width = metrics.widthPixels;
+		height = metrics.heightPixels;
 		if(settings.getBoolean("IS_INIT", true)) {
         	settings.edit().putBoolean("IS_INIT", false).commit();
         	setContentView(R.layout.layout_guide);
@@ -72,6 +81,7 @@ public class Guide extends Activity implements OnClickListener,
         	viewPager.setOnTouchListener(this);
         	viewPager.setAdapter(viewPagerAdapter);
         	viewPager.setOnPageChangeListener(this);
+        	viewPager.setOnClickListener(this);
         	
         	initBottomDots();
         }else {
@@ -107,6 +117,7 @@ public class Guide extends Activity implements OnClickListener,
 
 	@Override
 	public void onPageScrolled(int index, float arg1, int dis) {
+		currentIndex = index;
 	}
 
 	@Override
@@ -135,6 +146,10 @@ public class Guide extends Activity implements OnClickListener,
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			lastX = (int)event.getX();
+			if(event.getY() >= height * 2/3 && (event.getX() >width/3 && event.getX()<= width *2/3) && currentIndex == 2) {
+				startActivity(new Intent(this, Welcome.class));
+	        	Guide.this.finish();
+			}
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if(startFlag && (lastX - event.getX()) >100 && (currentIndex == views.size() -1)){
