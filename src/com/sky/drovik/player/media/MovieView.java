@@ -28,8 +28,8 @@ public class MovieView extends Activity {
             @Override
             public void onCompletion() {
                 if (finishOnCompletion) {
-                	MovieView.this.finish();
                 }
+                MovieView.this.finish();
             }
             
             @Override
