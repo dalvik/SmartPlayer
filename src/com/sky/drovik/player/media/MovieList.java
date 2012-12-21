@@ -8,10 +8,11 @@ import java.util.Map;
 
 import net.youmi.android.appoffers.YoumiOffersManager;
 import net.youmi.android.appoffers.YoumiPointsManager;
-
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,10 +35,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.sky.drovik.factory.IRegisterFoctory;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
+import com.sky.drovik.player.app.Res;
 import com.sky.drovik.player.engine.HistoryListAdpater;
 import com.sky.drovik.player.engine.ImageLoaderTask;
+import com.sky.drovik.player.engine.UpdateManager;
 import com.sky.drovik.player.pojo.FileUtil;
 import com.sky.drovik.player.pojo.HisInfo;
 import com.sky.drovik.player.pojo.MovieInfo;
@@ -108,8 +112,9 @@ public class MovieList extends Activity implements OnClickListener, OnChildClick
 		DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 		itemWidth = dm.widthPixels / column_count;// 根据屏幕大小计算每列大小
-		//UpdateManager.getUpdateManager().checkAppUpdate(this, false);
+		UpdateManager.getUpdateManager().checkAppUpdate(this, false);
 		initLayout(layout);
+		//foctory = new DrovikRegisterFactory();
 	}
 	
 	@Override
@@ -278,6 +283,11 @@ public class MovieList extends Activity implements OnClickListener, OnChildClick
 	
 	@Override
 	public void onClick(View v) {
+		/*boolean res = foctory.isRegister(context);
+		if(!res) {
+			showErrDialog(false);
+		}else {
+		}*/
 		Integer index = (Integer) v.getTag();
 		MovieInfo info = movieList.get(index);
 		HisInfo hisInfo = new HisInfo(System.currentTimeMillis(), info.title.toString(), info.path);
@@ -287,6 +297,28 @@ public class MovieList extends Activity implements OnClickListener, OnChildClick
 		startActivity(info.intent);
 	}
 	
+    private IRegisterFoctory foctory = null;
+	
+	  private void showErrDialog(boolean status) {
+	    	AlertDialog.Builder builder = new AlertDialog.Builder(context);
+	        builder.setTitle(Res.string.drovik_play_error_tips_str);
+	        builder.setMessage(status?context.getString(Res.string.drovik_play_error_developer_str):context.getString(Res.string.drovik_play_error_unsupport_format_str));
+	        builder.setMessage(status?context.getString(Res.string.drovik_play_error_developer_str):context.getString(Res.string.drovik_play_error_unsupport_format_str));
+	        if(!status){
+	        	 builder.setPositiveButton(Res.string.drovik_play_goto_regester_str,   new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						foctory.gotoRegister(context);
+					}
+	        	 });
+	        }
+	       builder.setNegativeButton(status?context.getString(Res.string.drovik_play_waitting_for_update_str):context.getString(Res.string.drovik_play_cancle_regester_str), new DialogInterface.OnClickListener() {
+	            public void onClick(DialogInterface dialog, int which) {
+	            }
+	        });
+	        builder.show();
+	    }
+	    
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {

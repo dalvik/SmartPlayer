@@ -296,7 +296,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     public boolean onError(MediaPlayer player, int arg1, int arg2) {
         mHandler.removeCallbacksAndMessages(null);
         mProgressView.setVisibility(View.GONE);
-       //获取注册状态 未注册提示注册 已注册  提示暂无法解码
+        //获取注册状态 未注册提示注册 已注册  提示暂无法解码
         foctory = new DrovikRegisterFactory();
         showErrDialog(foctory.isRegister(context));
         return true;
