@@ -51,6 +51,18 @@
     <string name="_loading_new_cancle_str">取消</string>
     <string name="_loading_str">下载</string>
     
+    <string name="pull_to_refresh_pull_label">下拉可以刷新</string>
+    <string name="pull_to_refresh_release_label">松开可以刷新</string>
+    <string name="pull_to_refresh_refreshing_label">加载中...</string>
+    <string name="pull_to_refresh_tap_label">下拉可以刷新</string>
+    <string name="pull_to_refresh_update">最近更新：</string>
+    
+    <string name="load_more">更多</string>
+    <string name="load_ing">加载中···</string>
+    <string name="load_full">已加载全部</string>
+    <string name="load_empty">暂无数据</string>
+    <string name="load_error">加载数据出错</string>
+    
     <!-- welcome   -->
     <string name="welcome_top_tips_str">卓维影音</string>
     <string name="welcome_bottom_tips_str">http://www.drovik.com</string>

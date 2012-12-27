@@ -128,7 +128,7 @@ public class MovieList extends Activity implements OnClickListener, OnChildClick
 		waterFallScrollView = (LazyScrollView) layout.findViewById(R.id.lazyScrollView);
 		waterFallContainer = (LinearLayout) layout.findViewById(R.id.waterFallContainer);
 		LayoutInflater factory = LayoutInflater.from(this);
-        rightView = factory.inflate(R.layout.reight_menu, null);
+        rightView = factory.inflate(R.layout.layout_reight_menu, null);
         expandableListView = (ExpandableListView) rightView.findViewById(R.id.history_list);
 		parentList =getParentList(); 
 		childList = getChildList();  
