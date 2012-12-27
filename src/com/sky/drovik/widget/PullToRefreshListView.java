@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.MeasureSpec;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.AbsListView;
@@ -112,7 +113,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     	if(lpHeight >0) {
     		childHeightSpec = MeasureSpec.makeMeasureSpec(lpHeight, MeasureSpec.EXACTLY);
     	} else {
-    		childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.EXACTLY);
+    		childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
     	}
     	child.measure(childWidthSpec, childHeightSpec);
     }
@@ -260,7 +261,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 				break;
 			}
 	 }
-  
+	
+	
 	public void onRefreshComplete(String update) {
 		lastUpdatedTextView.setText(update);
 		onRefreshComplete();
