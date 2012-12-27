@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Hashtable;
+import java.util.List;
 
 import android.app.Application;
 import android.content.Context;
@@ -17,7 +18,12 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.drovik.utils.URLs;
+import com.sky.drovik.player.engine.BeautyImageEngine;
+import com.sky.drovik.player.engine.ImageEngine;
+import com.sky.drovik.player.exception.AppException;
 import com.sky.drovik.player.exception.StringUtils;
+import com.sky.drovik.player.pojo.BaseImage;
 
 /**
  * 全局应用程序类：用于保存和调用全局应用配置及访问网络数据
@@ -38,6 +44,7 @@ public class AppContext extends Application {
 	private int loginUid = 0;	//登录用户的id
 	private Hashtable<String, Object> memCacheRegion = new Hashtable<String, Object>();
 	
+	private String[] catalogArr = {"image_beauty.xml","image_scenery.xml"};
 	/**
 	 * 获取当前网络类型
 	 * @return 0：没有网络   1：WIFI网络   2：WAP网络    3：NET网络
@@ -257,6 +264,11 @@ public class AppContext extends Application {
 			} catch (Exception e) {}
 		}
 		return null;
+	}
+	
+	
+	public List<BaseImage> getImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
+		return new BeautyImageEngine().fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]));
 	}
 
 	

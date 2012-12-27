@@ -16,6 +16,7 @@ import android.util.Log;
 
 import com.drovik.utils.URLs;
 import com.sky.drovik.player.BuildConfig;
+import com.sky.drovik.player.exception.AppException;
 import com.sky.drovik.player.pojo.BaseImage;
 
 public abstract class ImageEngine {
@@ -30,13 +31,18 @@ public abstract class ImageEngine {
 	
 	private String TAG = "ImageEngine";
 	
-	private boolean DEBUG = false;
+	private boolean DEBUG = true;
 	
-	public abstract List<BaseImage> fetchImage(String desc) throws IOException ;
+	public ImageEngine() {
+		
+	}
 	
-	public InputStream http_get(String url) throws IOException {
+	public abstract List<BaseImage> fetchImage(String desc) throws AppException;
+	
+	
+	public InputStream http_get(String url) throws AppException {
 		if(BuildConfig.DEBUG && DEBUG) {
-			Log.d(TAG, "### update url = " + url);
+			Log.d(TAG, "### fetch url = " + url);
 		}
 		HttpClient httpClient = null;
 		GetMethod httpGet = null;
@@ -48,7 +54,7 @@ public abstract class ImageEngine {
 				httpGet = getHttpGet(url, "", "");
 				int statusCode = httpClient.executeMethod(httpGet);
 				if(statusCode != HttpStatus.SC_OK) {
-					throw new IOException();
+					throw AppException.io(new IOException());
 				}
 				responseBody = httpGet.getResponseBodyAsString();
 				break;
@@ -69,7 +75,7 @@ public abstract class ImageEngine {
 			}
 		}while(time<RETRY_TIME);
 		if(BuildConfig.DEBUG && DEBUG) {
-			Log.d(TAG, "### " + responseBody);
+			Log.d(TAG, "### responseBody = " + responseBody);
 		}
 		//responseBody = responseBody.replace('', '?');
 		//if(responseBody.contains("result") && responseBody.contains("errorCode")) {

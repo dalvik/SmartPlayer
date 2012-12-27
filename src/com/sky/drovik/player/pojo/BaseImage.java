@@ -8,9 +8,11 @@ import java.util.List;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import android.graphics.Bitmap;
 import android.util.Xml;
 
 import com.drovik.utils.StringUtils;
+import com.sky.drovik.player.exception.AppException;
 
 public class BaseImage {
 
@@ -24,17 +26,21 @@ public class BaseImage {
 	
 	private String desc;
 
+	private Bitmap thum;
+	
 	public BaseImage() {
 		super();
 	}
 
-	public BaseImage(int id, String name, String thumbnail, String src, String desc) {
+	public BaseImage(int id, String name, String thumbnail, String src,
+			String desc, Bitmap thum) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.thumbnail = thumbnail;
 		this.src = src;
 		this.desc = desc;
+		this.thum = thum;
 	}
 
 	public int getId() {
@@ -77,6 +83,14 @@ public class BaseImage {
 		this.desc = desc;
 	}
 
+	public Bitmap getThum() {
+		return thum;
+	}
+
+	public void setThum(Bitmap thum) {
+		this.thum = thum;
+	}
+
 	@Override
 	public String toString() {
 		return "Image [id=" + id + ", name=" + name + ", thumbnail="
@@ -84,7 +98,7 @@ public class BaseImage {
 	}
 	
 
-	public static List<BaseImage> parse(InputStream inputStream) throws IOException {
+	public static List<BaseImage> parse(InputStream inputStream) throws AppException {
 		List<BaseImage> imageList = new ArrayList<BaseImage>();
 		BaseImage image = null;
 		XmlPullParser xmlPullParser = Xml.newPullParser();

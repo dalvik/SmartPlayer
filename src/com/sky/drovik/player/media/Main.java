@@ -20,13 +20,16 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.drovik.utils.BuildConfig;
 import com.sky.drovik.entity.Image;
 import com.sky.drovik.entity.UIHelper;
 import com.sky.drovik.player.AppContext;
+import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.adpter.ListViewImageAdapter;
 import com.sky.drovik.player.exception.StringUtils;
+import com.sky.drovik.player.pojo.BaseImage;
+import com.sky.drovik.utils.ImageCache.ImageCacheParams;
+import com.sky.drovik.utils.ImageFetcher;
 import com.sky.drovik.widget.PullToRefreshListView;
 import com.sky.drovik.widget.PullToRefreshListView.OnRefreshListener;
 import com.sky.drovik.widget.ScrollLayout;
@@ -35,6 +38,8 @@ public class Main extends Activity {
 
 	private String TAG = "Main";
 	
+    private static final String IMAGE_CACHE_DIR = "thumbs";
+    
 	private boolean DEBUG = true;
 	
 	private ScrollLayout mScrollLayout;
@@ -55,7 +60,7 @@ public class Main extends Activity {
 	//contentvew
 	private PullToRefreshListView imageListView;
 	private ListViewImageAdapter imageListViewAdapter;
-	private List<Image> imageListViewData = new ArrayList<Image>();
+	private List<BaseImage> imageListViewData = new ArrayList<BaseImage>();
 	private View imageListViewFooter;
 	private TextView imageListViewFootMore;
 	private ProgressBar imageListViewFootProgress;
@@ -67,10 +72,22 @@ public class Main extends Activity {
 	
 	private int curImageCatalog = Image.CATALOG_ALL;
 	
+	private AppContext appContext;//全局Context
+	
+    private ImageFetcher mImageFetcher;
+    
+    private int mImageThumbSize;
+    
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_main);
+		appContext = (AppContext)getApplication();
+		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
+		mImageFetcher = new ImageFetcher(appContext, mImageThumbSize);
+		mImageFetcher.setLoadingImage(R.drawable.empty_photo);
+		ImageCacheParams cacheParams = new ImageCacheParams(appContext, IMAGE_CACHE_DIR);
+		mImageFetcher.addImageCache(appContext, cacheParams);
 		this.initHeadView();
 		this.initFootBar();
 		this.initPageScroll(); 
@@ -215,7 +232,7 @@ public class Main extends Activity {
     }
 
     private void initImageListView() {
-    	imageListViewAdapter = new ListViewImageAdapter(this, imageListViewData,  R.layout.layout_image_list_item);
+    	imageListViewAdapter = new ListViewImageAdapter(this, imageListViewData,  R.layout.layout_image_list_item, mImageFetcher);
     	imageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
     	imageListViewFootMore = (TextView)imageListViewFooter.findViewById(R.id.list_view_foot_more);
     	imageListViewFootProgress = (ProgressBar)imageListViewFooter.findViewById(R.id.list_view_foot_progress);
@@ -232,7 +249,7 @@ public class Main extends Activity {
           		if(view instanceof TextView){
           			image = (Image)view.getTag();
           		}else{
-          			TextView tv = (TextView)view.findViewById(R.id.news_listitem_title);
+          			TextView tv = (TextView)view.findViewById(R.id.image_list_item_name);
           			image = (Image)tv.getTag();
           		}
           		if(image == null) return;
@@ -249,7 +266,11 @@ public class Main extends Activity {
 				//数据为空--不用继续下面代码了
 				if(imageListViewData.size() == 0) return;
 				//判断是否滚动到底部
-				
+				 if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
+	                  mImageFetcher.setPauseWork(true);
+	             } else {
+	                  mImageFetcher.setPauseWork(false);
+	             }
 				boolean scrollEnd = false;
 				try{
 					if(view.getPositionForView(imageListViewFooter) == view.getLastVisiblePosition()) {
@@ -280,14 +301,13 @@ public class Main extends Activity {
     }
 
     public void handleImageListData(int what,Object obj,int objtype,int actiontype) {
-    	System.out.println("===" + actiontype);
     	switch (actiontype) {
 		case UIHelper.LISTVIEW_ACTION_INIT:
 		case UIHelper.LISTVIEW_ACTION_REFRESH:
 		case UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG:
 			switch (objtype) {
 				case UIHelper.LISTVIEW_DATATYPE_NEWS:
-					List<Image> list = (List<Image>)obj;
+					List<BaseImage> list = (List<BaseImage>)obj;
 					imageListSumData = what;
 					imageListViewData.clear();//先清除原有数据
 					imageListViewData.addAll(list);
@@ -332,11 +352,11 @@ public class Main extends Activity {
 		case UIHelper.LISTVIEW_ACTION_SCROLL:
 			switch (objtype) {
 			case UIHelper.LISTVIEW_DATATYPE_NEWS:
-				List<Image> list = (List<Image>)obj;
+				List<BaseImage> list = (List<BaseImage>)obj;
 				//notice = list.getNotice();
 				imageListSumData += what;
 				if(imageListViewData.size() > 0){
-					for(Image image : list){
+					for(BaseImage image : list){
 						boolean b = false;
 						/*for(News news2 : lvNewsData){
 							if(news1.getId() == news2.getId()){
@@ -449,7 +469,7 @@ public class Main extends Activity {
     	}
     }
     
-    private void loadImageListData(final int catalog,final int pageIndex,final Handler handler,final int action){ 
+    private void loadImageListData(final int catalog,final int pageIndex, final Handler handler,final int action){ 
 		mHeadProgress.setVisibility(ProgressBar.VISIBLE);		
 		new Thread(){
 			public void run() {				
@@ -459,10 +479,9 @@ public class Main extends Activity {
 					isRefresh = true;
 				}
 				try {					
-					List<Image> list = new ArrayList<Image>();//appContext.getNewsList(catalog, pageIndex, isRefresh);				
-					msg.what = 12;//list.getPageSize();
+					List<BaseImage> list = appContext.getImageList(catalog, pageIndex, isRefresh);	
+					msg.what = list.size();
 					msg.obj = list;
-					Thread.sleep(3000);
 	            } catch (Exception e) {
 	            	e.printStackTrace();
 	            	msg.what = -1;
@@ -476,4 +495,23 @@ public class Main extends Activity {
 			}
 		}.start();
 	} 
+    
+    @Override
+    public void onResume() {
+        super.onResume();
+        mImageFetcher.setExitTasksEarly(false);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mImageFetcher.setExitTasksEarly(true);
+        mImageFetcher.flushCache();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mImageFetcher.closeCache();
+    }
 }
