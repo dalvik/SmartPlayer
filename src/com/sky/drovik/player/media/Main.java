@@ -14,6 +14,7 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -58,15 +59,20 @@ public class Main extends Activity {
 	private ImageView fbSetting;
 	
 	//contentvew
-	private PullToRefreshListView imageListView;
-	private ListViewImageAdapter imageListViewAdapter;
-	private List<BaseImage> imageListViewData = new ArrayList<BaseImage>();
+	private PullToRefreshListView beautyImageListView;
+	private ListViewImageAdapter beautyImageListViewAdapter;
+	private List<BaseImage> beautyImageListViewData = new ArrayList<BaseImage>();
 	private View imageListViewFooter;
 	private TextView imageListViewFootMore;
 	private ProgressBar imageListViewFootProgress;
 	
 	//handler
 	private Handler imageListViewHandler;
+	
+	//top buttons
+	private Button frameBeautyButton;
+	private Button frameSceneryButton;
+	private Button frameOtherButton;
 	
 	private int imageListSumData;
 	
@@ -90,7 +96,8 @@ public class Main extends Activity {
 		mImageFetcher.addImageCache(appContext, cacheParams);
 		this.initHeadView();
 		this.initFootBar();
-		this.initPageScroll(); 
+		this.initPageScroll();
+		this.initFrameButton();
         this.initFrameListView();
 	}
 
@@ -113,7 +120,7 @@ public class Main extends Activity {
 					if(mCurSel == pos) {
 		    			switch (pos) {
 						case 0://image
-							imageListView.clickRefresh();
+							beautyImageListView.clickRefresh();
 							break;	
 						case 1://video
 							break;
@@ -176,13 +183,54 @@ public class Main extends Activity {
     }
     
     /**
+     * 初始化主页的按钮
+     */
+    private void initFrameButton() {
+    	frameBeautyButton = (Button)findViewById(R.id.frame_btn_beauty);
+    	frameSceneryButton = (Button)findViewById(R.id.frame_btn_scenery);
+    	frameOtherButton = (Button)findViewById(R.id.frame_btn_other);
+    	
+    	frameBeautyButton.setOnClickListener(frameNewsBtnClick(frameBeautyButton, BaseImage.BEAUTY));
+    	frameSceneryButton.setOnClickListener(frameNewsBtnClick(frameSceneryButton, BaseImage.SCENERY));
+    	frameOtherButton.setOnClickListener(frameNewsBtnClick(frameSceneryButton, BaseImage.OTHER));
+    	
+    	
+    }
+    
+    private View.OnClickListener frameNewsBtnClick(final Button btn,final int catalog){
+    	return new View.OnClickListener() {
+			public void onClick(View v) {
+				if(btn == frameBeautyButton){
+					frameBeautyButton.setEnabled(false);
+		    	}else{
+		    		frameBeautyButton.setEnabled(true);
+		    	}
+		    	if(btn == frameSceneryButton){
+		    		frameSceneryButton.setEnabled(false);
+		    	}else{
+		    		frameSceneryButton.setEnabled(true);
+		    	}
+		    	if(btn == frameOtherButton){
+		    		frameOtherButton.setEnabled(false);
+		    	}else{
+		    		frameOtherButton.setEnabled(true);
+		    	}
+		    	curImageCatalog = catalog;
+		    	if(btn == frameBeautyButton) {
+		    		beautyImageListView.setVisibility(View.VISIBLE);
+		    	}
+			}
+    	};
+     }
+    
+    /**
      * 初始化ListView数据
      */
     private void initFrameListViewData() {
     	 //初始化Handler
-        imageListViewHandler = this.getListViewHandler(imageListView, imageListViewAdapter, imageListViewFootMore, imageListViewFootProgress, AppContext.PAGE_SIZE);
+        imageListViewHandler = this.getListViewHandler(beautyImageListView, beautyImageListViewAdapter, imageListViewFootMore, imageListViewFootProgress, AppContext.PAGE_SIZE);
         //加载数据				
-		if(imageListViewData.size() == 0) {
+		if(beautyImageListViewData.size() == 0) {
 			loadImageListData(curImageCatalog, 0, imageListViewHandler, UIHelper.LISTVIEW_ACTION_INIT);
 		}
     }
@@ -232,14 +280,14 @@ public class Main extends Activity {
     }
 
     private void initImageListView() {
-    	imageListViewAdapter = new ListViewImageAdapter(this, imageListViewData,  R.layout.layout_image_list_item, mImageFetcher);
+    	beautyImageListViewAdapter = new ListViewImageAdapter(this, beautyImageListViewData,  R.layout.layout_image_list_item, mImageFetcher);
     	imageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
     	imageListViewFootMore = (TextView)imageListViewFooter.findViewById(R.id.list_view_foot_more);
     	imageListViewFootProgress = (ProgressBar)imageListViewFooter.findViewById(R.id.list_view_foot_progress);
-    	imageListView = (PullToRefreshListView)findViewById(R.id.frame_list_view_image);
-    	imageListView.addFooterView(imageListViewFooter);
-    	imageListView.setAdapter(imageListViewAdapter);
-    	imageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    	beautyImageListView = (PullToRefreshListView)findViewById(R.id.frame_list_view_image);
+    	beautyImageListView.addFooterView(imageListViewFooter);
+    	beautyImageListView.setAdapter(beautyImageListViewAdapter);
+    	beautyImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
           	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
           		//点击头部、底部栏无效
           		if(position == 0 || view == imageListViewFooter) return;
@@ -258,13 +306,13 @@ public class Main extends Activity {
           		//UIHelper.showNewsRedirect(view.getContext(), news);
           	}        	
   		});
-    	imageListView.setOnScrollListener(new OnScrollListener() {
+    	beautyImageListView.setOnScrollListener(new OnScrollListener() {
 			
 			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
-				imageListView.onScrollStateChanged(view, scrollState);		
+				beautyImageListView.onScrollStateChanged(view, scrollState);		
 				//数据为空--不用继续下面代码了
-				if(imageListViewData.size() == 0) return;
+				if(beautyImageListViewData.size() == 0) return;
 				//判断是否滚动到底部
 				 if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
 	                  mImageFetcher.setPauseWork(true);
@@ -279,7 +327,7 @@ public class Main extends Activity {
 				} catch (Exception e) {
 					scrollEnd = false;
 				}
-				int imageListDataState = StringUtils.toInt(imageListView.getTag());
+				int imageListDataState = StringUtils.toInt(beautyImageListView.getTag());
 				if(scrollEnd && imageListDataState == 1) {
 					
 				}
@@ -288,10 +336,10 @@ public class Main extends Activity {
 			@Override
 			public void onScroll(AbsListView view, int firstVisibleItem,
 					int visibleItemCount, int totalItemCount) {
-				imageListView.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+				beautyImageListView.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
 			}
 		});
-    	imageListView.setOnRefreshListner(new OnRefreshListener() {
+    	beautyImageListView.setOnRefreshListner(new OnRefreshListener() {
 			
 			@Override
 			public void onRefresh() {
@@ -309,8 +357,8 @@ public class Main extends Activity {
 				case UIHelper.LISTVIEW_DATATYPE_NEWS:
 					List<BaseImage> list = (List<BaseImage>)obj;
 					imageListSumData = what;
-					imageListViewData.clear();//先清除原有数据
-					imageListViewData.addAll(list);
+					beautyImageListViewData.clear();//先清除原有数据
+					beautyImageListViewData.addAll(list);
 					break;
 				case UIHelper.LISTVIEW_DATATYPE_BLOG:
 					/*BlogList blist = (BlogList)obj;
@@ -355,7 +403,7 @@ public class Main extends Activity {
 				List<BaseImage> list = (List<BaseImage>)obj;
 				//notice = list.getNotice();
 				imageListSumData += what;
-				if(imageListViewData.size() > 0){
+				if(beautyImageListViewData.size() > 0){
 					for(BaseImage image : list){
 						boolean b = false;
 						/*for(News news2 : lvNewsData){
@@ -367,7 +415,7 @@ public class Main extends Activity {
 						if(!b) imageListViewData.add(image);*/
 					}
 				}else{
-					imageListViewData.addAll(list);
+					beautyImageListViewData.addAll(list);
 				}
 				break;
 			case UIHelper.LISTVIEW_DATATYPE_BLOG:

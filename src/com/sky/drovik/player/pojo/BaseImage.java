@@ -16,6 +16,12 @@ import com.sky.drovik.player.exception.AppException;
 
 public class BaseImage {
 
+	public static final int BEAUTY = 0;
+	
+	public static final int SCENERY = 1;
+	
+	public static final int OTHER = 2;
+	
 	private int id;
 	
 	private String name;

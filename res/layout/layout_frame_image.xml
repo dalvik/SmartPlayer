@@ -28,7 +28,7 @@
      	    android:background="@drawable/frame_button_cutline"/>
      	
      	<Button 
-     		android:id="@+id/frame_btn_star"
+     		android:id="@+id/frame_btn_other"
      		style="@style/frame_button"
          	android:text="frecommend"/>
     </LinearLayout>
