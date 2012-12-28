@@ -15,7 +15,7 @@ public class ControlPanel extends LinearLayout implements OnClickListener{
 	private LayoutParams lp = null;
 	
 	/** Handle的宽度，与Panel等高 */
-	public final static int HANDLE_WIDTH = 25;
+	public final static int HANDLE_WIDTH = 20;
 	
 	/** 每次自动展开/收缩的范围 */
 	private final static int MOVE_WIDTH = 10;

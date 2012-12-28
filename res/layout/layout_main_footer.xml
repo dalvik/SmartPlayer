@@ -29,5 +29,6 @@
 	<ImageView
 		android:id="@+id/main_footbar_setting"
 		style="@style/main_footbar_image"
+		android:visibility="gone"
 		android:src="@drawable/widget_bar_more"/>
 </LinearLayout>

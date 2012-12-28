@@ -31,7 +31,7 @@ public abstract class ImageEngine {
 	
 	private String TAG = "ImageEngine";
 	
-	private boolean DEBUG = true;
+	private boolean DEBUG = false;
 	
 	public ImageEngine() {
 		

@@ -197,7 +197,7 @@ public class MovieList extends Activity implements OnClickListener, OnChildClick
 		             curGroupMap.put("list", getText(listName[i]));   
 		       }   
 		        return list;   
-		   }   
+	}   
 	
 	public List<List<Map<String,Object>>> getChildList(){   
 		childList.clear();
