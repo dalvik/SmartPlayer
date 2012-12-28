@@ -35,11 +35,11 @@
 
 	
 	<com.sky.drovik.widget.PullToRefreshListView
-	  	android:id="@+id/frame_list_view_image"
+	  	android:id="@+id/frame_list_view_beayty_image"
 	    style="@style/widget_listview"/>
 	
 	<com.sky.drovik.widget.PullToRefreshListView
-	  	android:id="@+id/frame_listview_blog"
+	  	android:id="@+id/frame_list_view_secenry_image"
 	    style="@style/widget_listview"
 	    android:visibility="gone"/>
 	

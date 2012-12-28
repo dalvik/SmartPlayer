@@ -27,6 +27,8 @@ import com.sky.drovik.player.AppContext;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.adpter.ListViewImageAdapter;
+import com.sky.drovik.player.adpter.ListViewSceneryImageAdapter;
+import com.sky.drovik.player.exception.AppException;
 import com.sky.drovik.player.exception.StringUtils;
 import com.sky.drovik.player.pojo.BaseImage;
 import com.sky.drovik.utils.ImageCache.ImageCacheParams;
@@ -58,7 +60,7 @@ public class Main extends Activity {
 	private RadioButton fbVideo;
 	private ImageView fbSetting;
 	
-	//contentvew
+	//beayty image contentvew
 	private PullToRefreshListView beautyImageListView;
 	private ListViewImageAdapter beautyImageListViewAdapter;
 	private List<BaseImage> beautyImageListViewData = new ArrayList<BaseImage>();
@@ -66,15 +68,27 @@ public class Main extends Activity {
 	private TextView imageListViewFootMore;
 	private ProgressBar imageListViewFootProgress;
 	
+	//scenery image contentvew
+	private PullToRefreshListView sceneryImageListView;
+	private ListViewSceneryImageAdapter sceneryImageListViewAdapter;
+	private List<BaseImage> sceneryImageListViewData = new ArrayList<BaseImage>();
+	private View sceneryimageListViewFooter;
+	private TextView sceneryImageListViewFootMore;
+	private ProgressBar sceneryImageListViewFootProgress;
+		
+		
 	//handler
-	private Handler imageListViewHandler;
+	private Handler beaytyImageListViewHandler;
+	private Handler sceneryImageListViewHandler;
+	
 	
 	//top buttons
 	private Button frameBeautyButton;
 	private Button frameSceneryButton;
 	private Button frameOtherButton;
 	
-	private int imageListSumData;
+	private int beautyImageListSumData;
+	private int sceneryImageListSumData;
 	
 	private int curImageCatalog = Image.CATALOG_ALL;
 	
@@ -178,6 +192,7 @@ public class Main extends Activity {
     private void initFrameListView() {
     	//初始化listview控件
 		this.initImageListView();
+		this.initSceneryListView();
 		//加载listview数据
 		this.initFrameListViewData();
     }
@@ -190,9 +205,9 @@ public class Main extends Activity {
     	frameSceneryButton = (Button)findViewById(R.id.frame_btn_scenery);
     	frameOtherButton = (Button)findViewById(R.id.frame_btn_other);
     	
-    	frameBeautyButton.setOnClickListener(frameNewsBtnClick(frameBeautyButton, BaseImage.BEAUTY));
-    	frameSceneryButton.setOnClickListener(frameNewsBtnClick(frameSceneryButton, BaseImage.SCENERY));
-    	frameOtherButton.setOnClickListener(frameNewsBtnClick(frameSceneryButton, BaseImage.OTHER));
+    	frameBeautyButton.setOnClickListener(frameNewsBtnClick(frameBeautyButton, BaseImage.CATALOG_BEAUTY));
+    	frameSceneryButton.setOnClickListener(frameNewsBtnClick(frameSceneryButton, BaseImage.CATALOG_SCENERY));
+    	frameOtherButton.setOnClickListener(frameNewsBtnClick(frameOtherButton, BaseImage.CATALOG_OTHER));
     	
     	
     }
@@ -218,6 +233,18 @@ public class Main extends Activity {
 		    	curImageCatalog = catalog;
 		    	if(btn == frameBeautyButton) {
 		    		beautyImageListView.setVisibility(View.VISIBLE);
+		    		sceneryImageListView.setVisibility(View.GONE);
+		    		loadImageListData(curImageCatalog, 0, sceneryImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
+		    	} else {
+		    		beautyImageListView.setVisibility(View.GONE);
+		    		sceneryImageListView.setVisibility(View.VISIBLE);
+		    		if(sceneryImageListViewData.size() == 0) {
+		    			loadSceneryImageListData(curImageCatalog, 0, sceneryImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
+		    		} else {
+		    			sceneryImageListViewFootMore.setText(R.string.load_more);
+		    			sceneryImageListViewFootProgress.setVisibility(View.GONE);
+		    			loadSceneryImageListData(curImageCatalog, 0, sceneryImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
+		    		}
 		    	}
 			}
     	};
@@ -228,10 +255,11 @@ public class Main extends Activity {
      */
     private void initFrameListViewData() {
     	 //初始化Handler
-        imageListViewHandler = this.getListViewHandler(beautyImageListView, beautyImageListViewAdapter, imageListViewFootMore, imageListViewFootProgress, AppContext.PAGE_SIZE);
+        beaytyImageListViewHandler = this.getListViewHandler(beautyImageListView, beautyImageListViewAdapter, imageListViewFootMore, imageListViewFootProgress, AppContext.PAGE_SIZE);
+        sceneryImageListViewHandler = this.getListViewHandler(sceneryImageListView, sceneryImageListViewAdapter, sceneryImageListViewFootMore, sceneryImageListViewFootProgress, AppContext.PAGE_SIZE);
         //加载数据				
 		if(beautyImageListViewData.size() == 0) {
-			loadImageListData(curImageCatalog, 0, imageListViewHandler, UIHelper.LISTVIEW_ACTION_INIT);
+			loadImageListData(curImageCatalog, 0, beaytyImageListViewHandler, UIHelper.LISTVIEW_ACTION_INIT);
 		}
     }
     
@@ -241,7 +269,7 @@ public class Main extends Activity {
      * @param adapter
      * @return
      */
-    private Handler getListViewHandler(final PullToRefreshListView imageListView,final BaseAdapter adapter,final TextView more,final ProgressBar progress,final int pageSize){
+    private Handler getListViewHandler(final PullToRefreshListView imageListView,final BaseAdapter adapter,final TextView more,final ProgressBar progress, final int pageSize){
     	return new Handler(){
     		@Override
     		public void handleMessage(Message msg) {
@@ -284,7 +312,7 @@ public class Main extends Activity {
     	imageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
     	imageListViewFootMore = (TextView)imageListViewFooter.findViewById(R.id.list_view_foot_more);
     	imageListViewFootProgress = (ProgressBar)imageListViewFooter.findViewById(R.id.list_view_foot_progress);
-    	beautyImageListView = (PullToRefreshListView)findViewById(R.id.frame_list_view_image);
+    	beautyImageListView = (PullToRefreshListView)findViewById(R.id.frame_list_view_beayty_image);
     	beautyImageListView.addFooterView(imageListViewFooter);
     	beautyImageListView.setAdapter(beautyImageListViewAdapter);
     	beautyImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -343,24 +371,93 @@ public class Main extends Activity {
 			
 			@Override
 			public void onRefresh() {
-				loadImageListData(curImageCatalog, 0, imageListViewHandler, UIHelper.LISTVIEW_ACTION_REFRESH);
+				loadImageListData(curImageCatalog, 0, beaytyImageListViewHandler, UIHelper.LISTVIEW_ACTION_REFRESH);
 			}
 		});
     }
 
+    //init sencerty
+	private void initSceneryListView() {
+		sceneryImageListViewAdapter = new ListViewSceneryImageAdapter(this, sceneryImageListViewData, R.layout.layout_scenery_image_list_item, mImageFetcher);        
+        sceneryimageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
+        sceneryImageListViewFootMore = (TextView)sceneryimageListViewFooter.findViewById(R.id.list_view_foot_more);
+        sceneryImageListViewFootProgress = (ProgressBar)sceneryimageListViewFooter.findViewById(R.id.list_view_foot_progress);
+        sceneryImageListView = (PullToRefreshListView)findViewById(R.id.frame_list_view_secenry_image);
+        sceneryImageListView.addFooterView(sceneryimageListViewFooter);//添加底部视图  必须在setAdapter前
+        sceneryImageListView.setAdapter(sceneryImageListViewAdapter); 
+        sceneryImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        		//点击头部、底部栏无效
+        		if(position == 0 || view == sceneryImageListView) return;
+        		
+        		/*Blog blog = null;        		
+        		//判断是否是TextView
+        		if(view instanceof TextView){
+        			blog = (Blog)view.getTag();
+        		}else{
+        			TextView tv = (TextView)view.findViewById(R.id.blog_listitem_title);
+        			blog = (Blog)tv.getTag();
+        		}
+        		if(blog == null) return;*/
+        		//TODO
+        		//跳转到博客详情
+        		//UIHelper.showUrlRedirect(view.getContext(), blog.getUrl());
+        	}        	
+		});
+        sceneryImageListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				sceneryImageListView.onScrollStateChanged(view, scrollState);
+				
+				//数据为空--不用继续下面代码了
+				if(sceneryImageListViewData.size() == 0) return;
+				
+				//判断是否滚动到底部
+				boolean scrollEnd = false;
+				try {
+					if(view.getPositionForView(sceneryimageListViewFooter) == view.getLastVisiblePosition())
+						scrollEnd = true;
+				} catch (Exception e) {
+					scrollEnd = false;
+				}
+				
+				int lvDataState = StringUtils.toInt(sceneryImageListView.getTag());
+				if(scrollEnd && lvDataState==UIHelper.LISTVIEW_DATA_MORE)
+				{
+					sceneryImageListViewFootMore.setText(R.string.load_ing);
+					sceneryImageListViewFootProgress.setVisibility(View.VISIBLE);
+					//当前pageIndex
+					int pageIndex = sceneryImageListSumData/AppContext.PAGE_SIZE;
+					loadSceneryImageListData(curImageCatalog, pageIndex, sceneryImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
+				}
+			}
+			public void onScroll(AbsListView view, int firstVisibleItem,int visibleItemCount, int totalItemCount) {
+				sceneryImageListView.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+			}
+		});
+        sceneryImageListView.setOnRefreshListner(new PullToRefreshListView.OnRefreshListener() {
+            public void onRefresh() {
+            	loadSceneryImageListData(curImageCatalog, 0, sceneryImageListViewHandler, UIHelper.LISTVIEW_ACTION_REFRESH);
+            }
+        });					
+    }
+	
     public void handleImageListData(int what,Object obj,int objtype,int actiontype) {
     	switch (actiontype) {
 		case UIHelper.LISTVIEW_ACTION_INIT:
 		case UIHelper.LISTVIEW_ACTION_REFRESH:
 		case UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG:
 			switch (objtype) {
-				case UIHelper.LISTVIEW_DATATYPE_NEWS:
-					List<BaseImage> list = (List<BaseImage>)obj;
-					imageListSumData = what;
+				case UIHelper.LISTVIEW_DATATYPE_BEAUTY:
+					List<BaseImage> beaytyImageList = (List<BaseImage>)obj;
+					beautyImageListSumData = what;
 					beautyImageListViewData.clear();//先清除原有数据
-					beautyImageListViewData.addAll(list);
+					beautyImageListViewData.addAll(beaytyImageList);
 					break;
-				case UIHelper.LISTVIEW_DATATYPE_BLOG:
+				case UIHelper.LISTVIEW_DATATYPE_SCENERY:
+					List<BaseImage> sceneryImageList = (List<BaseImage>)obj;
+					sceneryImageListSumData = what;
+					sceneryImageListViewData.clear();//先清除原有数据
+					sceneryImageListViewData.addAll(sceneryImageList);
 					/*BlogList blist = (BlogList)obj;
 					notice = blist.getNotice();
 					lvBlogSumData = what;
@@ -399,12 +496,12 @@ public class Main extends Activity {
 			break;
 		case UIHelper.LISTVIEW_ACTION_SCROLL:
 			switch (objtype) {
-			case UIHelper.LISTVIEW_DATATYPE_NEWS:
-				List<BaseImage> list = (List<BaseImage>)obj;
+			case UIHelper.LISTVIEW_DATATYPE_BEAUTY:
+				List<BaseImage> beaytyImageList = (List<BaseImage>)obj;
 				//notice = list.getNotice();
-				imageListSumData += what;
+				beautyImageListSumData += what;
 				if(beautyImageListViewData.size() > 0){
-					for(BaseImage image : list){
+					for(BaseImage image : beaytyImageList){
 						boolean b = false;
 						/*for(News news2 : lvNewsData){
 							if(news1.getId() == news2.getId()){
@@ -415,10 +512,18 @@ public class Main extends Activity {
 						if(!b) imageListViewData.add(image);*/
 					}
 				}else{
-					beautyImageListViewData.addAll(list);
+					beautyImageListViewData.addAll(beaytyImageList);
 				}
 				break;
-			case UIHelper.LISTVIEW_DATATYPE_BLOG:
+			case UIHelper.LISTVIEW_DATATYPE_SCENERY:
+				List<BaseImage> sceneryImageList = (List<BaseImage>)obj;
+				//notice = list.getNotice();
+				sceneryImageListSumData += what;
+				if(sceneryImageListViewData.size()>0) {
+					
+				} else {
+					sceneryImageListViewData.addAll(sceneryImageList);
+				}
 				/*BlogList blist = (BlogList)obj;
 				notice = blist.getNotice();
 				lvBlogSumData += what;
@@ -536,10 +641,48 @@ public class Main extends Activity {
 	            	msg.obj = e;
 	            }
 				msg.arg1 = action;
-				msg.arg2 = UIHelper.LISTVIEW_DATATYPE_NEWS;
+				msg.arg2 = UIHelper.LISTVIEW_DATATYPE_BEAUTY;
                 if(curImageCatalog == catalog) {
                 	handler.sendMessage(msg);
                 }
+			}
+		}.start();
+	} 
+    
+    private void loadSceneryImageListData(final int catalog,final int pageIndex,final Handler handler,final int action){ 
+		mHeadProgress.setVisibility(ProgressBar.VISIBLE);
+		new Thread(){
+			public void run() {
+				Message msg = new Message();
+				boolean isRefresh = false;
+				if(action == UIHelper.LISTVIEW_ACTION_REFRESH || action == UIHelper.LISTVIEW_ACTION_SCROLL)
+					isRefresh = true;
+				/*String type = "";
+				switch (catalog) {
+				case BaseImage.CATALOG_SCENERY:
+					type = BaseImage.TYPE_SCENERY;
+					break;
+				case BaseImage.CATALOG_OTHER:
+					type = BaseImage.TYPE_OTHER;
+					break;
+				}*/
+				try {
+					//BlogList list = appContext.getBlogList(type, pageIndex, isRefresh);		
+					List<BaseImage> list = appContext.getImageList(catalog, pageIndex, isRefresh);	
+					for(BaseImage l:list) {
+						System.out.println(l.toString());
+					}
+					msg.what = list.size();
+					msg.obj = list;
+	            } catch (AppException e) {
+	            	e.printStackTrace();
+	            	msg.what = -1;
+	            	msg.obj = e;
+	            }
+				msg.arg1 = action;
+				msg.arg2 = UIHelper.LISTVIEW_DATATYPE_SCENERY;
+                if(curImageCatalog == catalog)
+                	handler.sendMessage(msg);
 			}
 		}.start();
 	} 

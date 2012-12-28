@@ -16,11 +16,18 @@ import com.sky.drovik.player.exception.AppException;
 
 public class BaseImage {
 
-	public static final int BEAUTY = 0;
+	public static final int CATALOG_BEAUTY = 0;
 	
-	public static final int SCENERY = 1;
+	public static final int CATALOG_SCENERY = 1;
 	
-	public static final int OTHER = 2;
+	public static final int CATALOG_OTHER = 2;
+	
+	public static final String TYPE_BEAUTY = "beauty";
+	
+	public static final String TYPE_SCENERY = "scenery";
+	
+	public static final String TYPE_OTHER = "other";
+	
 	
 	private int id;
 	
@@ -122,13 +129,13 @@ public class BaseImage {
 						if(tag.equalsIgnoreCase("id")) {
 							image.setId(StringUtils.toInt(xmlPullParser.nextText(),0));
 						} else if(tag.equalsIgnoreCase("name")) {
-							image.setName(xmlPullParser.nextText());
+							image.setName(xmlPullParser.nextText().trim());
 						} else if(tag.equalsIgnoreCase("thumbnail")) {
-							image.setThumbnail(xmlPullParser.nextText());
+							image.setThumbnail(xmlPullParser.nextText().trim());
 						} else if(tag.equalsIgnoreCase("src")) {
-							image.setSrc(xmlPullParser.nextText());
+							image.setSrc(xmlPullParser.nextText().trim());
 						} else if(tag.equalsIgnoreCase("desc")) {
-							image.setDesc(xmlPullParser.nextText());
+							image.setDesc(xmlPullParser.nextText().trim());
 							imageList.add(image);
 						}
 					}
