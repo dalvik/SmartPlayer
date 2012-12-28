@@ -32,7 +32,7 @@
 		<item name="android:indeterminateDrawable">@anim/loading</item>
 		<item name="android:layout_width">21dip</item> 
 		<item name="android:layout_height">21dip</item>
-		<item name="android:layout_gravity">center_vertical</item>
+		<item name="android:layout_gravity">center</item>
 	</style>
 	
     <style name="main_head_title">

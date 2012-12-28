@@ -11,7 +11,7 @@
 		android:id="@+id/main_footbar_image"
 		style="@style/main_footbar_radio"
 		android:button="@null"
-		android:drawableTop="@drawable/widget_bar_question"/>
+		android:drawableBottom="@drawable/widget_bar_question"/>
 	
 	<ImageView
 		style="@style/main_footbar_cutline"
@@ -21,7 +21,8 @@
 		android:id="@+id/main_footbar_video"
 		style="@style/main_footbar_radio"
 		android:button="@null"
-		android:drawableTop="@drawable/widget_bar_question"/>
+		android:drawableBottom="@drawable/widget_bar_question"/>
+	
 	<ImageView
 		style="@style/main_footbar_cutline"
 		android:src="@drawable/widget_bar_cut_off"/>
