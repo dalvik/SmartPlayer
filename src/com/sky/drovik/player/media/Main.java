@@ -27,6 +27,7 @@ import com.sky.drovik.player.AppContext;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.adpter.ListViewImageAdapter;
+import com.sky.drovik.player.adpter.ListViewOtherImageAdapter;
 import com.sky.drovik.player.adpter.ListViewSceneryImageAdapter;
 import com.sky.drovik.player.exception.AppException;
 import com.sky.drovik.player.exception.StringUtils;
@@ -64,22 +65,30 @@ public class Main extends Activity {
 	private PullToRefreshListView beautyImageListView;
 	private ListViewImageAdapter beautyImageListViewAdapter;
 	private List<BaseImage> beautyImageListViewData = new ArrayList<BaseImage>();
-	private View imageListViewFooter;
-	private TextView imageListViewFootMore;
-	private ProgressBar imageListViewFootProgress;
+	private View beautyImageListViewFooter;
+	private TextView beautyImageListViewFootMore;
+	private ProgressBar beautyImageListViewFootProgress;
 	
 	//scenery image contentvew
 	private PullToRefreshListView sceneryImageListView;
 	private ListViewSceneryImageAdapter sceneryImageListViewAdapter;
 	private List<BaseImage> sceneryImageListViewData = new ArrayList<BaseImage>();
-	private View sceneryimageListViewFooter;
+	private View sceneryImageListViewFooter;
 	private TextView sceneryImageListViewFootMore;
 	private ProgressBar sceneryImageListViewFootProgress;
 		
+	//other image contentvew
+	private PullToRefreshListView otherImageListView;
+	private ListViewOtherImageAdapter otherImageListViewAdapter;
+	private List<BaseImage> otherImageListViewData = new ArrayList<BaseImage>();
+	private View otherImageListViewFooter;
+	private TextView otherImageListViewFootMore;
+	private ProgressBar otherImageListViewFootProgress;
 		
 	//handler
-	private Handler beaytyImageListViewHandler;
+	private Handler beautyImageListViewHandler;
 	private Handler sceneryImageListViewHandler;
+	private Handler otherImageListViewHandler;
 	
 	
 	//top buttons
@@ -89,8 +98,9 @@ public class Main extends Activity {
 	
 	private int beautyImageListSumData;
 	private int sceneryImageListSumData;
+	private int otherImageListSumData;
 	
-	private int curImageCatalog = Image.CATALOG_ALL;
+	private int curImageCatalog = BaseImage.CATALOG_BEAUTY;
 	
 	private AppContext appContext;//全局Context
 	
@@ -193,6 +203,7 @@ public class Main extends Activity {
     	//初始化listview控件
 		this.initImageListView();
 		this.initSceneryListView();
+		this.initOtherListView();
 		//加载listview数据
 		this.initFrameListViewData();
     }
@@ -234,9 +245,17 @@ public class Main extends Activity {
 		    	if(btn == frameBeautyButton) {
 		    		beautyImageListView.setVisibility(View.VISIBLE);
 		    		sceneryImageListView.setVisibility(View.GONE);
-		    		loadImageListData(curImageCatalog, 0, sceneryImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
-		    	} else {
+		    		otherImageListView.setVisibility(View.GONE);
+		    		if(beautyImageListViewData.size() == 0) {
+		    			loadImageListData(curImageCatalog, 0, beautyImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
+		    		} else {
+		    			beautyImageListViewFootMore.setText(R.string.load_more);
+		    			beautyImageListViewFootProgress.setVisibility(View.GONE);
+		    			loadSceneryImageListData(curImageCatalog, 0, beautyImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
+		    		}
+		    	} else if(btn == frameSceneryButton ){
 		    		beautyImageListView.setVisibility(View.GONE);
+		    		otherImageListView.setVisibility(View.GONE);
 		    		sceneryImageListView.setVisibility(View.VISIBLE);
 		    		if(sceneryImageListViewData.size() == 0) {
 		    			loadSceneryImageListData(curImageCatalog, 0, sceneryImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
@@ -244,6 +263,17 @@ public class Main extends Activity {
 		    			sceneryImageListViewFootMore.setText(R.string.load_more);
 		    			sceneryImageListViewFootProgress.setVisibility(View.GONE);
 		    			loadSceneryImageListData(curImageCatalog, 0, sceneryImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
+		    		}
+		    	} else if(btn == frameOtherButton ){
+		    		beautyImageListView.setVisibility(View.GONE);
+		    		sceneryImageListView.setVisibility(View.GONE);
+		    		otherImageListView.setVisibility(View.VISIBLE);
+		    		if(otherImageListViewData.size() == 0) {
+		    			loadOtherImageListData(curImageCatalog, 0, otherImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
+		    		} else {
+		    			otherImageListViewFootMore.setText(R.string.load_more);
+		    			otherImageListViewFootProgress.setVisibility(View.GONE);
+		    			loadOtherImageListData(curImageCatalog, 0, otherImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
 		    		}
 		    	}
 			}
@@ -255,11 +285,12 @@ public class Main extends Activity {
      */
     private void initFrameListViewData() {
     	 //初始化Handler
-        beaytyImageListViewHandler = this.getListViewHandler(beautyImageListView, beautyImageListViewAdapter, imageListViewFootMore, imageListViewFootProgress, AppContext.PAGE_SIZE);
+        beautyImageListViewHandler = this.getListViewHandler(beautyImageListView, beautyImageListViewAdapter, beautyImageListViewFootMore, beautyImageListViewFootProgress, AppContext.PAGE_SIZE);
         sceneryImageListViewHandler = this.getListViewHandler(sceneryImageListView, sceneryImageListViewAdapter, sceneryImageListViewFootMore, sceneryImageListViewFootProgress, AppContext.PAGE_SIZE);
+        otherImageListViewHandler = this.getListViewHandler(otherImageListView, otherImageListViewAdapter, otherImageListViewFootMore, otherImageListViewFootProgress, AppContext.PAGE_SIZE);
         //加载数据				
 		if(beautyImageListViewData.size() == 0) {
-			loadImageListData(curImageCatalog, 0, beaytyImageListViewHandler, UIHelper.LISTVIEW_ACTION_INIT);
+			loadImageListData(curImageCatalog, 0, beautyImageListViewHandler, UIHelper.LISTVIEW_ACTION_INIT);
 		}
     }
     
@@ -309,16 +340,16 @@ public class Main extends Activity {
 
     private void initImageListView() {
     	beautyImageListViewAdapter = new ListViewImageAdapter(this, beautyImageListViewData,  R.layout.layout_image_list_item, mImageFetcher);
-    	imageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
-    	imageListViewFootMore = (TextView)imageListViewFooter.findViewById(R.id.list_view_foot_more);
-    	imageListViewFootProgress = (ProgressBar)imageListViewFooter.findViewById(R.id.list_view_foot_progress);
+    	beautyImageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
+    	beautyImageListViewFootMore = (TextView)beautyImageListViewFooter.findViewById(R.id.list_view_foot_more);
+    	beautyImageListViewFootProgress = (ProgressBar)beautyImageListViewFooter.findViewById(R.id.list_view_foot_progress);
     	beautyImageListView = (PullToRefreshListView)findViewById(R.id.frame_list_view_beayty_image);
-    	beautyImageListView.addFooterView(imageListViewFooter);
+    	beautyImageListView.addFooterView(beautyImageListViewFooter);
     	beautyImageListView.setAdapter(beautyImageListViewAdapter);
     	beautyImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
           	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
           		//点击头部、底部栏无效
-          		if(position == 0 || view == imageListViewFooter) return;
+          		if(position == 0 || view == beautyImageListViewFooter) return;
           		
           		Image image = null;        		
           		//判断是否是TextView
@@ -349,7 +380,7 @@ public class Main extends Activity {
 	             }
 				boolean scrollEnd = false;
 				try{
-					if(view.getPositionForView(imageListViewFooter) == view.getLastVisiblePosition()) {
+					if(view.getPositionForView(beautyImageListViewFooter) == view.getLastVisiblePosition()) {
 						scrollEnd = true;
 					}
 				} catch (Exception e) {
@@ -371,7 +402,7 @@ public class Main extends Activity {
 			
 			@Override
 			public void onRefresh() {
-				loadImageListData(curImageCatalog, 0, beaytyImageListViewHandler, UIHelper.LISTVIEW_ACTION_REFRESH);
+				loadImageListData(curImageCatalog, 0, beautyImageListViewHandler, UIHelper.LISTVIEW_ACTION_REFRESH);
 			}
 		});
     }
@@ -379,11 +410,11 @@ public class Main extends Activity {
     //init sencerty
 	private void initSceneryListView() {
 		sceneryImageListViewAdapter = new ListViewSceneryImageAdapter(this, sceneryImageListViewData, R.layout.layout_scenery_image_list_item, mImageFetcher);        
-        sceneryimageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
-        sceneryImageListViewFootMore = (TextView)sceneryimageListViewFooter.findViewById(R.id.list_view_foot_more);
-        sceneryImageListViewFootProgress = (ProgressBar)sceneryimageListViewFooter.findViewById(R.id.list_view_foot_progress);
+        sceneryImageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
+        sceneryImageListViewFootMore = (TextView)sceneryImageListViewFooter.findViewById(R.id.list_view_foot_more);
+        sceneryImageListViewFootProgress = (ProgressBar)sceneryImageListViewFooter.findViewById(R.id.list_view_foot_progress);
         sceneryImageListView = (PullToRefreshListView)findViewById(R.id.frame_list_view_secenry_image);
-        sceneryImageListView.addFooterView(sceneryimageListViewFooter);//添加底部视图  必须在setAdapter前
+        sceneryImageListView.addFooterView(sceneryImageListViewFooter);//添加底部视图  必须在setAdapter前
         sceneryImageListView.setAdapter(sceneryImageListViewAdapter); 
         sceneryImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -414,7 +445,7 @@ public class Main extends Activity {
 				//判断是否滚动到底部
 				boolean scrollEnd = false;
 				try {
-					if(view.getPositionForView(sceneryimageListViewFooter) == view.getLastVisiblePosition())
+					if(view.getPositionForView(sceneryImageListViewFooter) == view.getLastVisiblePosition())
 						scrollEnd = true;
 				} catch (Exception e) {
 					scrollEnd = false;
@@ -441,6 +472,71 @@ public class Main extends Activity {
         });					
     }
 	
+	//init other
+	private void initOtherListView() {
+		otherImageListViewAdapter = new ListViewOtherImageAdapter(this, otherImageListViewData, R.layout.layout_other_image_list_item, mImageFetcher);        
+		otherImageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
+		otherImageListViewFootMore = (TextView)otherImageListViewFooter.findViewById(R.id.list_view_foot_more);
+		otherImageListViewFootProgress = (ProgressBar)otherImageListViewFooter.findViewById(R.id.list_view_foot_progress);
+		otherImageListView = (PullToRefreshListView)findViewById(R.id.frame_list_view_other_image);
+		otherImageListView.addFooterView(otherImageListViewFooter);//添加底部视图  必须在setAdapter前
+		otherImageListView.setAdapter(otherImageListViewAdapter); 
+		otherImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        		//点击头部、底部栏无效
+        		if(position == 0 || view == otherImageListView) return;
+        		
+        		/*Blog blog = null;        		
+        		//判断是否是TextView
+        		if(view instanceof TextView){
+        			blog = (Blog)view.getTag();
+        		}else{
+        			TextView tv = (TextView)view.findViewById(R.id.blog_listitem_title);
+        			blog = (Blog)tv.getTag();
+        		}
+        		if(blog == null) return;*/
+        		//TODO
+        		//跳转到博客详情
+        		//UIHelper.showUrlRedirect(view.getContext(), blog.getUrl());
+        	}        	
+		});
+		otherImageListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				otherImageListView.onScrollStateChanged(view, scrollState);
+				
+				//数据为空--不用继续下面代码了
+				if(otherImageListViewData.size() == 0) return;
+				
+				//判断是否滚动到底部
+				boolean scrollEnd = false;
+				try {
+					if(view.getPositionForView(otherImageListViewFooter) == view.getLastVisiblePosition())
+						scrollEnd = true;
+				} catch (Exception e) {
+					scrollEnd = false;
+				}
+				
+				int lvDataState = StringUtils.toInt(otherImageListView.getTag());
+				if(scrollEnd && lvDataState==UIHelper.LISTVIEW_DATA_MORE)
+				{
+					otherImageListViewFootMore.setText(R.string.load_ing);
+					otherImageListViewFootProgress.setVisibility(View.VISIBLE);
+					//当前pageIndex
+					int pageIndex = otherImageListSumData/AppContext.PAGE_SIZE;
+					loadSceneryImageListData(curImageCatalog, pageIndex, otherImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
+				}
+			}
+			public void onScroll(AbsListView view, int firstVisibleItem,int visibleItemCount, int totalItemCount) {
+				otherImageListView.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+			}
+		});
+		otherImageListView.setOnRefreshListner(new PullToRefreshListView.OnRefreshListener() {
+            public void onRefresh() {
+            	loadSceneryImageListData(curImageCatalog, 0, otherImageListViewHandler, UIHelper.LISTVIEW_ACTION_REFRESH);
+            }
+        });					
+	}
+	
     public void handleImageListData(int what,Object obj,int objtype,int actiontype) {
     	switch (actiontype) {
 		case UIHelper.LISTVIEW_ACTION_INIT:
@@ -464,7 +560,11 @@ public class Main extends Activity {
 					lvBlogData.clear();//先清除原有数据
 					lvBlogData.addAll(blist.getBloglist());*/
 					break;
-				case UIHelper.LISTVIEW_DATATYPE_POST:
+				case UIHelper.LISTVIEW_DATATYPE_OTHER:
+					List<BaseImage> otherImageList = (List<BaseImage>)obj;
+					otherImageListSumData = what;
+					otherImageListViewData.clear();//先清除原有数据
+					otherImageListViewData.addAll(otherImageList);
 					/*PostList plist = (PostList)obj;
 					notice = plist.getNotice();
 					lvQuestionSumData = what;
@@ -542,7 +642,14 @@ public class Main extends Activity {
 					lvBlogData.addAll(blist.getBloglist());
 				}*/
 				break;
-			case UIHelper.LISTVIEW_DATATYPE_POST:
+			case UIHelper.LISTVIEW_DATATYPE_OTHER:
+				List<BaseImage> otherImageList = (List<BaseImage>)obj;
+				otherImageListSumData += what;
+				if(otherImageListViewData.size()>0) {
+					
+				} else {
+					otherImageListViewData.addAll(otherImageList);
+				}
 				/*PostList plist = (PostList)obj;
 				notice = plist.getNotice();
 				lvQuestionSumData += what;
@@ -657,21 +764,9 @@ public class Main extends Activity {
 				boolean isRefresh = false;
 				if(action == UIHelper.LISTVIEW_ACTION_REFRESH || action == UIHelper.LISTVIEW_ACTION_SCROLL)
 					isRefresh = true;
-				/*String type = "";
-				switch (catalog) {
-				case BaseImage.CATALOG_SCENERY:
-					type = BaseImage.TYPE_SCENERY;
-					break;
-				case BaseImage.CATALOG_OTHER:
-					type = BaseImage.TYPE_OTHER;
-					break;
-				}*/
 				try {
 					//BlogList list = appContext.getBlogList(type, pageIndex, isRefresh);		
 					List<BaseImage> list = appContext.getImageList(catalog, pageIndex, isRefresh);	
-					for(BaseImage l:list) {
-						System.out.println(l.toString());
-					}
 					msg.what = list.size();
 					msg.obj = list;
 	            } catch (AppException e) {
@@ -681,6 +776,32 @@ public class Main extends Activity {
 	            }
 				msg.arg1 = action;
 				msg.arg2 = UIHelper.LISTVIEW_DATATYPE_SCENERY;
+                if(curImageCatalog == catalog)
+                	handler.sendMessage(msg);
+			}
+		}.start();
+	} 
+    
+    private void loadOtherImageListData(final int catalog,final int pageIndex,final Handler handler,final int action){ 
+		mHeadProgress.setVisibility(ProgressBar.VISIBLE);
+		new Thread(){
+			public void run() {
+				Message msg = new Message();
+				boolean isRefresh = false;
+				if(action == UIHelper.LISTVIEW_ACTION_REFRESH || action == UIHelper.LISTVIEW_ACTION_SCROLL)
+					isRefresh = true;
+				try {
+					//BlogList list = appContext.getBlogList(type, pageIndex, isRefresh);		
+					List<BaseImage> list = appContext.getImageList(catalog, pageIndex, isRefresh);	
+					msg.what = list.size();
+					msg.obj = list;
+	            } catch (AppException e) {
+	            	e.printStackTrace();
+	            	msg.what = -1;
+	            	msg.obj = e;
+	            }
+				msg.arg1 = action;
+				msg.arg2 = UIHelper.LISTVIEW_DATATYPE_OTHER;
                 if(curImageCatalog == catalog)
                 	handler.sendMessage(msg);
 			}

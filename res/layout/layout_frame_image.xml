@@ -43,4 +43,9 @@
 	    style="@style/widget_listview"
 	    android:visibility="gone"/>
 	
+	<com.sky.drovik.widget.PullToRefreshListView
+	  	android:id="@+id/frame_list_view_other_image"
+	    style="@style/widget_listview"
+	    android:visibility="gone"/>
+	
 </LinearLayout>

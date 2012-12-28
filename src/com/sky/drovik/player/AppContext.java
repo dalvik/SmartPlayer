@@ -44,7 +44,7 @@ public class AppContext extends Application {
 	private int loginUid = 0;	//登录用户的id
 	private Hashtable<String, Object> memCacheRegion = new Hashtable<String, Object>();
 	
-	private String[] catalogArr = {"image_beauty.xml","image_scenery.xml"};
+	private String[] catalogArr = {"image_beauty.xml","image_scenery.xml", "image_other.xml"};
 	/**
 	 * 获取当前网络类型
 	 * @return 0：没有网络   1：WIFI网络   2：WAP网络    3：NET网络

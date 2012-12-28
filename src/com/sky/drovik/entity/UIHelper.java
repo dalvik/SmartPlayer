@@ -14,7 +14,7 @@ public class UIHelper {
 	
 	public final static int LISTVIEW_DATATYPE_BEAUTY = 0x01;
 	public final static int LISTVIEW_DATATYPE_SCENERY = 0x02;
-	public final static int LISTVIEW_DATATYPE_POST = 0x03;
+	public final static int LISTVIEW_DATATYPE_OTHER = 0x03;
 	public final static int LISTVIEW_DATATYPE_TWEET = 0x04;
 	public final static int LISTVIEW_DATATYPE_ACTIVE = 0x05;
 	public final static int LISTVIEW_DATATYPE_MESSAGE = 0x06;
