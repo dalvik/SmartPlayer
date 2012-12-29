@@ -11,8 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sky.drovik.player.R;
+import com.sky.drovik.player.bitmapfun.ImageFetcher;
 import com.sky.drovik.player.pojo.BaseImage;
-import com.sky.drovik.utils.ImageFetcher;
 
 public class ListViewImageAdapter extends BaseAdapter {
 

@@ -71,7 +71,9 @@
     <string name="socket_exception_error">网络异常，读取数据超时</string>
     <string name="app_run_code_error">应用程序运行时异常</string>
     <string name="no_network_connection_toast">无网络连接</string>
-     
+    <string name="imageview_description">Image View</string>
+    <string name="clear_cache_menu">清除缓存</string>
+    <string name="clear_cache_complete_toast">缓存清除成功</string>
     
     <!-- welcome   -->
     <string name="welcome_top_tips_str">卓维影音</string>

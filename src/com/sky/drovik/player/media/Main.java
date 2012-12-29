@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -46,6 +45,9 @@ import com.sky.drovik.player.R;
 import com.sky.drovik.player.adpter.ListViewImageAdapter;
 import com.sky.drovik.player.adpter.ListViewOtherImageAdapter;
 import com.sky.drovik.player.adpter.ListViewSceneryImageAdapter;
+import com.sky.drovik.player.bitmapfun.ImageCache.ImageCacheParams;
+import com.sky.drovik.player.bitmapfun.ImageDetailActivity;
+import com.sky.drovik.player.bitmapfun.ImageFetcher;
 import com.sky.drovik.player.engine.HistoryListAdpater;
 import com.sky.drovik.player.engine.ImageLoaderTask;
 import com.sky.drovik.player.engine.UpdateManager;
@@ -55,8 +57,6 @@ import com.sky.drovik.player.pojo.BaseImage;
 import com.sky.drovik.player.pojo.FileUtil;
 import com.sky.drovik.player.pojo.HisInfo;
 import com.sky.drovik.player.pojo.MovieInfo;
-import com.sky.drovik.utils.ImageCache.ImageCacheParams;
-import com.sky.drovik.utils.ImageFetcher;
 import com.sky.drovik.views.ControlPanel;
 import com.sky.drovik.views.LazyScrollView;
 import com.sky.drovik.widget.PullToRefreshListView;
@@ -89,7 +89,7 @@ public class Main extends FragmentActivity {
 	//beayty image contentvew
 	private PullToRefreshListView beautyImageListView;
 	private ListViewImageAdapter beautyImageListViewAdapter;
-	private List<BaseImage> beautyImageListViewData = new ArrayList<BaseImage>();
+	private static List<BaseImage> beautyImageListViewData = new ArrayList<BaseImage>();
 	private View beautyImageListViewFooter;
 	private TextView beautyImageListViewFootMore;
 	private ProgressBar beautyImageListViewFootProgress;
@@ -97,7 +97,7 @@ public class Main extends FragmentActivity {
 	//scenery image contentvew
 	private PullToRefreshListView sceneryImageListView;
 	private ListViewSceneryImageAdapter sceneryImageListViewAdapter;
-	private List<BaseImage> sceneryImageListViewData = new ArrayList<BaseImage>();
+	private static List<BaseImage> sceneryImageListViewData = new ArrayList<BaseImage>();
 	private View sceneryImageListViewFooter;
 	private TextView sceneryImageListViewFootMore;
 	private ProgressBar sceneryImageListViewFootProgress;
@@ -105,7 +105,7 @@ public class Main extends FragmentActivity {
 	//other image contentvew
 	private PullToRefreshListView otherImageListView;
 	private ListViewOtherImageAdapter otherImageListViewAdapter;
-	private List<BaseImage> otherImageListViewData = new ArrayList<BaseImage>();
+	private static List<BaseImage> otherImageListViewData = new ArrayList<BaseImage>();
 	private View otherImageListViewFooter;
 	private TextView otherImageListViewFootMore;
 	private ProgressBar otherImageListViewFootProgress;
@@ -132,6 +132,10 @@ public class Main extends FragmentActivity {
     private ImageFetcher mImageFetcher;
     
     private int mImageThumbSize;
+    
+    private List<BaseImage> beautyImageListTmp = null;
+    private List<BaseImage> sceneryImageListTmp = null;
+    private List<BaseImage> otherImageListTmp = null;
     
     //video list
     private final int MENU_DELETE = Menu.FIRST;
@@ -597,10 +601,11 @@ public class Main extends FragmentActivity {
     	beautyImageListView.setAdapter(beautyImageListViewAdapter);
     	beautyImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
           	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+          		System.out.println("click");
           		//点击头部、底部栏无效
           		if(position == 0 || view == beautyImageListViewFooter) return;
           		
-          		Image image = null;        		
+          		/*Image image = null;        		
           		//判断是否是TextView
           		if(view instanceof TextView){
           			image = (Image)view.getTag();
@@ -608,7 +613,23 @@ public class Main extends FragmentActivity {
           			TextView tv = (TextView)view.findViewById(R.id.image_list_item_name);
           			image = (Image)tv.getTag();
           		}
-          		if(image == null) return;
+          		if(image == null) return;*/
+          		final Intent i = new Intent(appContext, ImageDetailActivity.class);
+          		System.out.println("push  = "  + position + " " + id);
+                i.putExtra(ImageDetailActivity.EXTRA_IMAGE, position-1);
+                i.putExtra(ImageDetailActivity.LIST_SIZE, beautyImageListViewData.size());
+                i.putExtra(ImageDetailActivity.CATA_LOG, curImageCatalog);
+                /*if (com.sky.drovik.player.bitmapfun.Utils.hasJellyBean()) {
+                    // makeThumbnailScaleUpAnimation() looks kind of ugly here as the loading spinner may
+                    // show plus the thumbnail image in GridView is cropped. so using
+                    // makeScaleUpAnimation() instead.
+                    ActivityOptions options =
+                            ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight());
+                    startActivity(i, options.toBundle());
+                } else {
+                    startActivity(i);
+                }*/
+                startActivity(i);
           		//TODO
           		//跳转到新闻详情
           		//UIHelper.showNewsRedirect(view.getContext(), news);
@@ -636,8 +657,12 @@ public class Main extends FragmentActivity {
 					scrollEnd = false;
 				}
 				int imageListDataState = StringUtils.toInt(beautyImageListView.getTag());
-				if(scrollEnd && imageListDataState == 1) {
-					
+				if(scrollEnd && imageListDataState == UIHelper.LISTVIEW_DATA_MORE) {
+					beautyImageListViewFootMore.setText(R.string.load_ing);
+					beautyImageListViewFootProgress.setVisibility(View.VISIBLE);
+					//当前pageIndex
+					int pageIndex = beautyImageListSumData/AppContext.PAGE_SIZE;
+					loadImageListData(curImageCatalog, pageIndex, beautyImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
 				}
 			}
 			
@@ -785,7 +810,7 @@ public class Main extends FragmentActivity {
             }
         });					
 	}
-	
+	//TODO
     public void handleImageListData(int what,Object obj,int objtype,int actiontype) {
     	switch (actiontype) {
 		case UIHelper.LISTVIEW_ACTION_INIT:
@@ -847,18 +872,17 @@ public class Main extends FragmentActivity {
 			switch (objtype) {
 			case UIHelper.LISTVIEW_DATATYPE_BEAUTY:
 				List<BaseImage> beaytyImageList = (List<BaseImage>)obj;
-				//notice = list.getNotice();
 				beautyImageListSumData += what;
 				if(beautyImageListViewData.size() > 0){
 					for(BaseImage image : beaytyImageList){
 						boolean b = false;
-						/*for(News news2 : lvNewsData){
-							if(news1.getId() == news2.getId()){
+						for(BaseImage newsImage : beautyImageListViewData){
+							if(image.equals(newsImage)){
 								b = true;
 								break;
 							}
 						}
-						if(!b) imageListViewData.add(image);*/
+						if(!b) beautyImageListViewData.add(image);
 					}
 				}else{
 					beautyImageListViewData.addAll(beaytyImageList);
@@ -987,15 +1011,42 @@ public class Main extends FragmentActivity {
 				if(action == UIHelper.LISTVIEW_ACTION_REFRESH || action == UIHelper.LISTVIEW_ACTION_SCROLL) {
 					isRefresh = true;
 				}
-				try {					
-					List<BaseImage> list = appContext.getImageList(catalog, pageIndex, isRefresh);	
-					msg.what = list.size();
-					msg.obj = list;
-	            } catch (Exception e) {
-	            	e.printStackTrace();
-	            	msg.what = -1;
-	            	msg.obj = e;
-	            }
+				if(pageIndex ==0) {
+					try {					
+						beautyImageListTmp = appContext.getImageList(catalog, pageIndex, isRefresh);
+						List<BaseImage> tmp = null;
+						if(beautyImageListTmp.size()<=AppContext.PAGE_SIZE) {
+							tmp = beautyImageListTmp.subList(0, beautyImageListTmp.size());
+						}else {
+							tmp = beautyImageListTmp.subList(0, AppContext.PAGE_SIZE);
+						}
+						msg.what = tmp.size();
+						msg.obj = tmp;
+					} catch (Exception e) {
+						e.printStackTrace();
+						msg.what = -1;
+						msg.obj = e;
+					}
+				} else {
+					List<BaseImage> tmp = new ArrayList<BaseImage>();
+					for(int i=AppContext.PAGE_SIZE * pageIndex; i<AppContext.PAGE_SIZE * (pageIndex +1);i++) {
+						if(i<beautyImageListTmp.size()) {
+							tmp.add(beautyImageListTmp.get(i));
+						}
+					}
+					msg.what = tmp.size();
+					if(msg.what == 0) {
+						msg.what = 1;
+					}
+					msg.obj = tmp;
+					try {
+						Thread.sleep(1500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						msg.what = -1;
+						msg.obj = e;
+					}
+				}
 				msg.arg1 = action;
 				msg.arg2 = UIHelper.LISTVIEW_DATATYPE_BEAUTY;
                 if(curImageCatalog == catalog) {
@@ -1119,5 +1170,16 @@ public class Main extends FragmentActivity {
 				break;
 		}
 		return super.onContextItemSelected(item);
+	}
+	
+	public static String getImgagePath(int postion, int catalog) {
+		System.out.println("positino  = "  + postion);
+		if(catalog == BaseImage.CATALOG_BEAUTY) {
+			return beautyImageListViewData.get(postion).getSrc();
+		}else if(catalog == BaseImage.CATALOG_SCENERY) {
+			return sceneryImageListViewData.get(postion).getSrc();
+		}else {
+			return otherImageListViewData.get(postion).getSrc();
+		}
 	}
 }
