@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.sky.drovik.utils;
+package com.sky.drovik.player.bitmapfun;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
