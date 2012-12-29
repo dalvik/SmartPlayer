@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils.TruncateAt;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -62,7 +63,7 @@ import com.sky.drovik.widget.PullToRefreshListView;
 import com.sky.drovik.widget.PullToRefreshListView.OnRefreshListener;
 import com.sky.drovik.widget.ScrollLayout;
 
-public class Main extends Activity {
+public class Main extends FragmentActivity {
 
 	private String TAG = "Main";
 	
@@ -188,7 +189,7 @@ public class Main extends Activity {
 		mImageFetcher = new ImageFetcher(appContext, mImageThumbSize);
 		mImageFetcher.setLoadingImage(R.drawable.empty_photo);
 		ImageCacheParams cacheParams = new ImageCacheParams(appContext, IMAGE_CACHE_DIR);
-		mImageFetcher.addImageCache(appContext, cacheParams);
+		mImageFetcher.addImageCache(getSupportFragmentManager(), cacheParams);
 		this.initHeadView();
 		this.initFootBar();
 		this.initPageScroll();

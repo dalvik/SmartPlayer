@@ -26,6 +26,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -120,10 +121,10 @@ public abstract class ImageWorker {
      * @param fragmentManager
      * @param cacheParams
      */
-    public void addImageCache(Context fragmentManager,
+    public void addImageCache(FragmentManager fragmentManager,
             ImageCache.ImageCacheParams cacheParams) {
         mImageCacheParams = cacheParams;
-        //setImageCache(ImageCache.findOrCreateCache(fragmentManager, mImageCacheParams));
+        setImageCache(ImageCache.findOrCreateCache(fragmentManager, mImageCacheParams));
         new CacheAsyncTask().execute(MESSAGE_INIT_DISK_CACHE);
     }
 
