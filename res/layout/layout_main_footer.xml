@@ -5,13 +5,13 @@
 	android:layout_width="fill_parent" 
 	android:layout_height="wrap_content"
 	android:gravity="center_vertical"
-	android:background="@drawable/widget_bar_bg_n">
+	android:background="@android:color/transparent">
 	
 	<RadioButton 
 		android:id="@+id/main_footbar_image"
 		style="@style/main_footbar_radio"
 		android:button="@null"
-		android:drawableBottom="@drawable/widget_bar_question"/>
+		android:drawableBottom="@drawable/widget_frame_image"/>
 	
 	<ImageView
 		style="@style/main_footbar_cutline"
@@ -21,7 +21,7 @@
 		android:id="@+id/main_footbar_video"
 		style="@style/main_footbar_radio"
 		android:button="@null"
-		android:drawableBottom="@drawable/widget_bar_question"/>
+		android:drawableBottom="@drawable/widget_frame_video"/>
 	
 	<ImageView
 		style="@style/main_footbar_cutline"

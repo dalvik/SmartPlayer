@@ -64,7 +64,8 @@
     <dimen name="space_2">2.0dip</dimen>
     <dimen name="space_1">1.0dip</dimen>
     
-    <dimen name="image_thumbnail_size">150dp</dimen>
+    <dimen name="image_thumbnail_width">80.0dip</dimen>
+    <dimen name="image_thumbnail_height">100.0dip</dimen>
     <dimen name="image_thumbnail_spacing">1dp</dimen>
     <dimen name="image_detail_pager_margin">80dp</dimen>
 </resources>

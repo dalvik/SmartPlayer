@@ -40,7 +40,7 @@ public class MediaList {
 		ContentResolver crs =  context.getContentResolver();
 		cursor = crs.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, mediaColumns, null, null,  MediaStore.Video.Media.DATE_ADDED + " DESC ");// + " LIMIT " + (index * perPageNum) + " , "+ perPageNum);
 		List<MovieInfo> videoList = new ArrayList<MovieInfo>();
-		if(cursor.moveToFirst()){
+		if(cursor != null && cursor.moveToFirst()){
 			do{
 				MovieInfo info = new MovieInfo();
 				info.mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.MIME_TYPE));
@@ -63,7 +63,9 @@ public class MediaList {
 				videoList.add(info);
 				thumbCursor.close();
 			}while(cursor.moveToNext());
-			cursor.close();
+			if(cursor != null) {
+				cursor.close();
+			}
 		}
 		return videoList;
 	}

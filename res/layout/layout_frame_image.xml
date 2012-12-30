@@ -12,7 +12,7 @@
      	<Button
      	    android:id="@+id/frame_btn_beauty"
      	    style="@style/frame_button"
-     	    android:text="news" />
+     	    android:text="@string/drovik_frame_image_beauty_str" />
 
      	<ImageView android:layout_width="wrap_content" 
      	    android:layout_height="fill_parent" 
@@ -21,7 +21,7 @@
      	<Button 
      		android:id="@+id/frame_btn_scenery"
      		style="@style/frame_button"
-         	android:text="blog"/>
+         	android:text="@string/drovik_frame_image_scenery_str"/>
      	
      	<ImageView android:layout_width="wrap_content" 
      	    android:layout_height="fill_parent" 
@@ -30,7 +30,7 @@
      	<Button 
      		android:id="@+id/frame_btn_other"
      		style="@style/frame_button"
-         	android:text="frecommend"/>
+         	android:text="@string/drovik_frame_image_other_str"/>
     </LinearLayout>
 
 	

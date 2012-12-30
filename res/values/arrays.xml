@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string-array name="head_titles">
-	    <item>图片</item>
+	    <item>相册</item>
 	    <item>视频</item>
     </string-array>
 </resources>

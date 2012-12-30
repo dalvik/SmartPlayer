@@ -131,7 +131,8 @@ public class Main extends FragmentActivity {
 	
     private ImageFetcher mImageFetcher;
     
-    private int mImageThumbSize;
+    private int mImageThumbWidth;
+    private int mImageThumbHeight;
     
     private List<BaseImage> beautyImageListTmp = null;
     private List<BaseImage> sceneryImageListTmp = null;
@@ -189,9 +190,10 @@ public class Main extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_main);
 		appContext = (AppContext)getApplication();
-		mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
-		mImageFetcher = new ImageFetcher(appContext, mImageThumbSize);
-		mImageFetcher.setLoadingImage(R.drawable.empty_photo);
+		mImageThumbWidth = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_width);
+		mImageThumbHeight = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_height);
+		mImageFetcher = new ImageFetcher(appContext, mImageThumbWidth, mImageThumbHeight);
+		//mImageFetcher.setLoadingImage(R.drawable.empty_photo);
 		ImageCacheParams cacheParams = new ImageCacheParams(appContext, IMAGE_CACHE_DIR);
 		mImageFetcher.addImageCache(getSupportFragmentManager(), cacheParams);
 		this.initHeadView();
@@ -238,6 +240,7 @@ public class Main extends FragmentActivity {
     	//设置第一显示屏
     	mCurSel = 0;
     	mButtons[mCurSel].setChecked(true);
+    	mButtons[mCurSel].setEnabled(true);
     	mScrollLayout.SetOnViewChangeListener(new ScrollLayout.OnViewChangeListener() {
 			public void OnViewChange(int viewIndex) {
 				setCurPoint(viewIndex);

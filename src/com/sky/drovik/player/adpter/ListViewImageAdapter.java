@@ -67,10 +67,7 @@ public class ListViewImageAdapter extends BaseAdapter {
 		BaseImage image = listItems.get(position);
 		itemView.name.setText(image.getName());
 		itemView.desc.setText(image.getDesc());
-<<<<<<< HEAD
-=======
-		//image.setThumbnail("http://www.eoeandroid.com/uc_server/data/avatar/000/64/74/76_avatar_middle.jpg");
->>>>>>> 822cbc021f0121c012f146fa2a66ad6f2f5f6d0c
+		itemView.src.setBackgroundResource(R.drawable.empty_photo);
 		mImageFetcher.loadImage(image.getThumbnail(), itemView.src);
 		return convertView;
 	}

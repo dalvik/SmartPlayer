@@ -4,6 +4,7 @@
     <color name="frame_button_text_select">#FFFFFF</color>
     <color name="listitem_transparent">#00000000</color>
 	<color name="alpha_00">#00000000</color>
+	<color name="alpha">#FF000000</color>
 	<color name="black">#000000</color>
 	<color name="white">#FFFFFF</color>
 	<color name="red">#FF0000</color>
@@ -56,7 +57,11 @@
 	
 	<drawable name="powderblue">#B0E0E6</drawable><!-- 粉蓝色 -->
 	
+	<drawable name="darkblue">#191970</drawable><!-- 深蓝色 -->
+	
 	<drawable name="aliceblue">#F0F8FF</drawable><!-- 艾利斯兰 -->
+	
+	<drawable name="alice">#FF4500</drawable>
 	
 	<drawable name="lightcoral">#F08080</drawable><!-- 亮珊瑚色 -->
 	
