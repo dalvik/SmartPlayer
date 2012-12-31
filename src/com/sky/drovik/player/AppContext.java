@@ -20,7 +20,6 @@ import android.net.NetworkInfo;
 
 import com.drovik.utils.URLs;
 import com.sky.drovik.player.engine.BeautyImageEngine;
-import com.sky.drovik.player.engine.ImageEngine;
 import com.sky.drovik.player.exception.AppException;
 import com.sky.drovik.player.exception.StringUtils;
 import com.sky.drovik.player.pojo.BaseImage;

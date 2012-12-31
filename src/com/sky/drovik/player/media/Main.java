@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -37,7 +38,6 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.sky.drovik.entity.Image;
 import com.sky.drovik.entity.UIHelper;
 import com.sky.drovik.player.AppContext;
 import com.sky.drovik.player.BuildConfig;
@@ -604,35 +604,33 @@ public class Main extends FragmentActivity {
     	beautyImageListView.setAdapter(beautyImageListViewAdapter);
     	beautyImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
           	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-          		System.out.println("click");
           		//点击头部、底部栏无效
-          		if(position == 0 || view == beautyImageListViewFooter) return;
-          		
-          		/*Image image = null;        		
-          		//判断是否是TextView
-          		if(view instanceof TextView){
-          			image = (Image)view.getTag();
-          		}else{
-          			TextView tv = (TextView)view.findViewById(R.id.image_list_item_name);
-          			image = (Image)tv.getTag();
+          		if(position == 0){
+          			return;
           		}
-          		if(image == null) return;*/
+          		if(view == beautyImageListViewFooter) {
+					beautyImageListViewFootMore.setText(R.string.load_ing);
+					beautyImageListViewFootProgress.setVisibility(View.VISIBLE);
+					//当前pageIndex
+					int pageIndex = beautyImageListSumData/AppContext.PAGE_SIZE;
+					loadImageListData(curImageCatalog, pageIndex, beautyImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
+          			return;
+          		}
           		final Intent i = new Intent(appContext, ImageDetailActivity.class);
-          		System.out.println("push  = "  + position + " " + id);
                 i.putExtra(ImageDetailActivity.EXTRA_IMAGE, position-1);
                 i.putExtra(ImageDetailActivity.LIST_SIZE, beautyImageListViewData.size());
                 i.putExtra(ImageDetailActivity.CATA_LOG, curImageCatalog);
-                /*if (com.sky.drovik.player.bitmapfun.Utils.hasJellyBean()) {
+                if (com.sky.drovik.player.bitmapfun.Utils.hasJellyBean()) {
                     // makeThumbnailScaleUpAnimation() looks kind of ugly here as the loading spinner may
                     // show plus the thumbnail image in GridView is cropped. so using
                     // makeScaleUpAnimation() instead.
                     ActivityOptions options =
-                            ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight());
+                            ActivityOptions.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
                     startActivity(i, options.toBundle());
                 } else {
                     startActivity(i);
-                }*/
-                startActivity(i);
+                }
+                //startActivity(i);
           		//TODO
           		//跳转到新闻详情
           		//UIHelper.showNewsRedirect(view.getContext(), news);
@@ -696,17 +694,31 @@ public class Main extends FragmentActivity {
         sceneryImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         		//点击头部、底部栏无效
-        		if(position == 0 || view == sceneryImageListView) return;
-        		
-        		/*Blog blog = null;        		
-        		//判断是否是TextView
-        		if(view instanceof TextView){
-        			blog = (Blog)view.getTag();
-        		}else{
-        			TextView tv = (TextView)view.findViewById(R.id.blog_listitem_title);
-        			blog = (Blog)tv.getTag();
+        		if(position == 0){
+        			return;
         		}
-        		if(blog == null) return;*/
+          		if(view == sceneryImageListViewFooter) {
+					sceneryImageListViewFootMore.setText(R.string.load_ing);
+					sceneryImageListViewFootProgress.setVisibility(View.VISIBLE);
+					//当前pageIndex
+					int pageIndex = sceneryImageListSumData/AppContext.PAGE_SIZE;
+					loadSceneryImageListData(curImageCatalog, pageIndex, sceneryImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
+          			return;
+          		}
+        		final Intent i = new Intent(appContext, ImageDetailActivity.class);
+                i.putExtra(ImageDetailActivity.EXTRA_IMAGE, position-1);
+                i.putExtra(ImageDetailActivity.LIST_SIZE, sceneryImageListViewData.size());
+                i.putExtra(ImageDetailActivity.CATA_LOG, curImageCatalog);  
+        		if (com.sky.drovik.player.bitmapfun.Utils.hasJellyBean()) {
+                    // makeThumbnailScaleUpAnimation() looks kind of ugly here as the loading spinner may
+                    // show plus the thumbnail image in GridView is cropped. so using
+                    // makeScaleUpAnimation() instead.
+                    ActivityOptions options =
+                            ActivityOptions.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
+                    startActivity(i, options.toBundle());
+                } else {
+                    startActivity(i);
+                }
         		//TODO
         		//跳转到博客详情
         		//UIHelper.showUrlRedirect(view.getContext(), blog.getUrl());
@@ -761,17 +773,31 @@ public class Main extends FragmentActivity {
 		otherImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         		//点击头部、底部栏无效
-        		if(position == 0 || view == otherImageListView) return;
-        		
-        		/*Blog blog = null;        		
-        		//判断是否是TextView
-        		if(view instanceof TextView){
-        			blog = (Blog)view.getTag();
-        		}else{
-        			TextView tv = (TextView)view.findViewById(R.id.blog_listitem_title);
-        			blog = (Blog)tv.getTag();
+        		if(position == 0){
+        			return;
         		}
-        		if(blog == null) return;*/
+          		if(view == otherImageListViewFooter) {
+					otherImageListViewFootMore.setText(R.string.load_ing);
+					otherImageListViewFootProgress.setVisibility(View.VISIBLE);
+					//当前pageIndex
+					int pageIndex = otherImageListSumData/AppContext.PAGE_SIZE;
+					loadOtherImageListData(curImageCatalog, pageIndex, otherImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
+          			return;
+          		}
+        		final Intent i = new Intent(appContext, ImageDetailActivity.class);
+                i.putExtra(ImageDetailActivity.EXTRA_IMAGE, position-1);
+                i.putExtra(ImageDetailActivity.LIST_SIZE, otherImageListViewData.size());
+                i.putExtra(ImageDetailActivity.CATA_LOG, curImageCatalog);  
+                if (com.sky.drovik.player.bitmapfun.Utils.hasJellyBean()) {
+                    // makeThumbnailScaleUpAnimation() looks kind of ugly here as the loading spinner may
+                    // show plus the thumbnail image in GridView is cropped. so using
+                    // makeScaleUpAnimation() instead.
+                    ActivityOptions options =
+                            ActivityOptions.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
+                    startActivity(i, options.toBundle());
+                } else {
+                    startActivity(i);
+                }
         		//TODO
         		//跳转到博客详情
         		//UIHelper.showUrlRedirect(view.getContext(), blog.getUrl());
@@ -800,7 +826,7 @@ public class Main extends FragmentActivity {
 					otherImageListViewFootProgress.setVisibility(View.VISIBLE);
 					//当前pageIndex
 					int pageIndex = otherImageListSumData/AppContext.PAGE_SIZE;
-					loadSceneryImageListData(curImageCatalog, pageIndex, otherImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
+					loadOtherImageListData(curImageCatalog, pageIndex, otherImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
 				}
 			}
 			public void onScroll(AbsListView view, int firstVisibleItem,int visibleItemCount, int totalItemCount) {
@@ -831,43 +857,12 @@ public class Main extends FragmentActivity {
 					sceneryImageListSumData = what;
 					sceneryImageListViewData.clear();//先清除原有数据
 					sceneryImageListViewData.addAll(sceneryImageList);
-					/*BlogList blist = (BlogList)obj;
-					notice = blist.getNotice();
-					lvBlogSumData = what;
-					lvBlogData.clear();//先清除原有数据
-					lvBlogData.addAll(blist.getBloglist());*/
 					break;
 				case UIHelper.LISTVIEW_DATATYPE_OTHER:
 					List<BaseImage> otherImageList = (List<BaseImage>)obj;
 					otherImageListSumData = what;
 					otherImageListViewData.clear();//先清除原有数据
 					otherImageListViewData.addAll(otherImageList);
-					/*PostList plist = (PostList)obj;
-					notice = plist.getNotice();
-					lvQuestionSumData = what;
-					lvQuestionData.clear();//先清除原有数据
-					lvQuestionData.addAll(plist.getPostlist());*/
-					break;
-				case UIHelper.LISTVIEW_DATATYPE_TWEET:
-					/*TweetList tlist = (TweetList)obj;
-					notice = tlist.getNotice();
-					lvTweetSumData = what;
-					lvTweetData.clear();//先清除原有数据
-					lvTweetData.addAll(tlist.getTweetlist());*/
-					break;
-				case UIHelper.LISTVIEW_DATATYPE_ACTIVE:
-					/*ActiveList alist = (ActiveList)obj;
-					notice = alist.getNotice();
-					lvActiveSumData = what;
-					lvActiveData.clear();//先清除原有数据
-					lvActiveData.addAll(alist.getActivelist());*/
-					break;
-				case UIHelper.LISTVIEW_DATATYPE_MESSAGE:
-					/*MessageList mlist = (MessageList)obj;
-					notice = mlist.getNotice();
-					lvMsgSumData = what;
-					lvMsgData.clear();//先清除原有数据
-					lvMsgData.addAll(mlist.getMessagelist());*/
 					break;
 			}
 			break;
@@ -893,113 +888,39 @@ public class Main extends FragmentActivity {
 				break;
 			case UIHelper.LISTVIEW_DATATYPE_SCENERY:
 				List<BaseImage> sceneryImageList = (List<BaseImage>)obj;
-				//notice = list.getNotice();
 				sceneryImageListSumData += what;
 				if(sceneryImageListViewData.size()>0) {
-					
-				} else {
-					sceneryImageListViewData.addAll(sceneryImageList);
-				}
-				/*BlogList blist = (BlogList)obj;
-				notice = blist.getNotice();
-				lvBlogSumData += what;
-				if(lvBlogData.size() > 0){
-					for(Blog blog1 : blist.getBloglist()){
+					for(BaseImage image : sceneryImageList){
 						boolean b = false;
-						for(Blog blog2 : lvBlogData){
-							if(blog1.getId() == blog2.getId()){
+						for(BaseImage newsImage : sceneryImageListViewData){
+							if(image.equals(newsImage)){
 								b = true;
 								break;
 							}
 						}
-						if(!b) lvBlogData.add(blog1);
+						if(!b) sceneryImageListViewData.add(image);
 					}
-				}else{
-					lvBlogData.addAll(blist.getBloglist());
-				}*/
+				} else {
+					sceneryImageListViewData.addAll(sceneryImageList);
+				}
 				break;
 			case UIHelper.LISTVIEW_DATATYPE_OTHER:
 				List<BaseImage> otherImageList = (List<BaseImage>)obj;
 				otherImageListSumData += what;
 				if(otherImageListViewData.size()>0) {
-					
+					for(BaseImage image : otherImageList){
+						boolean b = false;
+						for(BaseImage newsImage : otherImageListViewData){
+							if(image.equals(newsImage)){
+								b = true;
+								break;
+							}
+						}
+						if(!b) otherImageListViewData.add(image);
+					}
 				} else {
 					otherImageListViewData.addAll(otherImageList);
 				}
-				/*PostList plist = (PostList)obj;
-				notice = plist.getNotice();
-				lvQuestionSumData += what;
-				if(lvQuestionData.size() > 0){
-					for(Post post1 : plist.getPostlist()){
-						boolean b = false;
-						for(Post post2 : lvQuestionData){
-							if(post1.getId() == post2.getId()){
-								b = true;
-								break;
-							}
-						}
-						if(!b) lvQuestionData.add(post1);
-					}
-				}else{
-					lvQuestionData.addAll(plist.getPostlist());
-				}*/
-				break;
-			case UIHelper.LISTVIEW_DATATYPE_TWEET:
-				/*TweetList tlist = (TweetList)obj;
-				notice = tlist.getNotice();
-				lvTweetSumData += what;
-				if(lvTweetData.size() > 0){
-					for(Tweet tweet1 : tlist.getTweetlist()){
-						boolean b = false;
-						for(Tweet tweet2 : lvTweetData){
-							if(tweet1.getId() == tweet2.getId()){
-								b = true;
-								break;
-							}
-						}
-						if(!b) lvTweetData.add(tweet1);
-					}
-				}else{
-					lvTweetData.addAll(tlist.getTweetlist());
-				}*/
-				break;
-			case UIHelper.LISTVIEW_DATATYPE_ACTIVE:
-				/*ActiveList alist = (ActiveList)obj;
-				notice = alist.getNotice();
-				lvActiveSumData += what;
-				if(lvActiveData.size() > 0){
-					for(Active active1 : alist.getActivelist()){
-						boolean b = false;
-						for(Active active2 : lvActiveData){
-							if(active1.getId() == active2.getId()){
-								b = true;
-								break;
-							}
-						}
-						if(!b) lvActiveData.add(active1);
-					}
-				}else{
-					lvActiveData.addAll(alist.getActivelist());
-				}*/
-				break;
-			case UIHelper.LISTVIEW_DATATYPE_MESSAGE:
-				/*MessageList mlist = (MessageList)obj;
-				notice = mlist.getNotice();
-				lvMsgSumData += what;
-				if(lvMsgData.size() > 0){
-					for(Messages msg1 : mlist.getMessagelist()){
-						boolean b = false;
-						for(Messages msg2 : lvMsgData){
-							if(msg1.getId() == msg2.getId()){
-								b = true;
-								break;
-							}
-						}
-						if(!b) lvMsgData.add(msg1);
-					}
-				}else{
-					lvMsgData.addAll(mlist.getMessagelist());
-				}*/
 				break;
 			}
     	}
@@ -1067,16 +988,43 @@ public class Main extends FragmentActivity {
 				boolean isRefresh = false;
 				if(action == UIHelper.LISTVIEW_ACTION_REFRESH || action == UIHelper.LISTVIEW_ACTION_SCROLL)
 					isRefresh = true;
-				try {
-					//BlogList list = appContext.getBlogList(type, pageIndex, isRefresh);		
-					List<BaseImage> list = appContext.getImageList(catalog, pageIndex, isRefresh);	
-					msg.what = list.size();
-					msg.obj = list;
-	            } catch (AppException e) {
-	            	e.printStackTrace();
-	            	msg.what = -1;
-	            	msg.obj = e;
-	            }
+				if(pageIndex ==0) {
+					try {					
+						sceneryImageListTmp = appContext.getImageList(catalog, pageIndex, isRefresh);
+						List<BaseImage> tmp = null;
+						if(sceneryImageListTmp.size()<=AppContext.PAGE_SIZE) {
+							tmp = sceneryImageListTmp.subList(0, sceneryImageListTmp.size());
+						}else {
+							tmp = sceneryImageListTmp.subList(0, AppContext.PAGE_SIZE);
+						}
+						msg.what = tmp.size();
+						msg.obj = tmp;
+					} catch (Exception e) {
+						e.printStackTrace();
+						msg.what = -1;
+						msg.obj = e;
+					}
+				} else {
+					List<BaseImage> tmp = new ArrayList<BaseImage>();
+					for(int i=AppContext.PAGE_SIZE * pageIndex; i<AppContext.PAGE_SIZE * (pageIndex +1);i++) {
+						if(i<sceneryImageListTmp.size()) {
+							tmp.add(sceneryImageListTmp.get(i));
+						}
+					}
+					msg.what = tmp.size();
+					if(msg.what == 0) {
+						msg.what = 1;
+					}
+					msg.obj = tmp;
+					try {
+						Thread.sleep(1500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						msg.what = -1;
+						msg.obj = e;
+					}
+				}
+				
 				msg.arg1 = action;
 				msg.arg2 = UIHelper.LISTVIEW_DATATYPE_SCENERY;
                 if(curImageCatalog == catalog)
@@ -1093,16 +1041,42 @@ public class Main extends FragmentActivity {
 				boolean isRefresh = false;
 				if(action == UIHelper.LISTVIEW_ACTION_REFRESH || action == UIHelper.LISTVIEW_ACTION_SCROLL)
 					isRefresh = true;
-				try {
-					//BlogList list = appContext.getBlogList(type, pageIndex, isRefresh);		
-					List<BaseImage> list = appContext.getImageList(catalog, pageIndex, isRefresh);	
-					msg.what = list.size();
-					msg.obj = list;
-	            } catch (AppException e) {
-	            	e.printStackTrace();
-	            	msg.what = -1;
-	            	msg.obj = e;
-	            }
+				if(pageIndex ==0) {
+					try {					
+						otherImageListTmp = appContext.getImageList(catalog, pageIndex, isRefresh);
+						List<BaseImage> tmp = null;
+						if(otherImageListTmp.size()<=AppContext.PAGE_SIZE) {
+							tmp = otherImageListTmp.subList(0, otherImageListTmp.size());
+						}else {
+							tmp = otherImageListTmp.subList(0, AppContext.PAGE_SIZE);
+						}
+						msg.what = tmp.size();
+						msg.obj = tmp;
+					} catch (Exception e) {
+						e.printStackTrace();
+						msg.what = -1;
+						msg.obj = e;
+					}
+				} else {
+					List<BaseImage> tmp = new ArrayList<BaseImage>();
+					for(int i=AppContext.PAGE_SIZE * pageIndex; i<AppContext.PAGE_SIZE * (pageIndex +1);i++) {
+						if(i<otherImageListTmp.size()) {
+							tmp.add(otherImageListTmp.get(i));
+						}
+					}
+					msg.what = tmp.size();
+					if(msg.what == 0) {
+						msg.what = 1;
+					}
+					msg.obj = tmp;
+					try {
+						Thread.sleep(1500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						msg.what = -1;
+						msg.obj = e;
+					}
+				}
 				msg.arg1 = action;
 				msg.arg2 = UIHelper.LISTVIEW_DATATYPE_OTHER;
                 if(curImageCatalog == catalog)
@@ -1176,7 +1150,6 @@ public class Main extends FragmentActivity {
 	}
 	
 	public static String getImgagePath(int postion, int catalog) {
-		System.out.println("positino  = "  + postion);
 		if(catalog == BaseImage.CATALOG_BEAUTY) {
 			return beautyImageListViewData.get(postion).getSrc();
 		}else if(catalog == BaseImage.CATALOG_SCENERY) {

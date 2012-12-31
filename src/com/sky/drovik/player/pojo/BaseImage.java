@@ -173,10 +173,17 @@ public class BaseImage {
 				}
 				eventType = xmlPullParser.next();
 			}
-		} catch (XmlPullParserException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		}finally {
+			if(inputStream != null) {
+				try {
+					inputStream.close();
+					inputStream = null;
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}			}
 		}
 		return imageList;
 	}
