@@ -360,10 +360,7 @@ public abstract class ImageWorker {
                             new BitmapDrawable(mResources, bitmap)
                     });
             // Set background to loading bitmap
-            imageView.setImageBitmap(null);
-            imageView.setBackgroundDrawable(null);
-            imageView.setBackgroundDrawable(new BitmapDrawable(mResources, mLoadingBitmap));
-            System.out.println("2222");
+            //imageView.setBackgroundDrawable(new BitmapDrawable(mResources, mLoadingBitmap));
             imageView.setImageDrawable(td);
             td.startTransition(FADE_IN_TIME);
         } else {
