@@ -17,7 +17,6 @@ import android.util.Log;
 import com.drovik.utils.URLs;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.exception.AppException;
-import com.sky.drovik.player.pojo.BaseImage;
 
 public abstract class ImageEngine {
 	
@@ -37,7 +36,7 @@ public abstract class ImageEngine {
 		
 	}
 	
-	public abstract List<BaseImage> fetchImage(String desc) throws AppException;
+	public abstract List<?> fetchImage(String desc) throws AppException;
 	
 	
 	public InputStream http_get(String url) throws AppException {

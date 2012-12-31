@@ -7,20 +7,17 @@ import java.util.List;
 
 import org.xmlpull.v1.XmlPullParser;
 
-import android.content.SharedPreferences;
 import android.util.Xml;
 
 import com.drovik.utils.StringUtils;
-import com.sky.drovik.player.AppContext;
 import com.sky.drovik.player.exception.AppException;
 import com.sky.drovik.player.pojo.BaseImage;
 
-public class BeautyImageEngine extends ImageEngine {
+public class SceneryImageEngine extends ImageEngine {
 
-	private SharedPreferences photoInfo = null;
 	
-	public BeautyImageEngine(SharedPreferences photoInfo) {
-		this.photoInfo = photoInfo;
+	public SceneryImageEngine() {
+		
 	}
 	
 	@Override
@@ -30,9 +27,8 @@ public class BeautyImageEngine extends ImageEngine {
 
 	public List<BaseImage> parse(InputStream inputStream) throws AppException {
 		List<BaseImage> imageList = new ArrayList<BaseImage>();
-		BeautyImage image = null;
+		BaseImage image = null;
 		XmlPullParser xmlPullParser = Xml.newPullParser();
-		
 		try {
 			xmlPullParser.setInput(inputStream, "utf-8");
 			xmlPullParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -51,24 +47,9 @@ public class BeautyImageEngine extends ImageEngine {
 						} else if(tag.equalsIgnoreCase("thumbnail")) {
 							image.setThumbnail(xmlPullParser.nextText().trim());
 						} else if(tag.equalsIgnoreCase("src")) {
-							image.setSrcArr(xmlPullParser.nextText().trim().split(";"));
-							int len = image.getSrcArr().length;
-							image.setSrcSize(len);
-							int old = photoInfo.getInt(image.getName() + "_photo_number", 0);
-							if(len == old) {
-								image.setHasNew(false);
-							} else {
-								image.setNewImageSize(len-old>0?len-old:len);
-								image.setHasNew(true);
-								photoInfo.edit().putInt(image.getName() + "_photo_number", len).commit();
-							}
+							image.setSrc(xmlPullParser.nextText().trim());
 						} else if(tag.equalsIgnoreCase("desc")) {
-							String desc = xmlPullParser.nextText().trim();
-							if(desc.length() == 0) {
-								image.setDesc("ÔÝÎÞ¼ò½é");
-							} else {
-								image.setDesc(desc);
-							}
+							image.setDesc(xmlPullParser.nextText().trim());
 							imageList.add(image);
 						}
 					}
@@ -88,10 +69,10 @@ public class BeautyImageEngine extends ImageEngine {
 					inputStream.close();
 					inputStream = null;
 				} catch (IOException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}			}
 		}
 		return imageList;
 	}
-	
 }

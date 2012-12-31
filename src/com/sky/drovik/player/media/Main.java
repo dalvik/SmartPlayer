@@ -7,10 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.annotation.TargetApi;
 import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -48,6 +50,7 @@ import com.sky.drovik.player.adpter.ListViewSceneryImageAdapter;
 import com.sky.drovik.player.bitmapfun.ImageCache.ImageCacheParams;
 import com.sky.drovik.player.bitmapfun.ImageDetailActivity;
 import com.sky.drovik.player.bitmapfun.ImageFetcher;
+import com.sky.drovik.player.engine.BeautyImage;
 import com.sky.drovik.player.engine.HistoryListAdpater;
 import com.sky.drovik.player.engine.ImageLoaderTask;
 import com.sky.drovik.player.engine.UpdateManager;
@@ -184,7 +187,9 @@ public class Main extends FragmentActivity {
 	private ExpandableListView expandableListView = null;
 	
 	private HistoryListAdpater adapter;   
-    
+
+	private static int photoIndex = 0;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -594,7 +599,8 @@ public class Main extends FragmentActivity {
     	};
     }
 
-    private void initImageListView() {
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	private void initImageListView() {
     	beautyImageListViewAdapter = new ListViewImageAdapter(this, beautyImageListViewData,  R.layout.layout_image_list_item, mImageFetcher);
     	beautyImageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
     	beautyImageListViewFootMore = (TextView)beautyImageListViewFooter.findViewById(R.id.list_view_foot_more);
@@ -618,7 +624,15 @@ public class Main extends FragmentActivity {
           		}
           		final Intent i = new Intent(appContext, ImageDetailActivity.class);
                 i.putExtra(ImageDetailActivity.EXTRA_IMAGE, position-1);
-                i.putExtra(ImageDetailActivity.LIST_SIZE, beautyImageListViewData.size());
+                if(position - 1>=0 && position - 1 < beautyImageListViewData.size()) {
+                	photoIndex = position - 1;
+                	BeautyImage beautyImage = (BeautyImage) beautyImageListViewData.get(position-1);
+                	i.putExtra(ImageDetailActivity.LIST_SIZE, beautyImage.getSrcSize());
+                }else {
+                	photoIndex = position - 1;
+                	i.putExtra(ImageDetailActivity.LIST_SIZE, 0);
+                	
+                }
                 i.putExtra(ImageDetailActivity.CATA_LOG, curImageCatalog);
                 if (com.sky.drovik.player.bitmapfun.Utils.hasJellyBean()) {
                     // makeThumbnailScaleUpAnimation() looks kind of ugly here as the loading spinner may
@@ -692,7 +706,8 @@ public class Main extends FragmentActivity {
         sceneryImageListView.addFooterView(sceneryImageListViewFooter);//添加底部视图  必须在setAdapter前
         sceneryImageListView.setAdapter(sceneryImageListViewAdapter); 
         sceneryImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-        	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         		//点击头部、底部栏无效
         		if(position == 0){
         			return;
@@ -771,7 +786,8 @@ public class Main extends FragmentActivity {
 		otherImageListView.addFooterView(otherImageListViewFooter);//添加底部视图  必须在setAdapter前
 		otherImageListView.setAdapter(otherImageListViewAdapter); 
 		otherImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-        	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         		//点击头部、底部栏无效
         		if(position == 0){
         			return;
@@ -839,7 +855,7 @@ public class Main extends FragmentActivity {
             }
         });					
 	}
-	//TODO
+	
     public void handleImageListData(int what,Object obj,int objtype,int actiontype) {
     	switch (actiontype) {
 		case UIHelper.LISTVIEW_ACTION_INIT:
@@ -937,7 +953,7 @@ public class Main extends FragmentActivity {
 				}
 				if(pageIndex ==0) {
 					try {					
-						beautyImageListTmp = appContext.getImageList(catalog, pageIndex, isRefresh);
+						beautyImageListTmp = appContext.getBeautyImageList(catalog, pageIndex, isRefresh);
 						List<BaseImage> tmp = null;
 						if(beautyImageListTmp.size()<=AppContext.PAGE_SIZE) {
 							tmp = beautyImageListTmp.subList(0, beautyImageListTmp.size());
@@ -990,7 +1006,7 @@ public class Main extends FragmentActivity {
 					isRefresh = true;
 				if(pageIndex ==0) {
 					try {					
-						sceneryImageListTmp = appContext.getImageList(catalog, pageIndex, isRefresh);
+						sceneryImageListTmp = appContext.getBeautyImageList(catalog, pageIndex, isRefresh);
 						List<BaseImage> tmp = null;
 						if(sceneryImageListTmp.size()<=AppContext.PAGE_SIZE) {
 							tmp = sceneryImageListTmp.subList(0, sceneryImageListTmp.size());
@@ -1043,7 +1059,7 @@ public class Main extends FragmentActivity {
 					isRefresh = true;
 				if(pageIndex ==0) {
 					try {					
-						otherImageListTmp = appContext.getImageList(catalog, pageIndex, isRefresh);
+						otherImageListTmp = appContext.getOtherImageList(catalog, pageIndex, isRefresh);
 						List<BaseImage> tmp = null;
 						if(otherImageListTmp.size()<=AppContext.PAGE_SIZE) {
 							tmp = otherImageListTmp.subList(0, otherImageListTmp.size());
@@ -1149,13 +1165,14 @@ public class Main extends FragmentActivity {
 		return super.onContextItemSelected(item);
 	}
 	
-	public static String getImgagePath(int postion, int catalog) {
+	public static String getImgagePath(int position, int catalog) {
 		if(catalog == BaseImage.CATALOG_BEAUTY) {
-			return beautyImageListViewData.get(postion).getSrc();
+			BeautyImage beautyImage = (BeautyImage) beautyImageListViewData.get(photoIndex);
+			return beautyImage.getSrcArr()[position];
 		}else if(catalog == BaseImage.CATALOG_SCENERY) {
-			return sceneryImageListViewData.get(postion).getSrc();
+			return sceneryImageListViewData.get(position).getSrc();
 		}else {
-			return otherImageListViewData.get(postion).getSrc();
+			return otherImageListViewData.get(position).getSrc();
 		}
 	}
 }

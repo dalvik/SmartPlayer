@@ -1,20 +1,8 @@
 package com.sky.drovik.player.pojo;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import android.graphics.Bitmap;
-import android.util.Xml;
 
-import com.drovik.utils.StringUtils;
-import com.sky.drovik.player.exception.AppException;
-
-public class BaseImage {
+public abstract class BaseImage {
 
 	public static final int CATALOG_BEAUTY = 0;
 	
@@ -135,56 +123,5 @@ public class BaseImage {
 		return "Image [id=" + id + ", name=" + name + ", thumbnail="
 				+ thumbnail + ", src=" + src + ", desc=" + desc + "]";
 	}
-	
 
-	public static List<BaseImage> parse(InputStream inputStream) throws AppException {
-		List<BaseImage> imageList = new ArrayList<BaseImage>();
-		BaseImage image = null;
-		XmlPullParser xmlPullParser = Xml.newPullParser();
-		try {
-			xmlPullParser.setInput(inputStream, "utf-8");
-			xmlPullParser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-			int eventType = xmlPullParser.getEventType();
-			while(eventType != XmlPullParser.END_DOCUMENT) {
-				switch(eventType) {
-				case XmlPullParser.START_TAG:
-					String tag = xmlPullParser.getName();
-					if(tag.equalsIgnoreCase("beauty")) {
-						image = new BaseImage();
-					}else if(image != null) {
-						if(tag.equalsIgnoreCase("id")) {
-							image.setId(StringUtils.toInt(xmlPullParser.nextText(),0));
-						} else if(tag.equalsIgnoreCase("name")) {
-							image.setName(xmlPullParser.nextText().trim());
-						} else if(tag.equalsIgnoreCase("thumbnail")) {
-							image.setThumbnail(xmlPullParser.nextText().trim());
-						} else if(tag.equalsIgnoreCase("src")) {
-							image.setSrc(xmlPullParser.nextText().trim());
-						} else if(tag.equalsIgnoreCase("desc")) {
-							image.setDesc(xmlPullParser.nextText().trim());
-							imageList.add(image);
-						}
-					}
-					break;
-				case XmlPullParser.END_TAG:
-					break;
-					default:
-						break;
-				}
-				eventType = xmlPullParser.next();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}finally {
-			if(inputStream != null) {
-				try {
-					inputStream.close();
-					inputStream = null;
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}			}
-		}
-		return imageList;
-	}
 }

@@ -19,7 +19,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.drovik.utils.URLs;
+import com.sky.drovik.player.engine.BeautyImage;
 import com.sky.drovik.player.engine.BeautyImageEngine;
+import com.sky.drovik.player.engine.SceneryImageEngine;
 import com.sky.drovik.player.exception.AppException;
 import com.sky.drovik.player.exception.StringUtils;
 import com.sky.drovik.player.pojo.BaseImage;
@@ -128,8 +130,6 @@ public class AppContext extends Application {
 			failure = true;
 		return failure;
 	}
-	
-	
 	
 	// clear the cache before time numDays     
 	private int clearCacheFolder(File dir, long numDays) {          
@@ -266,9 +266,15 @@ public class AppContext extends Application {
 	}
 	
 	
-	public List<BaseImage> getImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
-		return new BeautyImageEngine().fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]));
+	public List<BaseImage> getBeautyImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
+		return new BeautyImageEngine(this.getSharedPreferences(BeautyImage.class.getName(), Context.MODE_PRIVATE)).fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]));
 	}
 
+	public List<BaseImage> getSceneryImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
+		return new SceneryImageEngine().fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]));
+	}
 	
+	public List<BaseImage> getOtherImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
+		return new SceneryImageEngine().fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]));
+	}
 }
