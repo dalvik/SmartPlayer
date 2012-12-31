@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.util.Xml;
 
 import com.drovik.utils.StringUtils;
-import com.sky.drovik.player.AppContext;
 import com.sky.drovik.player.exception.AppException;
 import com.sky.drovik.player.pojo.BaseImage;
 
@@ -58,7 +57,7 @@ public class BeautyImageEngine extends ImageEngine {
 							if(len == old) {
 								image.setHasNew(false);
 							} else {
-								image.setNewImageSize(len-old>0?len-old:len);
+								image.setNewImageSize(len-old>0 ? len-old : len);
 								image.setHasNew(true);
 								photoInfo.edit().putInt(image.getName() + "_photo_number", len).commit();
 							}

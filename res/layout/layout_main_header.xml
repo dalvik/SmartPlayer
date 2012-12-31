@@ -3,7 +3,7 @@
 	android:id="@+id/main_relativelayout_header" 
   	android:layout_width="fill_parent" 
   	android:layout_height="40dip"
-  	android:background="@drawable/widget_head_bg">
+  	android:background="@drawable/background_main_header">
   	
     <ImageView
     	android:id="@+id/main_head_logo"
@@ -24,10 +24,12 @@
 	
    	<ProgressBar 
 		android:id="@+id/main_head_progress" 
-		style="@style/loading_small"
+		style="?android:progressBarStyleSmallTitle"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
 		android:layout_toRightOf="@id/main_head_title"
 		android:layout_centerVertical="true"
 		android:layout_marginLeft="5.0dip"
 		android:visibility="gone"/>
-   	
+
 </RelativeLayout>

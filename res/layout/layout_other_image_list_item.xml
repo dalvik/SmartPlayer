@@ -4,10 +4,7 @@
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content"
     android:descendantFocusability="blocksDescendants" 
-    android:paddingLeft="6dip"
-    android:paddingRight="6dip"
-    android:paddingTop="8dip"
-    android:paddingBottom="7dip">   
+    android:paddingLeft="6dip">   
 
     <LinearLayout 
         android:orientation="horizontal" 
@@ -19,7 +16,7 @@
 	      	android:layout_width="80.0dip" 
 	        android:layout_height="100.0dip"
 	        android:layout_marginRight="2dip"
-	        android:layout_gravity="center_vertical"/>
+	        android:layout_gravity="center"/>
     
    	</LinearLayout>
 
@@ -27,28 +24,28 @@
     	android:orientation="vertical" 
         android:layout_width="fill_parent"  
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dip">   
+        android:layout_gravity="center"
+        android:layout_weight="1">   
        	
        	<TextView android:id="@+id/other_image_list_item_name"  
     		android:layout_width="wrap_content" 
            	android:layout_height="wrap_content" 
-           	android:textSize="@dimen/text_size_10"
-            android:textColor="@color/gray"/>
-       	
-       	<TextView
-       	    android:id="@+id/other_image_list_item_name" 
-    		android:layout_width="wrap_content" 
-           	android:layout_height="wrap_content" 
-           	android:layout_marginLeft="10dip"
-           	android:textSize="@dimen/text_size_10"
-            android:textColor="@color/gray"/>
+           	android:textSize="@dimen/text_size_20"
+           	android:layout_marginLeft="5dip"
+	    	android:layout_weight="1"
+	    	android:gravity="left|center"
+            android:textColor="@color/black"
+            />
        	
        	<TextView android:id="@+id/other_image_list_item_desc"   
     		android:layout_width="wrap_content" 
            	android:layout_height="wrap_content"
-           	android:layout_marginLeft="2dip" 
-           	android:textSize="@dimen/text_size_10"
-            android:textColor="@color/gray"/>
+           	android:textSize="@dimen/text_size_15"
+			android:layout_marginLeft="5dip"
+	    	android:layout_weight="1"
+	    	android:gravity="left|center"
+	    	android:maxLines="2"
+            android:textColor="@color/black"/>
        	
     </LinearLayout>
 

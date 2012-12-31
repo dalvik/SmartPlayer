@@ -113,8 +113,14 @@ public abstract class BaseImage {
 		if (src == null) {
 			if (other.src != null)
 				return false;
-		} else if (!src.equals(other.src))
+		} else if (!src.equals(other.src)){
 			return false;
+		} else if(name == null) {
+			if(other.name != null)
+				return false;
+		} else if(!name.equals(other.name)) {
+			return false;
+		}
 		return true;
 	}
 

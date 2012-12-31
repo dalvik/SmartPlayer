@@ -73,17 +73,19 @@ public class ListViewImageAdapter extends BaseAdapter {
 		BeautyImage image = (BeautyImage)listItems.get(position);
 		itemView.name.setText(image.getName());
 		StringBuilder sb = new StringBuilder();
-		sb.append("共有");
+		sb.append("共有 ");
 		int firstStart = sb.toString().length();
-		sb.append(image.getSrcSize() + "张图片，其中");
+		sb.append(image.getSrcSize() + " 张图片，其中 ");
+		itemView.desc.setText(image.getDesc());
 		int secondStart = sb.toString().length();
 		if(image.isHasNew()) {
-			sb.append(image.getNewImageSize() +"张更新");
+			sb.append(image.getNewImageSize() +" 张更新");
+		}else {
+			sb.append("0 张更新");
 		}
-		itemView.desc.setText(image.getDesc());
 		SpannableStringBuilder ssb = new SpannableStringBuilder(sb);
 		ssb.setSpan(new ForegroundColorSpan(Color.RED), firstStart, firstStart + getIntLength(image.getSrcSize()), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		ssb.setSpan(new ForegroundColorSpan(Color.RED), secondStart, secondStart + getIntLength(image.getNewImageSize()), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		ssb.setSpan(new ForegroundColorSpan(Color.RED), secondStart, secondStart + getIntLength(0), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		itemView.intro.setText(ssb);
 		mImageFetcher.loadImage(image.getThumbnail(), itemView.src);
 		return convertView;

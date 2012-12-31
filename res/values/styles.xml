@@ -84,9 +84,10 @@
    		<item name="android:layout_height">fill_parent</item>
        	<item name="android:layout_weight">1</item>      	
        	<item name="android:listSelector">@drawable/listview_item_selector</item>
-       	<item name="android:divider">@drawable/listview_divider_line</item>
+       	<item name="android:divider">@drawable/list_line</item>
        	<item name="android:dividerHeight">1.0dip</item>
        	<item name="android:fadingEdge">none</item>
+       	<item name="android:cacheColorHint">#00000000</item>
        	<item name="android:scrollingCache">false</item>
     </style>
     
@@ -97,4 +98,12 @@
        	<item name="android:background">@drawable/frame_button_bg</item>
        	<item name="android:textColor">@color/frame_button_text_light</item>
     </style>
+    
+    <style name="style_loading_progress_small" parent="@android:style/Widget.ProgressBar.Small">
+		<item name="android:indeterminateDrawable">@anim/progress_animation_list</item>
+		<item name="android:layout_width">21dip</item> 
+		<item name="android:layout_height">21dip</item>
+		<item name="android:layout_gravity">center_vertical</item>
+	</style>
+    
 </resources>

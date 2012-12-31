@@ -54,7 +54,6 @@ import com.sky.drovik.player.engine.BeautyImage;
 import com.sky.drovik.player.engine.HistoryListAdpater;
 import com.sky.drovik.player.engine.ImageLoaderTask;
 import com.sky.drovik.player.engine.UpdateManager;
-import com.sky.drovik.player.exception.AppException;
 import com.sky.drovik.player.exception.StringUtils;
 import com.sky.drovik.player.pojo.BaseImage;
 import com.sky.drovik.player.pojo.FileUtil;
@@ -198,7 +197,7 @@ public class Main extends FragmentActivity {
 		mImageThumbWidth = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_width);
 		mImageThumbHeight = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_height);
 		mImageFetcher = new ImageFetcher(appContext, mImageThumbWidth, mImageThumbHeight);
-		//mImageFetcher.setLoadingImage(R.drawable.empty_photo);
+		mImageFetcher.setLoadingImage(R.drawable.start_anima);
 		ImageCacheParams cacheParams = new ImageCacheParams(appContext, IMAGE_CACHE_DIR);
 		mImageFetcher.addImageCache(getSupportFragmentManager(), cacheParams);
 		this.initHeadView();
@@ -244,8 +243,10 @@ public class Main extends FragmentActivity {
     	}
     	//设置第一显示屏
     	mCurSel = 0;
-    	mButtons[mCurSel].setChecked(true);
     	mButtons[mCurSel].setEnabled(true);
+    	mButtons[mCurSel].setChecked(true);
+    	mButtons[mCurSel].requestFocusFromTouch();
+    	mButtons[mCurSel].requestFocus();
     	mScrollLayout.SetOnViewChangeListener(new ScrollLayout.OnViewChangeListener() {
 			public void OnViewChange(int viewIndex) {
 				setCurPoint(viewIndex);
@@ -261,7 +262,7 @@ public class Main extends FragmentActivity {
     	if (index < 0 || index > mViewCount - 1 || mCurSel == index)
     		return;
     	mButtons[mCurSel].setChecked(false);
-    	mButtons[index].setChecked(true);    	
+    	mButtons[index].setChecked(true);    
     	mHeadTitle.setText(mHeadTitles[index]);    	
     	mCurSel = index;
     	if(index == 0){
@@ -1006,7 +1007,7 @@ public class Main extends FragmentActivity {
 					isRefresh = true;
 				if(pageIndex ==0) {
 					try {					
-						sceneryImageListTmp = appContext.getBeautyImageList(catalog, pageIndex, isRefresh);
+						sceneryImageListTmp = appContext.getSceneryImageList(catalog, pageIndex, isRefresh);
 						List<BaseImage> tmp = null;
 						if(sceneryImageListTmp.size()<=AppContext.PAGE_SIZE) {
 							tmp = sceneryImageListTmp.subList(0, sceneryImageListTmp.size());

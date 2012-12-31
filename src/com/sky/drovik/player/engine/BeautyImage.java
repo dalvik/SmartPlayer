@@ -59,6 +59,38 @@ public class BeautyImage extends BaseImage {
 		this.newImageSize = newImageSize;
 	}
 
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + (hasNew ? 1231 : 1237);
+		result = prime * result + newImageSize;
+		result = prime * result + Arrays.hashCode(srcArr);
+		result = prime * result + srcSize;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		BeautyImage other = (BeautyImage) obj;
+		if (hasNew != other.hasNew)
+			return false;
+		if (newImageSize != other.newImageSize)
+			return false;
+		if (!Arrays.equals(srcArr, other.srcArr))
+			return false;
+		if (srcSize != other.srcSize)
+			return false;
+		return true;
+	}
+
 	@Override
 	public String toString() {
 		return "BeautyImage [srcArr=" + Arrays.toString(srcArr) + ", srcSize="

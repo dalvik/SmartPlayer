@@ -5,13 +5,13 @@
 	android:layout_width="fill_parent" 
 	android:layout_height="wrap_content"
 	android:gravity="center_vertical"
-	android:background="@android:color/transparent">
-	
+	android:background="@drawable/widget_bar_bg_n">
+
+
 	<RadioButton 
 		android:id="@+id/main_footbar_image"
 		style="@style/main_footbar_radio"
-		android:button="@null"
-		android:drawableBottom="@drawable/widget_frame_image"/>
+		android:drawableTop="@drawable/widget_frame_image"/>
 	
 	<ImageView
 		style="@style/main_footbar_cutline"
@@ -20,8 +20,7 @@
 	<RadioButton 
 		android:id="@+id/main_footbar_video"
 		style="@style/main_footbar_radio"
-		android:button="@null"
-		android:drawableBottom="@drawable/widget_frame_video"/>
+		android:drawableTop="@drawable/widget_frame_video"/>
 	
 	<ImageView
 		style="@style/main_footbar_cutline"
@@ -31,5 +30,90 @@
 		android:id="@+id/main_footbar_setting"
 		style="@style/main_footbar_image"
 		android:visibility="gone"
-		android:src="@drawable/widget_bar_more"/>
+		android:drawableTop="@drawable/widget_bar_more"/>
+    <!-- 	
+	 <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <RadioGroup
+            android:id="@id/bottom_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="56.0dip"
+            android:background="@drawable/bottom_bg"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@id/focus"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1.0"
+                android:background="@drawable/background_focus"
+                android:button="@null"
+                android:checked="true"
+                android:drawableTop="@drawable/bottom_focus_selector"
+                android:gravity="center"
+                android:text="@string/foucs_str"
+                android:textColor="@android:color/white"
+                android:textSize="14.0dip" />
+
+            <RadioButton
+                android:id="@id/soft"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1.0"
+                android:background="@drawable/background_focus"
+                android:button="@null"
+                android:drawableTop="@drawable/bottom_app_selector"
+                android:gravity="center"
+                android:text="@string/soft_str"
+                android:textColor="@android:color/white"
+                android:textSize="14.0dip" />
+
+            <RadioButton
+                android:id="@id/personal"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1.0"
+                android:background="@drawable/background_focus"
+                android:button="@null"
+                android:drawableTop="@drawable/bottom_personal_selector"
+                android:gravity="center"
+                android:text="@string/personal_str"
+                android:textColor="@android:color/white"
+                android:textSize="14.0dip" />
+
+            <RadioButton
+                android:id="@id/sns"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1.0"
+                android:background="@drawable/background_focus"
+                android:button="@null"
+                android:drawableTop="@drawable/bottom_sns_selector"
+                android:gravity="center"
+                android:text="@string/sns_str"
+                android:textColor="@android:color/white"
+                android:textSize="14.0dip" />
+
+            <RadioButton
+                android:id="@id/more"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1.0"
+                android:background="@drawable/background_focus"
+                android:button="@null"
+                android:drawableTop="@drawable/bottom_manage_selector"
+                android:gravity="center"
+                android:text="@string/manage_str"
+                android:textColor="@android:color/white"
+                android:textSize="14.0dip" />
+        </RadioGroup>
+    </FrameLayout>
+     -->
 </LinearLayout>

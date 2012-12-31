@@ -40,7 +40,9 @@
   
 	        <ProgressBar  
 	            android:id="@+id/head_progressBar"
-				style="@style/loading_small"
+				style="?android:attr/progressBarStyle"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
 				android:visibility="gone"/>
   
         </FrameLayout>
