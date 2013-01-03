@@ -158,7 +158,7 @@ public class Guide extends Activity implements OnClickListener,
 				if(!shutCutFlag) {
 					createShutcut(this, "com.sky.drovik.player", ".media.Guide");
 		        }
-				startActivity(new Intent(this, MovieList.class));
+				startActivity(new Intent(this, Main.class));
 				Guide.this.finish();
 			}
 			break;

@@ -43,7 +43,7 @@ public class BeautyImageEngine extends ImageEngine {
 					if(tag.equalsIgnoreCase("beauty")) {
 						image = new BeautyImage();
 					}else if(image != null) {
-						if(tag.equalsIgnoreCase("id")) {
+						if(tag.equalsIgnoreCase("id")) {// id > 0 е§ГЃ   == 0 ЩѓКЫ   < 0   вўВи
 							image.setId(StringUtils.toInt(xmlPullParser.nextText(),0));
 						} else if(tag.equalsIgnoreCase("name")) {
 							image.setName(xmlPullParser.nextText().trim());
@@ -68,7 +68,9 @@ public class BeautyImageEngine extends ImageEngine {
 							} else {
 								image.setDesc(desc);
 							}
-							imageList.add(image);
+							if(image.getId()>=0) {
+								imageList.add(image);
+							}
 						}
 					}
 					break;

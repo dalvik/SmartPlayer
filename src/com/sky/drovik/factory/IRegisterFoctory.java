@@ -12,4 +12,8 @@ public abstract class IRegisterFoctory {
 	
 	public abstract Balance viewScore(Context context);
 	
+	public abstract Balance viewScore(Context context,String name);
+	
+	public abstract void gotoRegister(Context context, String name);
+	
 }

@@ -49,8 +49,16 @@ public class SceneryImageEngine extends ImageEngine {
 						} else if(tag.equalsIgnoreCase("src")) {
 							image.setSrc(xmlPullParser.nextText().trim());
 						} else if(tag.equalsIgnoreCase("desc")) {
-							image.setDesc(xmlPullParser.nextText().trim());
-							imageList.add(image);
+							String desc = xmlPullParser.nextText().trim();
+							if(desc.length() == 0) {
+								image.setDesc("ÔİÎŞ¼ò½é");
+							} else {
+								image.setDesc(desc);
+							}
+							System.out.println(image.toString());
+							if(image.getId()>=0) {
+								imageList.add(image);
+							}
 						}
 					}
 					break;

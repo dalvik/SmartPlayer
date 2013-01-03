@@ -12,7 +12,7 @@ public class BeautyImage extends BaseImage {
 	
 	private boolean hasNew;
 	
-	private int newImageSize;
+	private int newImageSize = 0;
 	
 	public BeautyImage() {
 		super();

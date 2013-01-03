@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.xmlpull.v1.XmlPullParser;
 
+import android.content.SharedPreferences;
 import android.util.Xml;
 
 import com.drovik.utils.StringUtils;
@@ -15,9 +16,10 @@ import com.sky.drovik.player.pojo.BaseImage;
 
 public class OtherImageEngine extends ImageEngine {
 
+	private SharedPreferences photoInfo = null;
 	
-	public OtherImageEngine() {
-		
+	public OtherImageEngine(SharedPreferences photoInfo) {
+		this.photoInfo = photoInfo;
 	}
 	
 	@Override
@@ -48,10 +50,26 @@ public class OtherImageEngine extends ImageEngine {
 							image.setThumbnail(xmlPullParser.nextText().trim());
 						} else if(tag.equalsIgnoreCase("src")) {
 							image.setSrcArr(xmlPullParser.nextText().trim().split(";"));
-							image.setSrcSize(image.getSrcArr().length);
+							int len = image.getSrcArr().length;
+							image.setSrcSize(len);
+							int old = photoInfo.getInt(image.getName() + "_photo_number", 0);
+							if(len == old) {
+								image.setHasNew(false);
+							} else {
+								image.setNewImageSize(len-old>0 ? len-old : len);
+								image.setHasNew(true);
+								photoInfo.edit().putInt(image.getName() + "_photo_number", len).commit();
+							}
 						} else if(tag.equalsIgnoreCase("desc")) {
-							image.setDesc(xmlPullParser.nextText().trim());
-							imageList.add(image);
+							String desc = xmlPullParser.nextText().trim();
+							if(desc.length() == 0) {
+								image.setDesc("ÔİÎŞ¼ò½é");
+							} else {
+								image.setDesc(desc);
+							}
+							if(image.getId()>=0) {
+								imageList.add(image);
+							}
 						}
 					}
 					break;

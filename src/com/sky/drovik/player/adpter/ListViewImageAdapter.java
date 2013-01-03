@@ -85,7 +85,7 @@ public class ListViewImageAdapter extends BaseAdapter {
 		}
 		SpannableStringBuilder ssb = new SpannableStringBuilder(sb);
 		ssb.setSpan(new ForegroundColorSpan(Color.RED), firstStart, firstStart + getIntLength(image.getSrcSize()), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		ssb.setSpan(new ForegroundColorSpan(Color.RED), secondStart, secondStart + getIntLength(0), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		ssb.setSpan(new ForegroundColorSpan(Color.RED), secondStart, secondStart + getIntLength(image.getNewImageSize()), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		itemView.intro.setText(ssb);
 		mImageFetcher.loadImage(image.getThumbnail(), itemView.src);
 		return convertView;

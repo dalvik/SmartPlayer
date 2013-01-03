@@ -21,6 +21,7 @@ import android.net.NetworkInfo;
 import com.drovik.utils.URLs;
 import com.sky.drovik.player.engine.BeautyImage;
 import com.sky.drovik.player.engine.BeautyImageEngine;
+import com.sky.drovik.player.engine.OtherImageEngine;
 import com.sky.drovik.player.engine.SceneryImageEngine;
 import com.sky.drovik.player.exception.AppException;
 import com.sky.drovik.player.exception.StringUtils;
@@ -275,6 +276,6 @@ public class AppContext extends Application {
 	}
 	
 	public List<BaseImage> getOtherImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
-		return new SceneryImageEngine().fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]));
+		return new OtherImageEngine(this.getSharedPreferences(BeautyImage.class.getName(), Context.MODE_PRIVATE)).fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]));
 	}
 }

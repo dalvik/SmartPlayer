@@ -4,8 +4,8 @@
 	android:id="@+id/main_linearlayout_footer"
 	android:layout_width="fill_parent" 
 	android:layout_height="wrap_content"
-	android:gravity="center_vertical"
-	android:background="@drawable/widget_bar_bg_n">
+	android:gravity="center"
+	android:background="@drawable/background_main_footer">
 
 
 	<RadioButton 

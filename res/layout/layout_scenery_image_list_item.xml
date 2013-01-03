@@ -37,14 +37,14 @@
             android:textColor="@color/black"/>
        	
        	<TextView android:id="@+id/scenery_image_list_item_desc"   
-    		android:layout_width="wrap_content" 
+    		android:layout_width="fill_parent" 
            	android:layout_height="wrap_content"
-           	android:textSize="@dimen/text_size_15"
            	android:layout_marginLeft="5dip"
-	    	android:layout_weight="1"
+           	android:textSize="@dimen/text_size_10"
+           	android:maxLines="2"
+           	android:layout_weight="1"
 	    	android:gravity="left|center"
-            android:textColor="@color/black"
-            android:maxLines="2"/>
+            android:textColor="@color/black"/>
        	
     </LinearLayout>
 

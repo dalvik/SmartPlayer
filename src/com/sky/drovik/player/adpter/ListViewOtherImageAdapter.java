@@ -3,6 +3,10 @@ package com.sky.drovik.player.adpter;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +16,7 @@ import android.widget.TextView;
 
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.bitmapfun.ImageFetcher;
+import com.sky.drovik.player.engine.BeautyImage;
 import com.sky.drovik.player.pojo.BaseImage;
 
 public class ListViewOtherImageAdapter extends BaseAdapter {
@@ -55,6 +60,7 @@ public class ListViewOtherImageAdapter extends BaseAdapter {
 			itemView = new ListItemView();
 			//获取控件对象
 			itemView.name = (TextView)convertView.findViewById(R.id.other_image_list_item_name);
+			itemView.intro = (TextView) convertView.findViewById(R.id.other_image_list_item_intro);
 			itemView.desc = (TextView)convertView.findViewById(R.id.other_image_list_item_desc);
 			itemView.src= (ImageView)convertView.findViewById(R.id.other_image_list_item_thumbnail);
 			
@@ -64,10 +70,29 @@ public class ListViewOtherImageAdapter extends BaseAdapter {
 			itemView = (ListItemView)convertView.getTag();
 		}
 		
-		BaseImage image = listItems.get(position);
+	/*	BaseImage image = listItems.get(position);
 		itemView.name.setText(image.getName());
 		itemView.desc.setText(image.getDesc());
 		//image.setThumbnail("http://www.eoeandroid.com/uc_server/data/avatar/000/64/74/76_avatar_middle.jpg");
+		mImageFetcher.loadImage(image.getThumbnail(), itemView.src);*/
+
+		BeautyImage image = (BeautyImage)listItems.get(position);
+		itemView.name.setText(image.getName());
+		StringBuilder sb = new StringBuilder();
+		sb.append("共有 ");
+		int firstStart = sb.toString().length();
+		sb.append(image.getSrcSize() + " 张图片，其中 ");
+		itemView.desc.setText(image.getDesc());
+		int secondStart = sb.toString().length();
+		if(image.isHasNew()) {
+			sb.append(image.getNewImageSize() +" 张更新");
+		}else {
+			sb.append("0 张更新");
+		}
+		SpannableStringBuilder ssb = new SpannableStringBuilder(sb);
+		ssb.setSpan(new ForegroundColorSpan(Color.RED), firstStart, firstStart + getIntLength(image.getSrcSize()), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		ssb.setSpan(new ForegroundColorSpan(Color.RED), secondStart, secondStart + getIntLength(image.getNewImageSize()), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		itemView.intro.setText(ssb);
 		mImageFetcher.loadImage(image.getThumbnail(), itemView.src);
 		return convertView;
 	}
@@ -75,9 +100,11 @@ public class ListViewOtherImageAdapter extends BaseAdapter {
 	static class ListItemView { // 自定义控件集合
 		public ImageView src;
 		public TextView name;
+		public TextView intro;
 		public TextView desc;
-		public TextView date;
-		public TextView count;
 	}
 
+	private int getIntLength(int num) {
+		return String.valueOf(num).length();
+	}
 }

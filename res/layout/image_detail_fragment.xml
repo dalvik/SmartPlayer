@@ -18,11 +18,13 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
-<!-- style="?android:attr/progressBarStyleLarge" -->
+<!-- style="@style/loading_small" style="?android:attr/progressBarStyleLarge" -->
     <ProgressBar
-        style="@style/loading_small"
+        style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:indeterminate="false"
+		android:indeterminateDrawable="@drawable/drovik_progress"
         android:layout_gravity="center" />
 
     <!-- android:scaleType="matrix" -->

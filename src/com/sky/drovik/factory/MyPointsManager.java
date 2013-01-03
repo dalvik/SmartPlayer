@@ -65,6 +65,11 @@ public class MyPointsManager implements EarnedPointsNotifier {
 		return sp.getInt(KEY_POINTS, 0);
 	}
 
+	public int queryPoints(Context context, String key) {
+		SharedPreferences sp = context.getSharedPreferences(MovieList.class.getName(), Context.MODE_PRIVATE);
+		return sp.getInt(KEY_POINTS, 0);
+	}
+	
 	/**
 	 * 消费积分
 	 * 
@@ -120,11 +125,12 @@ public class MyPointsManager implements EarnedPointsNotifier {
 					if(BuildConfig.DEBUG && DEBUG) {
 						Log.e(TAG, "### store points = " + p );
 					}
-					if(p<100) {
+					ToastUtils.showToast(context, R.string.drovik_play_regester_success_str);
+					/*if(p<100) {
 						Toast.makeText(context, context.getString(R.string.drovik_play_regester_uncommplete_str, (100-p)), Toast.LENGTH_SHORT).show();
 					}else {
 						ToastUtils.showToast(context, R.string.drovik_play_regester_success_str);
-					}
+					}*/
 				}
 			}
 		} catch (Exception e) {

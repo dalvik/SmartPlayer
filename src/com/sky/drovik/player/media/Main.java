@@ -7,10 +7,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.youmi.android.appoffers.CheckStatusNotifier;
+import net.youmi.android.appoffers.EarnedPointsNotifier;
+import net.youmi.android.appoffers.EarnedPointsOrder;
+import net.youmi.android.appoffers.YoumiOffersManager;
+import net.youmi.android.appoffers.YoumiPointsManager;
 import android.annotation.TargetApi;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,7 +49,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.drovik.utils.ToastUtils;
 import com.sky.drovik.entity.UIHelper;
 import com.sky.drovik.player.AppContext;
 import com.sky.drovik.player.BuildConfig;
@@ -47,6 +59,7 @@ import com.sky.drovik.player.R;
 import com.sky.drovik.player.adpter.ListViewImageAdapter;
 import com.sky.drovik.player.adpter.ListViewOtherImageAdapter;
 import com.sky.drovik.player.adpter.ListViewSceneryImageAdapter;
+import com.sky.drovik.player.app.Res;
 import com.sky.drovik.player.bitmapfun.ImageCache.ImageCacheParams;
 import com.sky.drovik.player.bitmapfun.ImageDetailActivity;
 import com.sky.drovik.player.bitmapfun.ImageFetcher;
@@ -65,7 +78,7 @@ import com.sky.drovik.widget.PullToRefreshListView;
 import com.sky.drovik.widget.PullToRefreshListView.OnRefreshListener;
 import com.sky.drovik.widget.ScrollLayout;
 
-public class Main extends FragmentActivity {
+public class Main extends FragmentActivity implements EarnedPointsNotifier, CheckStatusNotifier {
 
 	private String TAG = "Main";
 	
@@ -171,8 +184,6 @@ public class Main extends FragmentActivity {
 	
 	private final int update = 1;
 	
-	private boolean debug = true;
-	
 	private ControlPanel rightControlPanel = null;
 	
 	private View rightView = null;
@@ -189,9 +200,18 @@ public class Main extends FragmentActivity {
 
 	private static int photoIndex = 0;
 	
+	private String curPhotoName = ""; //当前相册名称
+	
+	//ym
+	public static final String KEY_POINTS="BEYING";
+	private static final String KEY_FILE_ORDERS="Orders";
+    private boolean isDeviceInvalid;
+    
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		YoumiOffersManager.init(this, "d56c188174986b81", "07603ef9797423c0");
+		YoumiPointsManager.setUserID(this.getPackageName());
 		setContentView(R.layout.layout_main);
 		appContext = (AppContext)getApplication();
 		mImageThumbWidth = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_width);
@@ -205,6 +225,7 @@ public class Main extends FragmentActivity {
 		this.initPageScroll();
 		this.initFrameButton();
         this.initFrameListView();
+		UpdateManager.getUpdateManager().checkAppUpdate(this, false);
 	}
 
 	private void initPageScroll() {
@@ -245,8 +266,6 @@ public class Main extends FragmentActivity {
     	mCurSel = 0;
     	mButtons[mCurSel].setEnabled(true);
     	mButtons[mCurSel].setChecked(true);
-    	mButtons[mCurSel].requestFocusFromTouch();
-    	mButtons[mCurSel].requestFocus();
     	mScrollLayout.SetOnViewChangeListener(new ScrollLayout.OnViewChangeListener() {
 			public void OnViewChange(int viewIndex) {
 				setCurPoint(viewIndex);
@@ -266,9 +285,9 @@ public class Main extends FragmentActivity {
     	mHeadTitle.setText(mHeadTitles[index]);    	
     	mCurSel = index;
     	if(index == 0){
-    		mHeadLogo.setImageResource(R.drawable.frame_logo_news);
+    		mHeadLogo.setImageResource(R.drawable.frame_logo_image);
     	} else if(index == 1){
-    		mHeadLogo.setImageResource(R.drawable.frame_icon_post);
+    		mHeadLogo.setImageResource(R.drawable.frame_logo_video);
     	}
     }
     
@@ -292,7 +311,6 @@ public class Main extends FragmentActivity {
 		this.initVideoView();
 		//加载listview数据
 		this.initFrameListViewData();
-		UpdateManager.getUpdateManager().checkAppUpdate(this, false);
     }
     
     private void initVideoView() {
@@ -482,7 +500,8 @@ public class Main extends FragmentActivity {
     	frameSceneryButton.setOnClickListener(frameNewsBtnClick(frameSceneryButton, BaseImage.CATALOG_SCENERY));
     	frameOtherButton.setOnClickListener(frameNewsBtnClick(frameOtherButton, BaseImage.CATALOG_OTHER));
     	
-    	
+    	frameBeautyButton.setFocusable(true);
+    	frameBeautyButton.setEnabled(false);
     }
     
     private View.OnClickListener frameNewsBtnClick(final Button btn,final int catalog){
@@ -624,10 +643,15 @@ public class Main extends FragmentActivity {
           			return;
           		}
           		final Intent i = new Intent(appContext, ImageDetailActivity.class);
-                i.putExtra(ImageDetailActivity.EXTRA_IMAGE, position-1);
+                i.putExtra(ImageDetailActivity.EXTRA_IMAGE, 0);
                 if(position - 1>=0 && position - 1 < beautyImageListViewData.size()) {
                 	photoIndex = position - 1;
                 	BeautyImage beautyImage = (BeautyImage) beautyImageListViewData.get(position-1);
+                	curPhotoName = beautyImage.getName();
+                	if(beautyImage.getId()>0 && queryPoints(appContext)<= 0) {
+                		showErrDialog();
+                		return;
+                	}
                 	i.putExtra(ImageDetailActivity.LIST_SIZE, beautyImage.getSrcSize());
                 }else {
                 	photoIndex = position - 1;
@@ -646,7 +670,6 @@ public class Main extends FragmentActivity {
                     startActivity(i);
                 }
                 //startActivity(i);
-          		//TODO
           		//跳转到新闻详情
           		//UIHelper.showNewsRedirect(view.getContext(), news);
           	}        	
@@ -721,6 +744,15 @@ public class Main extends FragmentActivity {
 					loadSceneryImageListData(curImageCatalog, pageIndex, sceneryImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
           			return;
           		}
+          		if(position-1<0 || position-1 >= sceneryImageListViewData.size()) {
+          			return;
+          		}
+          		BaseImage sceneryBaseImage = sceneryImageListViewData.get(position-1);
+          		curPhotoName = sceneryBaseImage.getName();
+          		if(sceneryBaseImage.getId()>0 && queryPoints(appContext)<= 0) {
+            		showErrDialog();
+            		return;
+            	}
         		final Intent i = new Intent(appContext, ImageDetailActivity.class);
                 i.putExtra(ImageDetailActivity.EXTRA_IMAGE, position-1);
                 i.putExtra(ImageDetailActivity.LIST_SIZE, sceneryImageListViewData.size());
@@ -735,7 +767,6 @@ public class Main extends FragmentActivity {
                 } else {
                     startActivity(i);
                 }
-        		//TODO
         		//跳转到博客详情
         		//UIHelper.showUrlRedirect(view.getContext(), blog.getUrl());
         	}        	
@@ -801,9 +832,21 @@ public class Main extends FragmentActivity {
 					loadOtherImageListData(curImageCatalog, pageIndex, otherImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
           			return;
           		}
-        		final Intent i = new Intent(appContext, ImageDetailActivity.class);
-                i.putExtra(ImageDetailActivity.EXTRA_IMAGE, position-1);
-                i.putExtra(ImageDetailActivity.LIST_SIZE, otherImageListViewData.size());
+          		final Intent i = new Intent(appContext, ImageDetailActivity.class);
+          		i.putExtra(ImageDetailActivity.EXTRA_IMAGE, 0);
+          		if(position - 1>=0 && position - 1 < otherImageListViewData.size()) {
+                	photoIndex = position - 1;
+                	BeautyImage beautyImage = (BeautyImage) otherImageListViewData.get(position-1);
+                	curPhotoName = beautyImage.getName();
+                	if(beautyImage.getId()>0 && queryPoints(appContext)<= 0) {
+                		showErrDialog();
+                		return;
+                	}
+                	i.putExtra(ImageDetailActivity.LIST_SIZE, beautyImage.getSrcSize());
+                } else {
+                	photoIndex = position - 1;
+                	i.putExtra(ImageDetailActivity.LIST_SIZE, 0);
+                }
                 i.putExtra(ImageDetailActivity.CATA_LOG, curImageCatalog);  
                 if (com.sky.drovik.player.bitmapfun.Utils.hasJellyBean()) {
                     // makeThumbnailScaleUpAnimation() looks kind of ugly here as the loading spinner may
@@ -815,7 +858,6 @@ public class Main extends FragmentActivity {
                 } else {
                     startActivity(i);
                 }
-        		//TODO
         		//跳转到博客详情
         		//UIHelper.showUrlRedirect(view.getContext(), blog.getUrl());
         	}        	
@@ -868,6 +910,10 @@ public class Main extends FragmentActivity {
 					beautyImageListSumData = what;
 					beautyImageListViewData.clear();//先清除原有数据
 					beautyImageListViewData.addAll(beaytyImageList);
+					/*if(beautyImageListViewData.size()>0) {
+						beautyImageListView.requestFocusFromTouch();
+						beautyImageListView.setSelection(0);
+					}*/
 					break;
 				case UIHelper.LISTVIEW_DATATYPE_SCENERY:
 					List<BaseImage> sceneryImageList = (List<BaseImage>)obj;
@@ -1124,6 +1170,106 @@ public class Main extends FragmentActivity {
     }
     
     
+    @Override
+	public void onEarnedPoints(Context context,
+			List pointsList) {
+		try {
+			if (pointsList != null) {
+				for (int i = 0; i < pointsList.size(); i++) {
+					storePoints(context, (EarnedPointsOrder) pointsList.get(i));
+					//recordOrder(context, (EarnedPointsOrder) pointsList.get(i));
+				}
+			} else {
+				infoMsg("onPullPoints:pointsList is null");
+			}
+		} catch (Exception e) {
+			if(BuildConfig.DEBUG && DEBUG) {
+				Log.e(TAG, "### onEarnedPoints " + e.getLocalizedMessage());
+			}
+		}
+	}
+    
+    /**
+	 * 存储积分
+	 * @param context
+	 * @param order
+	 */
+	private void storePoints(Context context, EarnedPointsOrder order) {
+		try {
+			if (order != null) {
+				if (order.getPoints() > 0) {
+					SharedPreferences settings = context.getSharedPreferences(Main.class.getName(), Context.MODE_PRIVATE);
+					int p = settings.getInt(curPhotoName, 0);
+					p += order.getPoints();
+					settings.edit().putInt(curPhotoName, p).commit();
+					if(BuildConfig.DEBUG && DEBUG) {
+						Log.e(TAG, "### store points = " + p );
+					}
+					/*if(p<100) {
+						Toast.makeText(context, context.getString(R.string.drovik_play_regester_uncommplete_str, (100-p)), Toast.LENGTH_SHORT).show();
+					}else {
+						ToastUtils.showToast(context, R.string.drovik_play_regester_success_str);
+					}*/
+					//ToastUtils.showToast(context, R.string.drovik_play_regester_success_str);
+					Toast.makeText(context, context.getString(R.string.drovik_play_earncore_success_str, curPhotoName), Toast.LENGTH_SHORT).show();
+				}
+			}
+		} catch (Exception e) {
+			if(BuildConfig.DEBUG && DEBUG) {
+				Log.e(TAG, "### storePoints " + e.getLocalizedMessage());
+			}
+		}
+	}
+	
+	/**
+	 * 查询积分
+	 * @param context
+	 * @return
+	 */
+	public int queryPoints(Context context) {
+		//Log.d(TAG, "### queryPoints = " + curPhotoName);
+		SharedPreferences sp = context.getSharedPreferences(Main.class.getName(), Context.MODE_PRIVATE);
+		return sp.getInt(curPhotoName, 0);
+	}
+	
+	private void infoMsg(String msg) {
+		Log.e("MyPointsManager", msg);
+	}
+	
+	private void showErrDialog() {
+    	AlertDialog.Builder builder = new AlertDialog.Builder(Main.this);
+        builder.setTitle(Res.string.drovik_no_authority_tips_str);
+        builder.setMessage(appContext.getString(Res.string.drovik_no_authority_message_str));
+    	builder.setPositiveButton(Res.string.drovik_no_authority_sure_button_str, new OnClickListener() {
+    		public void onClick(DialogInterface dialog, int which) {
+    			if(!isDeviceInvalid) {
+    				YoumiOffersManager.showOffers(Main.this, YoumiOffersManager.TYPE_REWARD_OFFERS, Main.this);
+    			} else {
+    				ToastUtils.showToast(appContext, Res.string.drovik_play_invalid_device_str);
+    			}
+    		}
+    	});
+        builder.setNegativeButton(appContext.getString(Res.string.drovik_no_authority_cancle_button_str), new OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
+    }
+	
+	@Override
+	public void onCheckStatusConnectionFailed(Context arg0) {
+		
+	}
+	
+	@Override
+	public void onCheckStatusResponse(Context context, boolean isAppInvalid,
+			boolean isInTestMode, boolean isDeviceInvalid) {
+		this.isDeviceInvalid = isDeviceInvalid;
+		if(BuildConfig.DEBUG && DEBUG) {
+			Log.d(TAG, "isAppInvalid = " + isAppInvalid + "  isInTestMode = " + isInTestMode + "  isDeviceInvalid = " + isDeviceInvalid);
+		}
+	}
+	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
@@ -1173,7 +1319,8 @@ public class Main extends FragmentActivity {
 		}else if(catalog == BaseImage.CATALOG_SCENERY) {
 			return sceneryImageListViewData.get(position).getSrc();
 		}else {
-			return otherImageListViewData.get(position).getSrc();
+			BeautyImage beautyImage = (BeautyImage) otherImageListViewData.get(photoIndex);
+			return beautyImage.getSrcArr()[position];
 		}
 	}
 }

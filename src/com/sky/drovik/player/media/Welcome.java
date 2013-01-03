@@ -60,7 +60,7 @@ public class Welcome extends Activity implements OnClickListener {
 				if(count == 45) {
 					handler.removeMessages(1);
 					flag = false;
-					startActivity(new Intent(Welcome.this, MovieList.class));
+					startActivity(new Intent(Welcome.this, Main.class));
 					Welcome.this.finish();
 				}else {
 					if(flag){

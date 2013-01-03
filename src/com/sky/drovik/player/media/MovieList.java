@@ -41,7 +41,6 @@ import com.sky.drovik.player.R;
 import com.sky.drovik.player.app.Res;
 import com.sky.drovik.player.engine.HistoryListAdpater;
 import com.sky.drovik.player.engine.ImageLoaderTask;
-import com.sky.drovik.player.engine.UpdateManager;
 import com.sky.drovik.player.pojo.FileUtil;
 import com.sky.drovik.player.pojo.HisInfo;
 import com.sky.drovik.player.pojo.MovieInfo;
@@ -112,7 +111,7 @@ public class MovieList extends Activity implements OnClickListener, OnChildClick
 		DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 		itemWidth = dm.widthPixels / column_count;// 根据屏幕大小计算每列大小
-		UpdateManager.getUpdateManager().checkAppUpdate(this, false);
+		//UpdateManager.getUpdateManager().checkAppUpdate(this, false);
 		initLayout(layout);
 		//foctory = new DrovikRegisterFactory();
 	}
