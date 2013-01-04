@@ -31,6 +31,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager.LayoutParams;
 import android.widget.Toast;
 
 import com.sky.drovik.player.BuildConfig;
@@ -68,7 +69,6 @@ public class ImageDetailActivity extends FragmentActivity implements OnClickList
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         final int height = displayMetrics.heightPixels;
         final int width = displayMetrics.widthPixels;
-
         // For this sample we'll use half of the longest width to resize our images. As the
         // image scaling ensures the image is larger than this, we should be left with a
         // resolution that is appropriate for both portrait and landscape. For best image quality
@@ -112,9 +112,8 @@ public class ImageDetailActivity extends FragmentActivity implements OnClickList
 		});
         // Enable some additional newer visibility and ActionBar features to create a more
         // immersive photo viewing experience
-        if (Utils.hasHoneycomb()) {
+        /*if (Utils.hasHoneycomb()) {
             final ActionBar actionBar = getActionBar();
-
             // Hide title text and set home as up
             actionBar.setDisplayShowTitleEnabled(false);
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -135,8 +134,7 @@ public class ImageDetailActivity extends FragmentActivity implements OnClickList
             // Start low profile mode and hide ActionBar
             mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
             actionBar.hide();
-        }
-
+        }*/
         // Set the current item based on the extra passed in to this activity
         final int extraCurrentItem = getIntent().getIntExtra(EXTRA_IMAGE, -1);
         if (extraCurrentItem != -1) {

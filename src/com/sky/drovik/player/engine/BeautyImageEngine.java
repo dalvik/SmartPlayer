@@ -71,6 +71,8 @@ public class BeautyImageEngine extends ImageEngine {
 							if(image.getId()>=0) {
 								imageList.add(image);
 							}
+						} else if(tag.equalsIgnoreCase("channel")) {
+							image.setChannel(xmlPullParser.nextText().trim());
 						}
 					}
 					break;

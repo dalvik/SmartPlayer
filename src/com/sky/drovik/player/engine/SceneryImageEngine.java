@@ -55,10 +55,11 @@ public class SceneryImageEngine extends ImageEngine {
 							} else {
 								image.setDesc(desc);
 							}
-							System.out.println(image.toString());
 							if(image.getId()>=0) {
 								imageList.add(image);
 							}
+						}else if(tag.equalsIgnoreCase("channel")) {
+							image.setChannel(xmlPullParser.nextText().trim());
 						}
 					}
 					break;
@@ -77,7 +78,6 @@ public class SceneryImageEngine extends ImageEngine {
 					inputStream.close();
 					inputStream = null;
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}			}
 		}

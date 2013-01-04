@@ -19,6 +19,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -202,10 +205,12 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	
 	private String curPhotoName = ""; //当前相册名称
 	
+	
 	//ym
 	public static final String KEY_POINTS="BEYING";
 	private static final String KEY_FILE_ORDERS="Orders";
     private boolean isDeviceInvalid;
+    private String channelId = "";
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -214,6 +219,12 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		YoumiPointsManager.setUserID(this.getPackageName());
 		setContentView(R.layout.layout_main);
 		appContext = (AppContext)getApplication();
+		try {
+			ApplicationInfo info = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+			channelId = info.metaData.getInt("YOUMI_CHANNEL") +"";
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
 		mImageThumbWidth = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_width);
 		mImageThumbHeight = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_height);
 		mImageFetcher = new ImageFetcher(appContext, mImageThumbWidth, mImageThumbHeight);
@@ -648,8 +659,8 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
                 	photoIndex = position - 1;
                 	BeautyImage beautyImage = (BeautyImage) beautyImageListViewData.get(position-1);
                 	curPhotoName = beautyImage.getName();
-                	if(beautyImage.getId()>0 && queryPoints(appContext)<= 0) {
-                		showErrDialog();
+                	if(beautyImage.getId()>0 && queryPoints(appContext)<= 0 && !beautyImage.getChannel().contains(channelId)) {
+                		showErrDialog();//id==0表示审核 >0 注册  没有包含channel的话 也表示需要注册了。所以通过审核以后需要将channel值0
                 		return;
                 	}
                 	i.putExtra(ImageDetailActivity.LIST_SIZE, beautyImage.getSrcSize());
@@ -749,7 +760,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
           		}
           		BaseImage sceneryBaseImage = sceneryImageListViewData.get(position-1);
           		curPhotoName = sceneryBaseImage.getName();
-          		if(sceneryBaseImage.getId()>0 && queryPoints(appContext)<= 0) {
+          		if(sceneryBaseImage.getId()>0 && queryPoints(appContext)<= 0 && !sceneryBaseImage.getChannel().contains(channelId)) {
             		showErrDialog();
             		return;
             	}
@@ -838,7 +849,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
                 	photoIndex = position - 1;
                 	BeautyImage beautyImage = (BeautyImage) otherImageListViewData.get(position-1);
                 	curPhotoName = beautyImage.getName();
-                	if(beautyImage.getId()>0 && queryPoints(appContext)<= 0) {
+                	if(beautyImage.getId()>0 && queryPoints(appContext)<= 0 && !beautyImage.getChannel().contains(channelId)) {
                 		showErrDialog();
                 		return;
                 	}
