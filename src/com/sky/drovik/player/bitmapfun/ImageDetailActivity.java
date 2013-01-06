@@ -16,8 +16,12 @@
 
 package com.sky.drovik.player.bitmapfun;
 
+import java.io.IOException;
+
 import android.annotation.TargetApi;
 import android.app.ActionBar;
+import android.app.WallpaperManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -27,6 +31,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +39,7 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Toast;
 
+import com.baidu.mobstat.StatService;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.media.Main;
@@ -145,12 +151,15 @@ public class ImageDetailActivity extends FragmentActivity implements OnClickList
     @Override
     public void onResume() {
         super.onResume();
+        StatService.onResume(this);
+        StatService.onEvent(this, "Õº∆¨œÍ«È", "¥Úø™œ‡≤· ");
         mImageFetcher.setExitTasksEarly(false);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        StatService.onPause(this);
         mImageFetcher.setExitTasksEarly(true);
         mImageFetcher.flushCache();
     }
@@ -164,11 +173,25 @@ public class ImageDetailActivity extends FragmentActivity implements OnClickList
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+            case R.id.set_wallpaper:
+                //NavUtils.navigateUpFromSameTask(this);
+            	Bitmap b = mImageFetcher.processBitmap(Main.getImgagePath(mPager.getCurrentItem(), cataLog));
+            	System.out.println("b= " + b);
+            	if(b == null) {
+            		return false;
+            	}
+				try {
+					WallpaperManager.getInstance(ImageDetailActivity.this).setBitmap(b);
+					Toast.makeText(this, R.string.set_wall_paper_menu_toast,Toast.LENGTH_SHORT).show();
+					StatService.onEvent(this, "Õº∆¨œÍ«È", "±⁄÷Ω…Ë÷√≥…π¶ ");
+				} catch (IOException e) {
+					Log.d("ImageDetailActivity", "### " + e.getLocalizedMessage());
+					StatService.onEvent(this, "Õº∆¨œÍ«È", "±⁄÷Ω…Ë÷√ ß∞‹ ");
+				}
                 return true;
             case R.id.clear_cache:
                 mImageFetcher.clearCache();
+                StatService.onEvent(this, "Õº∆¨œÍ«È", "«Âø’Õº∆¨ª∫¥Ê ");
                 Toast.makeText(this, R.string.clear_cache_complete_toast,Toast.LENGTH_SHORT).show();
                 return true;
         }

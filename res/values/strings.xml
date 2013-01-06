@@ -88,6 +88,8 @@
     <string name="imageview_description">Image View</string>
     <string name="clear_cache_menu">清除缓存</string>
     <string name="clear_cache_complete_toast">缓存清除成功</string>
+    <string name="set_wall_paper_menu">设为壁纸</string>
+    <string name="set_wall_paper_menu_toast">设为壁纸成功</string>
     
     <!-- welcome   -->
     <string name="welcome_top_tips_str">卓维影音</string>
