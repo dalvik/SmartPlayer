@@ -24,6 +24,7 @@ import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.baidu.mobstat.StatService;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 
@@ -105,6 +106,18 @@ public class Guide extends Activity implements OnClickListener,
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		StatService.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		StatService.onPause(this);
+	}
+	
+	@Override
 	public void onClick(View v) {
 		int position = (Integer) v.getTag();
 		setCurView(position);
@@ -148,6 +161,7 @@ public class Guide extends Activity implements OnClickListener,
 			lastX = (int)event.getX();
 			if(event.getY() >= height * 2/3 && (event.getX() >width/3 && event.getX()<= width *2/3) && currentIndex == 2) {
 				startActivity(new Intent(this, Welcome.class));
+				StatService.onEvent(Guide.this, "首次安装", "点击完成向导按钮", 1);
 	        	Guide.this.finish();
 			}
 			break;

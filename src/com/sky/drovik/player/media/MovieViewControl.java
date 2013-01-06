@@ -39,6 +39,7 @@ import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import com.baidu.mobstat.StatService;
 import com.drovik.utils.StringUtils;
 import com.drovik.utils.ToastUtils;
 import com.sky.drovik.factory.DrovikRegisterFactory;
@@ -281,12 +282,13 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     public void onPause() {
         mHandler.removeCallbacksAndMessages(null);
         setBookmark(mVideoView.getCurrentPosition(), mVideoView.getDuration());
-
+        StatService.onPause(context);
        // mVideoView.suspend();
     }
 
     public void onResume() {
         //mVideoView.resume();
+    	StatService.onResume(context);
     }
 
     public void onDestroy() {
@@ -297,12 +299,14 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
         mHandler.removeCallbacksAndMessages(null);
         mProgressView.setVisibility(View.GONE);
         //获取注册状态 未注册提示注册 已注册  提示暂无法解码
+        StatService.onEvent(context, "视频播放失败", mUri.getPath());
         foctory = new DrovikRegisterFactory();
         showErrDialog(foctory.isRegister(context));
         return true;
     }
 
 	public void onCompletion(MediaPlayer mp) {
+		StatService.onEvent(context, "视频播放完成", mUri.getPath());
         onCompletion();
     }
 
@@ -333,6 +337,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
         			if(!isDeviceInvalid) {
         				foctory.gotoRegister(context);
         			} else {
+        				 StatService.onEvent(context, "视频解码器失败", mUri.getPath());
         				ToastUtils.showToast(context, Res.string.drovik_play_invalid_device_str);
         			}
         		}

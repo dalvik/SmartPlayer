@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.baidu.mobstat.StatService;
 import com.sky.drovik.player.R;
 
 public class Welcome extends Activity implements OnClickListener {
@@ -107,6 +108,7 @@ public class Welcome extends Activity implements OnClickListener {
 	
 	@Override
 	public void onClick(View v) {
+		StatService.onEvent(Welcome.this, "欢迎界面", "点击欢迎界面", 1);
 		Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(getText(R.string.welcome_bottom_tips_str).toString()));
 		startActivity(intent);
 	}
@@ -123,4 +125,15 @@ public class Welcome extends Activity implements OnClickListener {
 		return mbmpTest;
 	}
 	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		StatService.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		StatService.onPause(this);
+	}
 }

@@ -54,6 +54,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.mobstat.StatService;
 import com.drovik.utils.ToastUtils;
 import com.sky.drovik.entity.UIHelper;
 import com.sky.drovik.player.AppContext;
@@ -259,8 +260,10 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		    			switch (pos) {
 						case 0://image
 							beautyImageListView.clickRefresh();
+							StatService.onEvent(Main.this, "主界面", "点击图像按钮");
 							break;	
 						case 1://video
+							StatService.onEvent(Main.this, "主界面", "点击视频按钮");
 							break;
 						case 2://settings
 							break;
@@ -520,15 +523,18 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 			public void onClick(View v) {
 				if(btn == frameBeautyButton){
 					frameBeautyButton.setEnabled(false);
+					StatService.onEvent(Main.this, "主界面", "美图按钮");
 		    	}else{
 		    		frameBeautyButton.setEnabled(true);
 		    	}
 		    	if(btn == frameSceneryButton){
 		    		frameSceneryButton.setEnabled(false);
+		    		StatService.onEvent(Main.this, "主界面", "风景按钮");
 		    	}else{
 		    		frameSceneryButton.setEnabled(true);
 		    	}
 		    	if(btn == frameOtherButton){
+		    		StatService.onEvent(Main.this, "主界面", "其他按钮");
 		    		frameOtherButton.setEnabled(false);
 		    	}else{
 		    		frameOtherButton.setEnabled(true);
@@ -622,6 +628,15 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
     			if(msg.arg1 == UIHelper.LISTVIEW_ACTION_REFRESH) {
     				imageListView.onRefreshComplete(getString(R.string.pull_to_refresh_update) + new Date().toLocaleString());
     				imageListView.setSelection(0);
+    				String info = null;
+    				if(curImageCatalog == BaseImage.CATALOG_BEAUTY) {
+    					info = "刷新美图成功";
+    				}else if(curImageCatalog == BaseImage.CATALOG_SCENERY) {
+    					info = "刷新风景成功";
+    				} else {
+    					info = "刷新其他成功";
+    				}
+    				StatService.onEvent(Main.this, "主界面", info);
     			}else if(msg.arg1 == UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG) {
     				imageListView.onRefreshComplete();
     				imageListView.setSelection(0);
@@ -660,6 +675,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
                 	BeautyImage beautyImage = (BeautyImage) beautyImageListViewData.get(position-1);
                 	curPhotoName = beautyImage.getName();
                 	if(beautyImage.getId()>0 && queryPoints(appContext)<= 0 && !beautyImage.getChannel().contains(channelId)) {
+                		StatService.onEvent(Main.this, "主界面", "打开相册 " + curPhotoName+ " 注册框");
                 		showErrDialog();//id==0表示审核 >0 注册  没有包含channel的话 也表示需要注册了。所以通过审核以后需要将channel值0
                 		return;
                 	}
@@ -1162,6 +1178,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
     @Override
     public void onResume() {
         super.onResume();
+        StatService.onResume(this);
         childList = getChildList();  
 		adapter.notifyDataSetChanged();
         mImageFetcher.setExitTasksEarly(false);
@@ -1170,6 +1187,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
     @Override
     public void onPause() {
         super.onPause();
+        StatService.onPause(this);
         mImageFetcher.setExitTasksEarly(true);
         mImageFetcher.flushCache();
     }
@@ -1223,6 +1241,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 					}*/
 					//ToastUtils.showToast(context, R.string.drovik_play_regester_success_str);
 					Toast.makeText(context, context.getString(R.string.drovik_play_earncore_success_str, curPhotoName), Toast.LENGTH_SHORT).show();
+					StatService.onEvent(Main.this, "主界面", "成功注册 " + curPhotoName);
 				}
 			}
 		} catch (Exception e) {
@@ -1245,6 +1264,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	
 	private void infoMsg(String msg) {
 		Log.e("MyPointsManager", msg);
+		StatService.onEvent(Main.this, "主界面", "注册失败 " + msg);
 	}
 	
 	private void showErrDialog() {
