@@ -736,6 +736,9 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 			public void onScroll(AbsListView view, int firstVisibleItem,
 					int visibleItemCount, int totalItemCount) {
 				beautyImageListView.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+				if(beautyImageListViewData.size()<=0) {
+					beautyImageListView.onScrollStateChanged(view, SCROLL_STATE_TOUCH_SCROLL);
+				}
 			}
 		});
     	beautyImageListView.setOnRefreshListner(new OnRefreshListener() {
@@ -826,6 +829,9 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 			}
 			public void onScroll(AbsListView view, int firstVisibleItem,int visibleItemCount, int totalItemCount) {
 				sceneryImageListView.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+				if(sceneryImageListViewData.size()<=0) {
+					sceneryImageListView.onScrollStateChanged(view, SCROLL_STATE_TOUCH_SCROLL);
+				}
 			}
 		});
         sceneryImageListView.setOnRefreshListner(new PullToRefreshListView.OnRefreshListener() {
@@ -917,6 +923,9 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 			}
 			public void onScroll(AbsListView view, int firstVisibleItem,int visibleItemCount, int totalItemCount) {
 				otherImageListView.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+				if(otherImageListViewData.size()<=0) {
+					otherImageListView.onScrollStateChanged(view, SCROLL_STATE_TOUCH_SCROLL);
+				}
 			}
 		});
 		otherImageListView.setOnRefreshListner(new PullToRefreshListView.OnRefreshListener() {
