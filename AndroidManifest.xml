@@ -83,7 +83,7 @@
         </activity>
         
         <!-- 从百度网站获取的APP KEY -->
-		<meta-data android:name="BaiduMobAd_STAT_ID" android:value="quhPjlsAavO9tWsMI9IkErkG" />
+		<meta-data android:name="BaiduMobAd_STAT_ID" android:value="79da89a725" />
 		<!-- 渠道商编号 -->
 		<meta-data android:name="BaiduMobAd_CHANNEL" android:value="Baidu Market" />
 		<!-- 是否开启错误日志统计，默认为false -->
