@@ -340,7 +340,7 @@ public class UpdateManager {
 		@Override
 		public void run() {
 			try {
-				String apkName = "WebCam_"+updateInfo.getVersionName()+".apk";
+				String apkName = context.getPackageName() + "_"+updateInfo.getVersionName()+".apk";
 				//≈–∂œ «∑Òπ“‘ÿ¡ÀSDø®
 				String storageState = Environment.getExternalStorageState();		
 				if(storageState.equals(Environment.MEDIA_MOUNTED)){
