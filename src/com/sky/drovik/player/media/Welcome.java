@@ -62,6 +62,7 @@ public class Welcome extends Activity implements OnClickListener {
 					handler.removeMessages(1);
 					flag = false;
 					startActivity(new Intent(Welcome.this, Main.class));
+					overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);		
 					Welcome.this.finish();
 				}else {
 					if(flag){
