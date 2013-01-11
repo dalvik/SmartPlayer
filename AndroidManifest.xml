@@ -67,7 +67,6 @@
          <activity
             android:name="com.sky.drovik.player.bitmapfun.FlingGalleryActivity"
             android:configChanges="orientation|keyboardHidden" 
-            android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
         
          
@@ -117,6 +116,8 @@
         	yyh 10050
         	gfan 10020 
         	nduo 10060
+			360  10190
+			hiapk  10030
          -->
     </application>
 

@@ -165,10 +165,9 @@ public class ImageResizer extends ImageWorker {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
-
         // Calculate inSampleSize
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-
+		//options.inSampleSize = calculateInSampleSize(options, options.outWidth, options.outHeight);
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
@@ -209,7 +208,7 @@ public class ImageResizer extends ImageWorker {
             // be more aggressive with sample down the image (=larger
             // inSampleSize).
 
-            final float totalPixels = width * height;
+           /* final float totalPixels = width * height;
 
             // Anything more than 2x the requested pixels we'll sample down
             // further.
@@ -217,7 +216,7 @@ public class ImageResizer extends ImageWorker {
 
             while (totalPixels / (inSampleSize * inSampleSize) > totalReqPixelsCap) {
                 inSampleSize++;
-            }
+            }*/
         }
         return inSampleSize;
     }

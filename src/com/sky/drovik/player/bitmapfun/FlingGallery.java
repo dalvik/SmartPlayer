@@ -87,6 +87,9 @@ public class FlingGallery extends FrameLayout {
     
     private int selectIndexTmp = 0;
     
+    //屏幕方向默认为竖屏 1
+    private int orientation = 1;
+    
 	public FlingGallery(Context context, DisplayMetrics dm) {
 		super(context);
 
@@ -516,8 +519,10 @@ public class FlingGallery extends FrameLayout {
 				if (newPosition >= getFirstPosition()&& newPosition <= getLastPosition()) {
 					mExternalView = (ImageView)mAdapter.getView(newPosition,mExternalView, mInternalLayout);
 					//TODO
-					//matrix = new Matrix();
-					//mExternalView.setImageMatrix(matrix);
+					if(orientation == 1) {
+						matrix = new Matrix();
+						mExternalView.setImageMatrix(matrix);
+					}
 				} else {
 					mExternalView = mInvalidLayout;
 				}
@@ -597,8 +602,8 @@ public class FlingGallery extends FrameLayout {
 			mTargetDistance = mTargetOffset - mInitialOffset;
 
 			// Configure base animation properties
-			//this.setDuration(mAnimationDuration);
-			//this.setInterpolator(mDecelerateInterpolater);
+			this.setDuration(mAnimationDuration);
+			this.setInterpolator(mDecelerateInterpolater);
 			// Start/continued animation
 			mIsAnimationInProgres = true;
 		}
@@ -653,6 +658,7 @@ public class FlingGallery extends FrameLayout {
 	}
 
 	public void updateResolution(String path, int w, int h) {
+		System.out.println("cur bitmap width = " + w + " height = " + h);
 		if(isInitFlingGallery) {
 			String src = (String)mAdapter.getItem(currentImageIndex);
 			if(src.equalsIgnoreCase(path)) {
@@ -661,9 +667,6 @@ public class FlingGallery extends FrameLayout {
 				initImageHeight = h;
 				minZoom();
 				center();
-				matrix = new Matrix();
-				mViews[mCurrentViewNumber].mExternalView.setImageMatrix(matrix);
-				matrix.postScale(minScaleR, minScaleR);
 				mViews[mCurrentViewNumber].mExternalView.setImageMatrix(matrix);
 			}
 		}else {
@@ -671,38 +674,47 @@ public class FlingGallery extends FrameLayout {
 			initImageHeight = h;
 			minZoom();
 			center();
-			matrix = new Matrix();
-			mViews[mCurrentViewNumber].mExternalView.setImageMatrix(matrix);
-			matrix.postScale(minScaleR, minScaleR);
 			mViews[mCurrentViewNumber].mExternalView.setImageMatrix(matrix);
 		}
-		/*int deltX = 0;
+		
+	}
+	
+	public void updateMetrics(DisplayMetrics dm) {
+		this.dm = dm;
+		mCurrentViewNumber = 0;
+		mViews[0].recycleView(currentImageIndex);
+		mViews[1].recycleView(getNextPosition(currentImageIndex));
+		mViews[2].recycleView(getPrevPosition(currentImageIndex));
+
+		// Position views at correct starting offsets
+		mViews[0].setOffset(0, 0, mCurrentViewNumber);
+		mViews[1].setOffset(0, 0, mCurrentViewNumber);
+		mViews[2].setOffset(0, 0, mCurrentViewNumber);
+	}
+	
+	private void minZoom() {
+        minScaleR = Math.min((float) dm.widthPixels / (float) initImageWidth, (float) dm.heightPixels / (float) initImageHeight);
+        curScaleR = minScaleR;
+        System.out.println("minScaleR = " + minScaleR);
+        matrix = new Matrix();
+        int deltX = 0;
 		int deltY = 0;
 		Matrix m = new Matrix();
 		m.set(matrix);
 		RectF rectF = new RectF(0, 0, initImageWidth, initImageHeight);
 		m.mapRect(rectF);
 		System.out.println(rectF.top + " " + rectF.bottom + " " + rectF.left + "  "+ rectF.right);
-		if(rectF.right<dm.widthPixels) {
+		if(initImageWidth<=dm.widthPixels) {
 			deltX = (dm.widthPixels - (int)initImageWidth)/2;
 		}
-		if(rectF.bottom<dm.heightPixels) {
+		if(initImageHeight<=dm.heightPixels) {
 			deltY = (dm.heightPixels - (int)initImageHeight)/2;
 		}
-		matrix.setTranslate(deltX, deltY);*/
-	}
-	
-	public void updateMetrics(DisplayMetrics dm) {
-		this.dm = dm;
-	}
-	
-	private void minZoom() {
-        minScaleR = Math.min((float) dm.widthPixels / (float) initImageWidth, (float) dm.heightPixels / (float) initImageHeight);
-        curScaleR = minScaleR;
+		matrix.preTranslate(deltX, deltY);
         //MAX_SCALE = Math.max((float) initImageWidth / (float) dm.widthPixels, (float) initImageHeight / (float) dm.heightPixels);;
-        //if (minScaleR != 1.0f) {
+        if (minScaleR < 1.0f) {
             matrix.postScale(minScaleR, minScaleR);
-        //}
+        }
     }
 	
     private void CheckView() {
@@ -759,4 +771,12 @@ public class FlingGallery extends FrameLayout {
         matrix.postTranslate(deltaX, deltaY);
     }
 
+	public String getCurrentItem() {
+		return (String)mAdapter.getItem(currentImageIndex);
+	}
+
+	public void setOrientation(int orientation) {
+		this.orientation = orientation;
+	}
+    
 }
