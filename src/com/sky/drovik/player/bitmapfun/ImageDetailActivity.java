@@ -19,7 +19,6 @@ package com.sky.drovik.player.bitmapfun;
 import java.io.IOException;
 
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.WallpaperManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -27,7 +26,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.DisplayMetrics;
@@ -36,7 +34,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.WindowManager.LayoutParams;
 import android.widget.Toast;
 
 import com.baidu.mobstat.StatService;

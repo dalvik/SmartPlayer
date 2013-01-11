@@ -64,6 +64,13 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
         
+         <activity
+            android:name="com.sky.drovik.player.bitmapfun.FlingGalleryActivity"
+            android:configChanges="orientation|keyboardHidden" 
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
+        
+         
         <activity android:name=".media.MovieView"
             android:screenOrientation="landscape"
             android:label="@string/playing_title"

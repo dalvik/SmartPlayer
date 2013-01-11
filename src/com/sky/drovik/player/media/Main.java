@@ -19,11 +19,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -64,6 +64,7 @@ import com.sky.drovik.player.adpter.ListViewImageAdapter;
 import com.sky.drovik.player.adpter.ListViewOtherImageAdapter;
 import com.sky.drovik.player.adpter.ListViewSceneryImageAdapter;
 import com.sky.drovik.player.app.Res;
+import com.sky.drovik.player.bitmapfun.FlingGalleryActivity;
 import com.sky.drovik.player.bitmapfun.ImageCache.ImageCacheParams;
 import com.sky.drovik.player.bitmapfun.ImageDetailActivity;
 import com.sky.drovik.player.bitmapfun.ImageFetcher;
@@ -668,7 +669,9 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 					loadImageListData(curImageCatalog, pageIndex, beautyImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
           			return;
           		}
-          		final Intent i = new Intent(appContext, ImageDetailActivity.class);
+          		Intent i = new Intent(appContext, FlingGalleryActivity.class);
+          		
+          		//final Intent i = new Intent(appContext, ImageDetailActivity.class);
                 i.putExtra(ImageDetailActivity.EXTRA_IMAGE, 0);
                 if(position - 1>=0 && position - 1 < beautyImageListViewData.size()) {
                 	photoIndex = position - 1;
@@ -680,13 +683,16 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
                 		return;
                 	}
                 	i.putExtra(ImageDetailActivity.LIST_SIZE, beautyImage.getSrcSize());
+                	//new add when add imageflinggallery
+                	i.putExtra(FlingGalleryActivity.IMAGE_SRC_LIST, beautyImage.getSrcArr());//文件地址列表
                 }else {
                 	photoIndex = position - 1;
                 	i.putExtra(ImageDetailActivity.LIST_SIZE, 0);
+                	i.putExtra(FlingGalleryActivity.IMAGE_SRC_LIST, new String[0]);
                 	
                 }
                 i.putExtra(ImageDetailActivity.CATA_LOG, curImageCatalog);
-                if (com.sky.drovik.player.bitmapfun.Utils.hasJellyBean()) {
+                /*if (com.sky.drovik.player.bitmapfun.Utils.hasJellyBean()) {
                     // makeThumbnailScaleUpAnimation() looks kind of ugly here as the loading spinner may
                     // show plus the thumbnail image in GridView is cropped. so using
                     // makeScaleUpAnimation() instead.
@@ -695,7 +701,9 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
                     startActivity(i, options.toBundle());
                 } else {
                     startActivity(i);
-                }
+                }*/
+                startActivity(i);
+           		
                 //startActivity(i);
           		//跳转到新闻详情
           		//UIHelper.showNewsRedirect(view.getContext(), news);
