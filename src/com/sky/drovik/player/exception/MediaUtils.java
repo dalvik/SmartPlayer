@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** 
- * 濯掍綋绫诲瀷宸ュ叿鍖?
+ * 媒体类型工具
  * @author  @Cundong
  * @weibo   http://weibo.com/liucundong
  * @blog    http://www.liucundong.com
@@ -17,7 +17,7 @@ public class MediaUtils
 	
 	static
 	{
-		//闊抽
+		//音频
 		FORMAT_TO_CONTENTTYPE.put( "mp3", "audio" );
 		FORMAT_TO_CONTENTTYPE.put( "mid", "audio" );
 		FORMAT_TO_CONTENTTYPE.put( "midi", "audio" );
@@ -31,7 +31,7 @@ public class MediaUtils
 		FORMAT_TO_CONTENTTYPE.put( "mod", "audio" );
 		FORMAT_TO_CONTENTTYPE.put( "mpc", "audio" );
 		
-		//瑙嗛
+		//视频
 		FORMAT_TO_CONTENTTYPE.put( "fla", "video" );
 		FORMAT_TO_CONTENTTYPE.put( "flv", "video" );
 		FORMAT_TO_CONTENTTYPE.put( "wav", "video" );
@@ -48,7 +48,7 @@ public class MediaUtils
 		
 		FORMAT_TO_CONTENTTYPE.put( "null", "video" );
 		
-		//鍥剧墖
+		//图片
 		FORMAT_TO_CONTENTTYPE.put( "jpg", "photo" );
 		FORMAT_TO_CONTENTTYPE.put( "jpeg", "photo" );
 		FORMAT_TO_CONTENTTYPE.put( "png", "photo" );
@@ -57,7 +57,7 @@ public class MediaUtils
 	}
 	
 	/**
-	 * 鏍规嵁鏍规嵁鎵╁睍鍚嶈幏鍙栫被鍨?
+	 * 根据根据扩展名获取类
 	 * @param attFormat
 	 * @return
 	 */
@@ -73,7 +73,7 @@ public class MediaUtils
 	}
 	
 	/**
-	 * 鍒ゆ柇鏂囦欢MimeType鐨刴ethod
+	 * 判断文件MimeType的method
 	 * @param f
 	 * @return
 	 */
@@ -81,10 +81,10 @@ public class MediaUtils
     {
         String type = "";
         String fName = FileUtils.getFileName(filePath);
-        /* 鍙栧緱鎵╁睍鍚?*/
+        /* 取得扩展*/
         String end = fName.substring(fName.lastIndexOf(".") + 1, fName.length()).toLowerCase();
         
-        /* 鎸夋墿灞曞悕鐨勭被鍨嬪喅瀹歁imeType */
+        /* 按扩展名的类型决定MimeType */
         if (end.equals("m4a") || end.equals("mp3") || end.equals("mid") || end.equals("xmf") || end.equals("ogg")
             || end.equals("wav"))
         {
@@ -114,7 +114,7 @@ public class MediaUtils
         {
             type = "*";
         }
-        /* 濡傛灉鏃犳硶鐩存帴鎵撳紑锛屽氨寮瑰嚭杞欢鍒楄〃缁欑敤鎴烽?鎷?*/
+        /* 如果无法直接打开，就弹出软件列表给用户*/
         type += "/*";
         return type;
     }

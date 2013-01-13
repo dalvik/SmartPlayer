@@ -53,13 +53,15 @@ public class BeautyImageEngine extends ImageEngine {
 							image.setSrcArr(xmlPullParser.nextText().trim().split(";"));
 							int len = image.getSrcArr().length;
 							image.setSrcSize(len);
-							int old = photoInfo.getInt(image.getName() + "_photo_number", 0);
-							if(len == old) {
-								image.setHasNew(false);
-							} else {
-								image.setNewImageSize(len-old>0 ? len-old : len);
-								image.setHasNew(true);
-								photoInfo.edit().putInt(image.getName() + "_photo_number", len).commit();
+							if(photoInfo != null) {
+								int old = photoInfo.getInt(image.getName() + "_photo_number", 0);
+								if(len == old) {
+									image.setHasNew(false);
+								} else {
+									image.setNewImageSize(len-old>0 ? len-old : len);
+									image.setHasNew(true);
+									photoInfo.edit().putInt(image.getName() + "_photo_number", len).commit();
+								}
 							}
 						} else if(tag.equalsIgnoreCase("desc")) {
 							String desc = xmlPullParser.nextText().trim();

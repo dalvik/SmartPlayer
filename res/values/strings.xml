@@ -58,13 +58,19 @@
     <string name="_loading_new_str">正在下载新版本</string>
     <string name="_loading_new_cancle_str">取消</string>
     <string name="_loading_str">下载</string>
+    <!-- service check update -->
+    <string name="_need_update_new_version_str">卓维影音版本有更新</string>
+    <string name="_can_update_version_str">当前版本  <xliff:g id="number">%1$s</xliff:g> 可更新至 <xliff:g id="number">%2$s</xliff:g></string>
+    <string name="_has_new_images_str">相册有更新</string>
+    <string name="_view_new_images_str"><xliff:g id="number">%1$s</xliff:g>等 <xliff:g id="number">%2$d</xliff:g>个相册有更新，点击查看</string>
+    
     
     <string name="pull_to_refresh_pull_label">下拉可以刷新</string>
     <string name="pull_to_refresh_release_label">松开可以刷新</string>
     <string name="pull_to_refresh_refreshing_label">加载中...</string>
     <string name="pull_to_refresh_tap_label">下拉可以刷新</string>
     <string name="pull_to_refresh_update">最近更新：</string>
-    
+   
     <string name="load_more">更多</string>
     <string name="load_ing">加载中···</string>
     <string name="load_full">已加载全部。每天更新，记得下拉刷新哦！</string>

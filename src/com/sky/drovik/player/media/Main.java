@@ -238,7 +238,11 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		this.initPageScroll();
 		this.initFrameButton();
         this.initFrameListView();
-		UpdateManager.getUpdateManager().checkAppUpdate(this, false);
+        Intent intent = getIntent();
+        if(intent != null) {
+        	boolean flag = intent.getBooleanExtra("check_update", false);
+        	UpdateManager.getUpdateManager().checkAppUpdate(this, flag);
+        }
 	}
 
 	private void initPageScroll() {
@@ -1044,7 +1048,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 				}
 				if(pageIndex ==0) {
 					try {					
-						beautyImageListTmp = appContext.getBeautyImageList(catalog, pageIndex, isRefresh);
+						beautyImageListTmp = appContext.getBeautyImageList(catalog, -1, isRefresh);
 						List<BaseImage> tmp = null;
 						if(beautyImageListTmp.size()<=AppContext.PAGE_SIZE) {
 							tmp = beautyImageListTmp.subList(0, beautyImageListTmp.size());

@@ -268,7 +268,7 @@ public class AppContext extends Application {
 	
 	
 	public List<BaseImage> getBeautyImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
-		return new BeautyImageEngine(this.getSharedPreferences(BeautyImage.class.getName(), Context.MODE_PRIVATE)).fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]));
+		return new BeautyImageEngine(pageIndex>=0?this.getSharedPreferences(BeautyImage.class.getName(), Context.MODE_PRIVATE):null).fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]));
 	}
 
 	public List<BaseImage> getSceneryImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
@@ -276,6 +276,6 @@ public class AppContext extends Application {
 	}
 	
 	public List<BaseImage> getOtherImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
-		return new OtherImageEngine(this.getSharedPreferences(BeautyImage.class.getName(), Context.MODE_PRIVATE)).fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]));
+		return new OtherImageEngine(pageIndex>=0?this.getSharedPreferences(BeautyImage.class.getName(), Context.MODE_PRIVATE):null).fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]));
 	}
 }
