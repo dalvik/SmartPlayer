@@ -21,8 +21,8 @@ public class SceneryImageEngine extends ImageEngine {
 	}
 	
 	@Override
-	public List<BaseImage> fetchImage(String desc) throws AppException {
-		return parse(http_get(desc));
+	public List<BaseImage> fetchImage(String desc, int catalog) throws AppException {
+		return parse(http_get(desc, catalog));
 	}
 
 	public List<BaseImage> parse(InputStream inputStream) throws AppException {

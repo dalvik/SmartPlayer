@@ -1,6 +1,10 @@
 package com.sky.drovik.player.engine;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -14,9 +18,12 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 
 import android.util.Log;
 
+import com.drovik.utils.FileUtil;
 import com.drovik.utils.URLs;
+import com.sky.drovik.player.AppContext;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.exception.AppException;
+import com.sky.drovik.player.exception.FileUtils;
 
 public abstract class ImageEngine {
 	
@@ -30,16 +37,16 @@ public abstract class ImageEngine {
 	
 	private String TAG = "ImageEngine";
 	
-	private boolean DEBUG = false;
+	private boolean DEBUG = true;
 	
 	public ImageEngine() {
 		
 	}
 	
-	public abstract List<?> fetchImage(String desc) throws AppException;
+	public abstract List<?> fetchImage(String desc, int catalog) throws AppException;
 	
 	
-	public InputStream http_get(String url) throws AppException {
+	public InputStream http_get(String url, int cataLog) throws AppException {
 		if(BuildConfig.DEBUG && DEBUG) {
 			Log.d(TAG, "### fetch url = " + url);
 		}
@@ -75,6 +82,43 @@ public abstract class ImageEngine {
 		}while(time<RETRY_TIME);
 		if(BuildConfig.DEBUG && DEBUG) {
 			Log.d(TAG, "### responseBody = " + responseBody);
+		}
+		if(responseBody.length()<=0) { // nodata
+			File file =  new File(AppContext.getLocalImageListFile(cataLog));
+			if(file.exists()) {
+				//return new ByteArrayInputStream(buf);
+				try {
+					return new FileInputStream(file);
+				} catch (FileNotFoundException e) {
+					throw AppException.io(e);
+				}
+			}
+		} else {// savedata
+			File file = new File(AppContext.getLocalImageListFile(cataLog));
+			if(!file.exists()) {
+				try {
+					file.createNewFile();
+				} catch (IOException e) {
+					throw AppException.io(e);
+				}
+			}
+			FileOutputStream fileOutputStream = null;
+			try {
+				fileOutputStream = new FileOutputStream(file, false);
+				fileOutputStream.write(responseBody.getBytes());
+				fileOutputStream.flush();
+			} catch (Exception e) {
+				throw AppException.io(e);
+			} finally {
+				if(fileOutputStream != null) {
+					try {
+						fileOutputStream.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					fileOutputStream = null;
+				}
+			}
 		}
 		//responseBody = responseBody.replace('', '?');
 		//if(responseBody.contains("result") && responseBody.contains("errorCode")) {

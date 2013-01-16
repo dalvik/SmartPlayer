@@ -99,7 +99,7 @@ public class Welcome extends Activity implements OnClickListener {
 		findViewById(R.id.welcome_top_info).setAnimation(AnimationUtils.loadAnimation(this, R.anim.welcome_toptext_rotate));
 		bottomInfo = (TextView) findViewById(R.id.welcom_bottom_info);
 		handler.sendEmptyMessage(1);
-		startService(new Intent(this, SmartPlayerService.class));
+		///startService(new Intent(this, SmartPlayerService.class));
 		//handler.sendEmptyMessageDelayed(FADE_IN, 10);
 	}
 	

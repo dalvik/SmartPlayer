@@ -47,6 +47,11 @@ public class AppContext extends Application {
 	private Hashtable<String, Object> memCacheRegion = new Hashtable<String, Object>();
 	
 	private String[] catalogArr = {"image_beauty.xml","image_scenery.xml", "image_other.xml"};
+	
+	private static String [] fileArr = {"dat_0", "dat_1", "dat_2"};
+	
+	private static String workPath = null; 
+	
 	/**
 	 * 获取当前网络类型
 	 * @return 0：没有网络   1：WIFI网络   2：WAP网络    3：NET网络
@@ -266,16 +271,26 @@ public class AppContext extends Application {
 		return null;
 	}
 	
+	public static String getLocalImageListFile(int catalog) {
+		return  workPath + File.separator + fileArr[catalog];
+	}
+	
+	public void getWorkPathInstance() {
+		if(workPath == null || workPath.length() <= 0) {
+			workPath = getFilesDir().getAbsolutePath();
+		}
+	}
 	
 	public List<BaseImage> getBeautyImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
-		return new BeautyImageEngine(pageIndex>=0?this.getSharedPreferences(BeautyImage.class.getName(), Context.MODE_PRIVATE):null).fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]));
+		getWorkPathInstance();
+		return new BeautyImageEngine(pageIndex>=0?this.getSharedPreferences(BeautyImage.class.getName(), Context.MODE_PRIVATE):null).fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]), catalog);
 	}
 
 	public List<BaseImage> getSceneryImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
-		return new SceneryImageEngine().fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]));
+		return new SceneryImageEngine().fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]), catalog);
 	}
 	
 	public List<BaseImage> getOtherImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
-		return new OtherImageEngine(pageIndex>=0?this.getSharedPreferences(BeautyImage.class.getName(), Context.MODE_PRIVATE):null).fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]));
+		return new OtherImageEngine(pageIndex>=0?this.getSharedPreferences(BeautyImage.class.getName(), Context.MODE_PRIVATE):null).fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]), catalog);
 	}
 }

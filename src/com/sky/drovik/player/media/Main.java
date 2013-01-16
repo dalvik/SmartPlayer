@@ -1217,6 +1217,10 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
     public void onDestroy() {
         super.onDestroy();
         mImageFetcher.closeCache();
+        //TODO
+        beautyImageListViewData.clear();
+        sceneryImageListViewData.clear();
+        otherImageListViewData.clear();
     }
     
     

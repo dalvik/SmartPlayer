@@ -23,8 +23,8 @@ public class BeautyImageEngine extends ImageEngine {
 	}
 	
 	@Override
-	public List<BaseImage> fetchImage(String desc) throws AppException {
-		return parse(http_get(desc));
+	public List<BaseImage> fetchImage(String desc, int cataLog) throws AppException {
+		return parse(http_get(desc, cataLog));
 	}
 
 	public List<BaseImage> parse(InputStream inputStream) throws AppException {
