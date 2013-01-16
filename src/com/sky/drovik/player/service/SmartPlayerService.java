@@ -47,6 +47,8 @@ public class SmartPlayerService extends Service {
 	
 	private String newVersion = "";
 	
+	private String packageSize = "512KB";
+	
 	private BroadcastReceiver connectionReceiver = new BroadcastReceiver() {
 
 		@Override
@@ -83,8 +85,9 @@ public class SmartPlayerService extends Service {
 				notification.flags = Notification.FLAG_AUTO_CANCEL;
 				notification.icon = R.drawable.ic_launcher; // 设置在状态栏显示的图标   
 			    notification.tickerText = getText(R.string._need_update_new_version_str); // 设置在状态栏显示的内容   
+			    notification.when = System.currentTimeMillis();
 			    // 设置通知显示的参数   
-			    notification.setLatestEventInfo(SmartPlayerService.this, getText(R.string._need_update_new_version_str), getString(R.string._can_update_version_str, currentVersion, newVersion), pendIntent);
+			    notification.setLatestEventInfo(SmartPlayerService.this, getText(R.string._need_update_new_version_str), getString(R.string._can_update_version_str, currentVersion, newVersion, packageSize), pendIntent);
 			    notificationManager.notify(0, notification); // 执行通知. 
 				break;
 			case new_images:
@@ -99,11 +102,12 @@ public class SmartPlayerService extends Service {
 				Notification notification2 = new Notification();   
 				notification2.flags = Notification.FLAG_AUTO_CANCEL;
 				notification2.icon = R.drawable.ic_launcher; // 设置在状态栏显示的图标   
-			    notification2.tickerText = getText(R.string._has_new_images_str); // 设置在状态栏显示的内容   
+			    notification2.tickerText = getText(R.string._has_new_images_str); // 设置在状态栏显示的内容
+			    notification2.when = System.currentTimeMillis();
 			    // 设置通知显示的参数   
 			    notification2.setLatestEventInfo(SmartPlayerService.this, getText(R.string._has_new_images_str), getString(R.string._view_new_images_str, msg.obj, msg.arg1), pendIntent2);
-			    notificationManager.notify(0, notification2); // 执行通知.
-				break;
+			    notificationManager.notify(1, notification2); // 执行通知.
+			    break;
 				default:
 					break;
 			}
@@ -156,6 +160,7 @@ public class SmartPlayerService extends Service {
 					msg.what = new_update_version;
 					currentVersion = packageInfo.versionName;
 					newVersion = updateInfo.getVersionName();
+					packageSize = updateInfo.getPackageSize();
 					handler.sendEmptyMessage(new_update_version);
 				}
 				AppContext appContext = (AppContext)getApplication();
@@ -163,7 +168,6 @@ public class SmartPlayerService extends Service {
 				SharedPreferences photoInfo = appContext.getSharedPreferences(BeautyImage.class.getName(), Context.MODE_PRIVATE);
 				int updateImageNum = 0;
 				String updateImageName = "";
-				System.out.println("beautyImageListTmp  = " + beautyImageListTmp.size());
 				for(BaseImage baseImage:beautyImageListTmp) {
 					BeautyImage beautyImage = (BeautyImage) baseImage;
 					int old = photoInfo.getInt(baseImage.getName() + "_photo_number", 0);
@@ -172,7 +176,6 @@ public class SmartPlayerService extends Service {
 						updateImageName = baseImage.getName();
 					}
 				}
-				System.out.println("====" + updateImageNum + " " + updateImageName);
 				if(updateImageNum>0) {
 					Message msg = new Message();
 					msg.what = new_images;

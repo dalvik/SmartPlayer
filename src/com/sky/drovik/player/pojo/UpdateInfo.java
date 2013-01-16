@@ -22,6 +22,8 @@ public class UpdateInfo implements Serializable {
 	private String downloadUrl;
 	
 	private String updateLog;
+	
+	private String packageSize;
 
 	public UpdateInfo() {
 		super();
@@ -59,13 +61,23 @@ public class UpdateInfo implements Serializable {
 		this.updateLog = updateLog;
 	}
 
+	
+	public String getPackageSize() {
+		return packageSize;
+	}
+
+	public void setPackageSize(String packageSize) {
+		this.packageSize = packageSize;
+	}
+
+	
 	@Override
 	public String toString() {
 		return "UpdateInfo [versionCode=" + versionCode + ", versionName="
 				+ versionName + ", downloadUrl=" + downloadUrl + ", updateLog="
-				+ updateLog + "]";
+				+ updateLog + ", packageSize=" + packageSize + "]";
 	}
-	
+
 	public static UpdateInfo parse(InputStream inputStream) throws IOException {
 		UpdateInfo updateInfo = null;
 		XmlPullParser xmlPullParser = Xml.newPullParser();
@@ -88,6 +100,8 @@ public class UpdateInfo implements Serializable {
 							updateInfo.setDownloadUrl(xmlPullParser.nextText());
 						} else if(tag.equalsIgnoreCase("updateLog")) {
 							updateInfo.setUpdateLog(xmlPullParser.nextText());
+						}else if(tag.equalsIgnoreCase("packageSize")) {
+							updateInfo.setPackageSize(xmlPullParser.nextText());
 						}
 					}
 					break;

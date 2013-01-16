@@ -60,7 +60,7 @@
     <string name="_loading_str">下载</string>
     <!-- service check update -->
     <string name="_need_update_new_version_str">卓维影音版本有更新</string>
-    <string name="_can_update_version_str">当前版本  <xliff:g id="number">%1$s</xliff:g> 可更新至 <xliff:g id="number">%2$s</xliff:g></string>
+    <string name="_can_update_version_str">当前版本  <xliff:g id="number">%1$s</xliff:g> 可更新至 <xliff:g id="number">%2$s</xliff:g> 包大小 <xliff:g id="number">%3$s</xliff:g></string>
     <string name="_has_new_images_str">相册有更新</string>
     <string name="_view_new_images_str"><xliff:g id="number">%1$s</xliff:g>等 <xliff:g id="number">%2$d</xliff:g>个相册有更新，点击查看</string>
     
