@@ -41,6 +41,9 @@ public class ScrollyGalleryActivity extends FragmentActivity implements OnLoadIm
 	private ImageGalleryAdapter imageAdapter;
 	
 	private ScrollLayout imageScrollLayout = null;
+	
+    private DisplayMetrics dm;
+    
     @Override
     public boolean onTouchEvent(MotionEvent event)
 	{
@@ -68,11 +71,16 @@ public class ScrollyGalleryActivity extends FragmentActivity implements OnLoadIm
         mImageFetcher.setImageFadeIn(false);
         mImageFetcher.setOnLoadImageListener(this);
         imageScrollLayout.setImageFetcher(mImageFetcher);
+        if(getResources().getConfiguration().orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT){
+        	imageScrollLayout.setOrientation(1);
+        }else {
+        	imageScrollLayout.setOrientation(0);
+        }
         cataLog = getIntent().getIntExtra(CATA_LOG, 0);
         String[] imageSrc = getIntent().getStringArrayExtra(IMAGE_SRC_LIST);
         final int extraCurrentItem = getIntent().getIntExtra(EXTRA_IMAGE, -1);
         imageScrollLayout.setAdapter(imageSrc, extraCurrentItem);
-        
+        imageScrollLayout.updateMetrics(displayMetrics);
         ImageView preView = (ImageView)imageScrollLayout.findViewById(R.id.preImageView);
         ImageView nextView = (ImageView)imageScrollLayout.findViewById(R.id.nextImageView);
         ImageView[] views = {preView, nextView}; 
@@ -106,8 +114,9 @@ public class ScrollyGalleryActivity extends FragmentActivity implements OnLoadIm
     
     @Override
 	public void updateResolution(String path, int w, int h) {
-    	//mGallery.updateResolution(path, w, h);
+    	imageScrollLayout.updateResolution(path, w, h);
 	}
+    
     
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -119,11 +128,11 @@ public class ScrollyGalleryActivity extends FragmentActivity implements OnLoadIm
 //         final int longest = (height > width ? height : width) / 2;
 //         mImageFetcher.setImageSize(longest);
          if(newConfig.orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {//ÊúÆÁ1
-        	 //mGallery.setOrientation(1);
+        	 imageScrollLayout.setOrientation(1);
          }else {//0
-        	// mGallery.setOrientation(0);
+        	 imageScrollLayout.setOrientation(0);
          }
-        // mGallery.updateMetrics(displayMetrics);
+         imageScrollLayout.updateMetrics(displayMetrics);
     }
     
     @Override

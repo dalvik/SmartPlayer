@@ -2,7 +2,12 @@ package com.sky.drovik.player.bitmapfun;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.PointF;
+import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.FloatMath;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -64,6 +69,38 @@ public class ScrollLayout extends FrameLayout {
 	
 	private ImageFetcher mImageFetcher;
 	
+    private Matrix matrix = new Matrix();
+    
+    private Matrix savedMatrix = new Matrix();
+    
+    private float initImageWidth = 0;
+    
+    private float initImageHeight = 0;
+    
+    private DisplayMetrics dm;
+    
+    float minScaleR;// 最小缩放比例
+    float curScaleR = 0;
+    static float MAX_SCALE = 4f;// 最大缩放比例
+    
+    static final int NONE = 0;// 初始状态
+    static final int DRAG = 1;// 拖动
+    static final int ZOOM = 2;// 缩放
+    int mode = NONE;
+    
+    PointF prev = new PointF();
+    PointF mid = new PointF();
+    float dist = 1f;
+    
+    private boolean isInitFlingGallery = true; //是否是初始化
+    
+    private int currentImageIndex = 0;//当前的展现的view
+    
+    private int selectIndexTmp = 0;
+    
+    //屏幕方向默认为竖屏 1
+    private int orientation = 1;
+    
 	public void setIsScroll(boolean b) {
 		this.isScroll = b;
 	}
@@ -288,15 +325,29 @@ System.out.println("mNextScreen=" + mNextScreen);
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
 		acquireVelocityTrackerAndAddMovement(ev);
 		final int action = ev.getAction();
-		if ((action == MotionEvent.ACTION_MOVE)
-				&& (mTouchState != TOUCH_STATE_REST)) {
+		if ((action == MotionEvent.ACTION_MOVE)&& (mTouchState != TOUCH_STATE_REST)) {
 			return true;
 		}
 		switch (action & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_MOVE: {
+
+			Matrix m = new Matrix();
+    		m.set(matrix);
+    		RectF rectF = new RectF(0, 0, initImageWidth, initImageHeight);
+    		m.mapRect(rectF);
+    		if (mode == ZOOM) {
+            	float newDist = spacing(ev);
+                if (newDist > 10f) {
+                    matrix.set(savedMatrix);
+                    float tScale = newDist / dist;
+                    matrix.postScale(tScale, tScale, mid.x, mid.y);
+                }
+                System.out.println("zoom  =====");
+            }
+    		
 			final int pointerIndex = ev.findPointerIndex(mActivePointerId);
-			final float x = ev.getX(pointerIndex);
-			final float y = ev.getY(pointerIndex);
+			final float x = ev.getX();
+			final float y = ev.getY();
 			final int xDiff = (int) Math.abs(x - mLastMotionX);
 			final int yDiff = (int) Math.abs(y - mLastMotionY);
 
@@ -305,7 +356,7 @@ System.out.println("mNextScreen=" + mNextScreen);
 			boolean yMoved = yDiff > touchSlop;
 
 			if (xMoved || yMoved) {
-
+			//if (xMoved) {
 				if (xMoved) {
 					// Scroll if the user moved far enough along the X axis
 					mTouchState = TOUCH_STATE_SCROLLING;
@@ -318,6 +369,11 @@ System.out.println("mNextScreen=" + mNextScreen);
 		}
 
 		case MotionEvent.ACTION_DOWN: {
+            System.out.println("drag-----------------");
+            savedMatrix.set(matrix);
+            prev.set(ev.getX(), ev.getY());
+            mode = DRAG;
+            
 			final float x = ev.getX();
 			final float y = ev.getY();
 			// Remember location of down touch
@@ -332,30 +388,37 @@ System.out.println("mNextScreen=" + mNextScreen);
 			mTouchState = mScroller.isFinished() ? TOUCH_STATE_REST	: TOUCH_STATE_SCROLLING;
 			break;
 		}
-
+		case MotionEvent.ACTION_POINTER_DOWN:
+            dist = spacing(ev);
+            if (spacing(ev) > 10f) {
+            	savedMatrix.set(matrix);
+                midPoint(mid, ev);
+                mode = ZOOM;
+                System.out.println("zoom");
+            }
+            break;
 		case MotionEvent.ACTION_CANCEL:
 		case MotionEvent.ACTION_UP:
+        case MotionEvent.ACTION_POINTER_UP:
+            mode = NONE;
 			// Release the drag
 			mTouchState = TOUCH_STATE_REST;
 			mActivePointerId = INVALID_POINTER;
 			releaseVelocityTracker();
 			break;
-
-		case MotionEvent.ACTION_POINTER_UP:
-			break;
 		}
-
 		/*
 		 * The only time we want to intercept motion events is if we are in the
 		 * drag mode.
 		 */
+		imageArr[preSelectIndex].setImageMatrix(matrix);
+        CheckView();
 		return mTouchState != TOUCH_STATE_REST;
 	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
-		final int action = ev.getAction();
-		switch (action & MotionEvent.ACTION_MASK) {
+		switch (ev.getAction() & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_DOWN:
 			if (!mScroller.isFinished()) {
 				mScroller.abortAnimation();
@@ -365,10 +428,11 @@ System.out.println("mNextScreen=" + mNextScreen);
 			mActivePointerId = ev.getPointerId(0);
 			break;
 		case MotionEvent.ACTION_MOVE:
+			System.out.println("move  --------  ");
 			if (mTouchState == TOUCH_STATE_SCROLLING) {
 				// Scroll to follow the motion event
 				final int pointerIndex = ev.findPointerIndex(mActivePointerId);
-				final float x = ev.getX(pointerIndex);
+				final float x = ev.getX();
 				final float deltaX = mLastMotionX - x;
 				mLastMotionX = x;
 				if (deltaX < 0) { //
@@ -382,8 +446,7 @@ System.out.println("mNextScreen=" + mNextScreen);
 						invalidate();
 					}
 				} else if (deltaX > 0) {
-					final float availableToScroll = getChildAt(	getChildCount() - 1).getRight()
-							- mTouchX - (true ? 0 : getWidth());
+					final float availableToScroll = getChildAt(	getChildCount() - 1).getRight() - mTouchX - (true ? 0 : getWidth());
 					if (availableToScroll > 0) {
 						mTouchX += Math.min(availableToScroll, deltaX);
 						mSmoothingTime = System.nanoTime() / NANOTIME_DIV;
@@ -396,6 +459,7 @@ System.out.println("mNextScreen=" + mNextScreen);
 			}
 			break;
 		case MotionEvent.ACTION_UP:
+        case MotionEvent.ACTION_POINTER_UP:
 			if (mTouchState == TOUCH_STATE_SCROLLING) {
 				final VelocityTracker velocityTracker = mVelocityTracker;
 				velocityTracker.computeCurrentVelocity(1000);
@@ -438,8 +502,6 @@ System.out.println("mNextScreen=" + mNextScreen);
 			mActivePointerId = INVALID_POINTER;
 			releaseVelocityTracker();
 			break;
-		case MotionEvent.ACTION_POINTER_UP:
-			break;
 		}
 		return true;
 	}
@@ -464,8 +526,7 @@ System.out.println("mNextScreen=" + mNextScreen);
 			mNextScreen = INVALID_SCREEN;
 		} else if (mTouchState == TOUCH_STATE_SCROLLING) {
 			final float now = System.nanoTime() / NANOTIME_DIV;
-			final float e = (float) Math.exp((now - mSmoothingTime)
-					/ SMOOTHING_CONSTANT);
+			final float e = (float) Math.exp((now - mSmoothingTime) / SMOOTHING_CONSTANT);
 			final float dx = mTouchX - getScrollX();
 			// mScrollX += dx * e;
 			final int scrolltoX = getScrollX() + (int) (dx * e);
@@ -519,6 +580,129 @@ System.out.println("mNextScreen=" + mNextScreen);
 	
 	private int getAdapterCount() {
 		return arr == null? 0 : arr.length;
+	}
+	
+	public void updateResolution(String path, int w, int h) {
+		System.out.println("cur bitmap width = " + w + " height = " + h);
+		if(isInitFlingGallery) {
+			String src = (String)arr[currentImageIndex];
+			if(src.equalsIgnoreCase(path)) {
+				isInitFlingGallery = false;
+				initImageWidth = w;
+				initImageHeight = h;
+				minZoom();
+				center();
+				imageArr[mCurScreen].setImageMatrix(matrix);
+			}
+		}else {
+			initImageWidth = w;
+			initImageHeight = h;
+			minZoom();
+			center();
+			imageArr[mCurScreen].setImageMatrix(matrix);
+		}
+		
+	}
+	
+	private void minZoom() {
+        minScaleR = Math.min((float) dm.widthPixels / (float) initImageWidth, (float) dm.heightPixels / (float) initImageHeight);
+        curScaleR = minScaleR;
+        System.out.println("minScaleR = " + minScaleR);
+        matrix = new Matrix();
+        int deltX = 0;
+		int deltY = 0;
+		Matrix m = new Matrix();
+		m.set(matrix);
+		RectF rectF = new RectF(0, 0, initImageWidth, initImageHeight);
+		m.mapRect(rectF);
+		System.out.println(rectF.top + " " + rectF.bottom + " " + rectF.left + "  "+ rectF.right);
+		if(initImageWidth<=dm.widthPixels) {
+			deltX = (dm.widthPixels - (int)initImageWidth)/2;
+		}
+		if(initImageHeight<=dm.heightPixels) {
+			deltY = (dm.heightPixels - (int)initImageHeight)/2;
+		}
+		matrix.preTranslate(deltX, deltY);
+        //MAX_SCALE = Math.max((float) initImageWidth / (float) dm.widthPixels, (float) initImageHeight / (float) dm.heightPixels);;
+        if (minScaleR < 1.0f) {
+            matrix.postScale(minScaleR, minScaleR);
+        }
+    }
+	
+    
+    private void CheckView() {
+        float p[] = new float[9];
+        matrix.getValues(p);
+        curScaleR = p[0];
+        if (mode == ZOOM) {
+            if (curScaleR < minScaleR) {
+                matrix.setScale(minScaleR, minScaleR);
+            }
+            if (curScaleR > MAX_SCALE) {
+                matrix.set(savedMatrix);
+            }
+        }
+        center();
+    }
+    
+    private void center() {
+        center(true, true);
+    }
+    
+    protected void center(boolean horizontal, boolean vertical) {
+
+        Matrix m = new Matrix();
+        m.set(matrix);
+        RectF rect = new RectF(0, 0, initImageWidth, initImageHeight);
+        m.mapRect(rect);
+        float height = rect.height();
+        float width = rect.width();
+        float deltaX = 0, deltaY = 0;
+
+        if (vertical) {
+            int screenHeight = dm.heightPixels;
+            if (height <= screenHeight) {
+                deltaY = (screenHeight - height) / 2 - rect.top;
+            } else if (rect.top > 0) {
+                deltaY = -rect.top;
+            } else if (rect.bottom < screenHeight) {
+                deltaY = screenHeight - rect.bottom;
+            }
+        }
+
+        if (horizontal) {
+            int screenWidth = dm.widthPixels;
+            if (width <= screenWidth) {
+                deltaX = (screenWidth - width) / 2 - rect.left;
+            } else if (rect.left > 0) {
+                deltaX = -rect.left;
+            } else if (rect.right < screenWidth) {
+                deltaX = screenWidth - rect.right;
+            }
+        }
+       // Log.d("System.out", "deltaX= " + deltaX + " deltaY=" + deltaY);
+        matrix.postTranslate(deltaX, deltaY);
+    }
+    
+    private float spacing(MotionEvent event) {
+        float x = event.getX(0) - event.getX(1);
+        float y = event.getY(0) - event.getY(1);
+        return FloatMath.sqrt(x * x + y * y);
+    }
+    
+	private void midPoint(PointF point, MotionEvent event) {
+        float x = event.getX(0) + event.getX(1);
+        float y = event.getY(0) + event.getY(1);
+        point.set(x / 2, y / 2);
+    }
+	
+    public void updateMetrics(DisplayMetrics dm) {
+		this.dm = dm;
+    }
+    
+
+	public void setOrientation(int orientation) {
+		this.orientation = orientation;
 	}
 	
 	/**
