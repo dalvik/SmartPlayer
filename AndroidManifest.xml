@@ -70,6 +70,10 @@
             android:configChanges="orientation|keyboardHidden" 
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
         
+         <activity
+            android:name="com.sky.drovik.player.bitmapfun.ScrollyGalleryActivity"
+            android:configChanges="orientation|keyboardHidden" 
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
          
         <activity android:name=".media.MovieView"
             android:screenOrientation="landscape"

@@ -6,7 +6,6 @@ import android.app.WallpaperManager;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
@@ -14,14 +13,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.baidu.mobstat.StatService;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.bitmapfun.ImageWorker.OnLoadImageListener;
-import com.sky.drovik.player.media.Main;
 
 public class ScrollyGalleryActivity extends FragmentActivity implements OnLoadImageListener {
 	
@@ -37,22 +34,26 @@ public class ScrollyGalleryActivity extends FragmentActivity implements OnLoadIm
     
     public int cataLog = 0;
     
-	private FlingGallery mGallery;
+	//private FlingGallery mGallery;
 	
     private ImageFetcher mImageFetcher;
     
 	private ImageGalleryAdapter imageAdapter;
 	
+	private ScrollLayout imageScrollLayout = null;
     @Override
     public boolean onTouchEvent(MotionEvent event)
 	{
-    	return mGallery.onTouchEvent(event);
+    	//return mGallery.onTouchEvent(event);
+    	return imageScrollLayout.onTouchEvent(event);
     }
 
     @Override
 	public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.layout_scroll_image);
+        imageScrollLayout = (ScrollLayout) findViewById(R.id.main_image_scroll);
         final DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         final int height = displayMetrics.heightPixels;
@@ -66,17 +67,27 @@ public class ScrollyGalleryActivity extends FragmentActivity implements OnLoadIm
         mImageFetcher.addImageCache(getSupportFragmentManager(), cacheParams);
         mImageFetcher.setImageFadeIn(false);
         mImageFetcher.setOnLoadImageListener(this);
-        mGallery = new FlingGallery(this, displayMetrics);
+        imageScrollLayout.setImageFetcher(mImageFetcher);
+        cataLog = getIntent().getIntExtra(CATA_LOG, 0);
+        String[] imageSrc = getIntent().getStringArrayExtra(IMAGE_SRC_LIST);
+        final int extraCurrentItem = getIntent().getIntExtra(EXTRA_IMAGE, -1);
+        imageScrollLayout.setAdapter(imageSrc, extraCurrentItem);
+        
+        ImageView preView = (ImageView)imageScrollLayout.findViewById(R.id.preImageView);
+        ImageView nextView = (ImageView)imageScrollLayout.findViewById(R.id.nextImageView);
+        ImageView[] views = {preView, nextView}; 
+        imageScrollLayout.initImageArr(views);
+        imageScrollLayout.loadInit();
+        
+        /*mGallery = new FlingGallery(this, displayMetrics);
         if(getResources().getConfiguration().orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT){
         	mGallery.setOrientation(1);
         }else {
         	mGallery.setOrientation(0);
         }
         mGallery.setPaddingWidth(100);
-        cataLog = getIntent().getIntExtra(CATA_LOG, 0);
-        String[] imageSrc = getIntent().getStringArrayExtra(IMAGE_SRC_LIST);
+        
         imageAdapter = new ImageGalleryAdapter(ScrollyGalleryActivity.this, mImageFetcher, imageSrc);
-        final int extraCurrentItem = getIntent().getIntExtra(EXTRA_IMAGE, -1);
         mGallery.setAdapter(imageAdapter, extraCurrentItem);
         mGallery.setIsGalleryCircular(true);
         LinearLayout layout = new LinearLayout(getApplicationContext());
@@ -90,12 +101,12 @@ public class ScrollyGalleryActivity extends FragmentActivity implements OnLoadIm
 		layoutParams.weight = 1.0f;
         layout.addView(mGallery, layoutParams);
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        setContentView(layout);
+        setContentView(layout);*/
     }	
     
     @Override
 	public void updateResolution(String path, int w, int h) {
-    	mGallery.updateResolution(path, w, h);
+    	//mGallery.updateResolution(path, w, h);
 	}
     
     @Override
@@ -108,11 +119,11 @@ public class ScrollyGalleryActivity extends FragmentActivity implements OnLoadIm
 //         final int longest = (height > width ? height : width) / 2;
 //         mImageFetcher.setImageSize(longest);
          if(newConfig.orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {//ÊúÆÁ1
-        	 mGallery.setOrientation(1);
+        	 //mGallery.setOrientation(1);
          }else {//0
-        	 mGallery.setOrientation(0);
+        	// mGallery.setOrientation(0);
          }
-         mGallery.updateMetrics(displayMetrics);
+        // mGallery.updateMetrics(displayMetrics);
     }
     
     @Override
@@ -126,7 +137,7 @@ public class ScrollyGalleryActivity extends FragmentActivity implements OnLoadIm
         switch (item.getItemId()) {
             case R.id.set_wallpaper:
                 //NavUtils.navigateUpFromSameTask(this);
-            	Bitmap b = mImageFetcher.processBitmap(mGallery.getCurrentItem());
+            	Bitmap b = null;//mImageFetcher.processBitmap(mGallery.getCurrentItem());
             	System.out.println("b= " + b);
             	if(b == null) {
             		return false;

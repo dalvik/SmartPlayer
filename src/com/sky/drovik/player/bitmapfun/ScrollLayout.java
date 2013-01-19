@@ -54,13 +54,15 @@ public class ScrollLayout extends FrameLayout {
 	private float mTouchX;
 	private boolean mFirstLayout = true;
 	
-	private int[] arr = null;
+	private String[] arr = null;
 	
 	private int preSelectIndex = 0;
 	
 	private ImageView[] imageArr = null;
 	
 	private int imageAdapterIndex = 0;
+	
+	private ImageFetcher mImageFetcher;
 	
 	public void setIsScroll(boolean b) {
 		this.isScroll = b;
@@ -83,12 +85,26 @@ public class ScrollLayout extends FrameLayout {
 		mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
 	}
 	
-	public void setAdapter(int[] arr) {
+	public void setAdapter(String[] arr) {
 		this.arr = arr;
+	}
+	
+	public void setAdapter(String[] arr, int selectIndex) {
+		this.arr = arr;
+		this.imageAdapterIndex = selectIndex;
 	}
 	
 	public void initImageArr(ImageView[] imageArr) {
 		this.imageArr = imageArr;
+	}
+	
+	public void setImageFetcher(ImageFetcher mImageFetcher) {
+		this.mImageFetcher = mImageFetcher;
+	}
+	
+	public void loadInit() {
+		mImageFetcher.loadImage(arr[imageAdapterIndex], imageArr[imageAdapterIndex]);
+		
 	}
 	
 	@Override
@@ -140,8 +156,10 @@ public class ScrollLayout extends FrameLayout {
 			drawChild(canvas, getChildAt(mCurScreen), getDrawingTime());
 			if(preSelectIndex != mCurScreen) {
 				//TODO
+				imageArr[preSelectIndex].setImageBitmap(null);				
 				System.out.println(preSelectIndex + " mCurScreen=" + mCurScreen);
 				preSelectIndex = mCurScreen;
+				mImageFetcher.loadImage(arr[imageAdapterIndex], imageArr[preSelectIndex]);
 			}
 		} else {
 			long drawingTime = getDrawingTime();
@@ -210,9 +228,11 @@ public class ScrollLayout extends FrameLayout {
 		mNextScreen = whichScreen;
 		if(mNextScreen>mCurScreen) {
 			imageAdapterIndex= nextAdapterPos(imageAdapterIndex);
+			//mImageFetcher.loadImage(arr[imageAdapterIndex], imageArr[mCurScreen]);
 			System.out.println("next = " + imageAdapterIndex);
 		}else if(mNextScreen<mCurScreen) {
 			imageAdapterIndex= preAdapterPos(imageAdapterIndex);
+			//mImageFetcher.loadImage(arr[imageAdapterIndex], imageArr[mCurScreen]);
 			System.out.println("pre = " + imageAdapterIndex);
 		}
 System.out.println("mNextScreen=" + mNextScreen);

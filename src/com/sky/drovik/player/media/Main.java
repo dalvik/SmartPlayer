@@ -68,6 +68,7 @@ import com.sky.drovik.player.bitmapfun.FlingGalleryActivity;
 import com.sky.drovik.player.bitmapfun.ImageCache.ImageCacheParams;
 import com.sky.drovik.player.bitmapfun.ImageDetailActivity;
 import com.sky.drovik.player.bitmapfun.ImageFetcher;
+import com.sky.drovik.player.bitmapfun.ScrollyGalleryActivity;
 import com.sky.drovik.player.engine.BeautyImage;
 import com.sky.drovik.player.engine.HistoryListAdpater;
 import com.sky.drovik.player.engine.ImageLoaderTask;
@@ -673,8 +674,8 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 					loadImageListData(curImageCatalog, pageIndex, beautyImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
           			return;
           		}
-          		Intent i = new Intent(appContext, FlingGalleryActivity.class);
-          		
+          		//Intent i = new Intent(appContext, FlingGalleryActivity.class);
+          		Intent i = new Intent(appContext, ScrollyGalleryActivity.class);
           		//final Intent i = new Intent(appContext, ImageDetailActivity.class);
                 i.putExtra(ImageDetailActivity.EXTRA_IMAGE, 0);
                 if(position - 1>=0 && position - 1 < beautyImageListViewData.size()) {
