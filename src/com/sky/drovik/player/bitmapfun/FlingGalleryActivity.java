@@ -57,7 +57,7 @@ public class FlingGalleryActivity extends FragmentActivity implements OnLoadImag
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         final int height = displayMetrics.heightPixels;
         final int width = displayMetrics.widthPixels;
-        final int longest = (height > width ? height : width);
+        final int longest = (height > width ? height : width) * 2/3;
         ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
         cacheParams.setMemCacheSizePercent(this, 0.25f); // Set memory cache to 25% of mem class
 

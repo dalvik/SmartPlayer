@@ -1048,7 +1048,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 				}
 				if(pageIndex ==0) {
 					try {					
-						beautyImageListTmp = appContext.getBeautyImageList(catalog, -1, isRefresh);
+						beautyImageListTmp = appContext.getBeautyImageList(catalog, pageIndex, isRefresh);
 						List<BaseImage> tmp = null;
 						if(beautyImageListTmp.size()<=AppContext.PAGE_SIZE) {
 							tmp = beautyImageListTmp.subList(0, beautyImageListTmp.size());
