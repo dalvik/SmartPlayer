@@ -330,7 +330,6 @@ System.out.println("mNextScreen=" + mNextScreen);
 		}
 		switch (action & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_MOVE: {
-			System.out.println("Intercept event move");
 			//Matrix m = new Matrix();
     		//m.set(matrix);
     		//RectF rectF = new RectF(0, 0, initImageWidth, initImageHeight);
@@ -370,7 +369,6 @@ System.out.println("mNextScreen=" + mNextScreen);
 		}
 
 		case MotionEvent.ACTION_DOWN: {
-            System.out.println("Intercept event drag");
             savedMatrix.set(matrix);
             prev.set(ev.getX(), ev.getY());
             mode = DRAG;
@@ -390,7 +388,6 @@ System.out.println("mNextScreen=" + mNextScreen);
 			break;
 		}
 		case MotionEvent.ACTION_POINTER_DOWN:
-			System.out.println("Intercept event POINTER_DOWN");
             dist = spacing(ev);
             if (spacing(ev) > 10f) {
             	savedMatrix.set(matrix);
@@ -402,7 +399,6 @@ System.out.println("mNextScreen=" + mNextScreen);
 		case MotionEvent.ACTION_CANCEL:
 		case MotionEvent.ACTION_UP:
         case MotionEvent.ACTION_POINTER_UP:
-        	System.out.println("Intercept event up");
             mode = NONE;
 			// Release the drag
 			mTouchState = TOUCH_STATE_REST;
@@ -429,23 +425,52 @@ System.out.println("mNextScreen=" + mNextScreen);
 			// Remember where the motion event started
 			mLastMotionX = ev.getX();
 			mActivePointerId = ev.getPointerId(0);
-			System.out.println("ontouch event down");
 			break;
 		case MotionEvent.ACTION_MOVE:
-			System.out.println("ontouch event move" + " mode = " + mode);
+			final float dx = (ev.getX() - prev.x);
 			Matrix m = new Matrix();
     		m.set(matrix);
     		RectF rectF = new RectF(0, 0, initImageWidth, initImageHeight);
     		m.mapRect(rectF);
-			if(rectF.top !=0.0 || rectF.bottom != (float)dm.heightPixels) {
+    		//System.out.println(rectF.left + " " + rectF.right);
+    		if(rectF.left==0.0f) {
+    			if(dx > 0) {
+    				mTouchState = TOUCH_STATE_SCROLLING;
+    				mode = NONE;
+    			} else {
+    				if(rectF.right==dm.widthPixels){
+    	    			mTouchState = TOUCH_STATE_SCROLLING;
+    	    			mode = NONE;
+        			} else {
+        				mTouchState = TOUCH_STATE_REST;
+        				mode = DRAG;
+        			}
+    			}
+    		}else {
+    			if(rectF.left<0.0f){
+    				if(dx > 0) {
+    					mTouchState = TOUCH_STATE_REST;
+        				mode = DRAG;
+        			} else {
+        				if(rectF.right==dm.widthPixels) {
+        					mTouchState = TOUCH_STATE_SCROLLING;
+        					mode = NONE;
+        				}else {
+        					mTouchState = TOUCH_STATE_REST;
+        					mode = DRAG;
+        				}
+        			}
+    			} else {
+    				mTouchState = TOUCH_STATE_SCROLLING;
+					mode = NONE;
+    			}
+    		}
+			if(mode == DRAG) {//rectF.top !=0.0 || rectF.bottom != (float)dm.heightPixels && 
 				matrix.set(savedMatrix);
-        		float dx = (ev.getX() - prev.x);
         		if(Math.abs(dx)>5f){
         			float dy = ev.getY() - prev.y;
         			matrix.postTranslate(dx, dy);
         		}
-        		//mTouchState = TOUCH_STATE_REST;
-        		System.out.println(rectF.left + "  " + rectF.right);
 			}
 			if (mTouchState == TOUCH_STATE_SCROLLING && mode != ZOOM) {
 				// Scroll to follow the motion event
@@ -488,12 +513,13 @@ System.out.println("mNextScreen=" + mNextScreen);
 			break;
 		case MotionEvent.ACTION_UP:
         case MotionEvent.ACTION_POINTER_UP:
-        	System.out.println("ontouch event up");
 			if (mTouchState == TOUCH_STATE_SCROLLING) {
 				final VelocityTracker velocityTracker = mVelocityTracker;
-				velocityTracker.computeCurrentVelocity(1000);
-				final int velocityX = (int) velocityTracker.getXVelocity();
-
+				int velocityX = 0;
+				if(velocityTracker != null) {
+					velocityTracker.computeCurrentVelocity(1000);
+					velocityX = (int) velocityTracker.getXVelocity();
+				}
 				final int screenWidth = getWidth();
 				// final int whichScreen = (mScrollX + (screenWidth / 2)) /
 				// screenWidth;
@@ -521,7 +547,6 @@ System.out.println("mNextScreen=" + mNextScreen);
 			releaseVelocityTracker();
 			break;
 		case MotionEvent.ACTION_CANCEL:
-			System.out.println("ontouch event cancle");
 			if (mTouchState == TOUCH_STATE_SCROLLING) {
 				final int screenWidth = getWidth();
 				final int whichScreen = (getScrollX() + (screenWidth / 2))
@@ -641,7 +666,7 @@ System.out.println("mNextScreen=" + mNextScreen);
         curScaleR = minScaleR;
         System.out.println("minScaleR = " + minScaleR);
         matrix = new Matrix();
-        int deltX = 0;
+        /*int deltX = 0;
 		int deltY = 0;
 		Matrix m = new Matrix();
 		m.set(matrix);
@@ -654,11 +679,12 @@ System.out.println("mNextScreen=" + mNextScreen);
 		if(initImageHeight<=dm.heightPixels) {
 			deltY = (dm.heightPixels - (int)initImageHeight)/2;
 		}
-		matrix.preTranslate(deltX, deltY);
+		matrix.preTranslate(deltX, deltY);*/
         //MAX_SCALE = Math.max((float) initImageWidth / (float) dm.widthPixels, (float) initImageHeight / (float) dm.heightPixels);;
-        if (minScaleR < 1.0f) {
-            matrix.postScale(minScaleR, minScaleR);
-        }
+        /*if (minScaleR < 1.0f) {
+        	minScaleR = 1.0f;
+        }*/
+        matrix.postScale(minScaleR, minScaleR);
     }
 	
     
@@ -730,6 +756,11 @@ System.out.println("mNextScreen=" + mNextScreen);
 	
     public void updateMetrics(DisplayMetrics dm) {
 		this.dm = dm;
+		if(imageArr != null) {
+			minZoom();
+			center();
+			imageArr[mCurScreen].setImageMatrix(matrix);
+		}
     }
     
 
