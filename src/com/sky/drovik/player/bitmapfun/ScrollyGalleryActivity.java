@@ -61,7 +61,7 @@ public class ScrollyGalleryActivity extends FragmentActivity implements OnLoadIm
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         final int height = displayMetrics.heightPixels;
         final int width = displayMetrics.widthPixels;
-        final int longest = (height > width ? height : width) * 2/3;
+        final int longest = (height > width ? height : width) * 3/4;
         ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
         cacheParams.setMemCacheSizePercent(this, 0.25f); // Set memory cache to 25% of mem class
 
@@ -146,7 +146,7 @@ public class ScrollyGalleryActivity extends FragmentActivity implements OnLoadIm
         switch (item.getItemId()) {
             case R.id.set_wallpaper:
                 //NavUtils.navigateUpFromSameTask(this);
-            	Bitmap b = null;//mImageFetcher.processBitmap(mGallery.getCurrentItem());
+            	Bitmap b = mImageFetcher.processBitmap(imageScrollLayout.getCurrentItem());
             	System.out.println("b= " + b);
             	if(b == null) {
             		return false;

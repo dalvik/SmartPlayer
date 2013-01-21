@@ -81,7 +81,7 @@ public class ScrollLayout extends FrameLayout {
     
     float minScaleR;// 最小缩放比例
     float curScaleR = 0;
-    static float MAX_SCALE = 4f;// 最大缩放比例
+    static float MAX_SCALE = 6f;// 最大缩放比例
     
     static final int NONE = 0;// 初始状态
     static final int DRAG = 1;// 拖动
@@ -266,13 +266,12 @@ public class ScrollLayout extends FrameLayout {
 		if(mNextScreen>mCurScreen) {
 			imageAdapterIndex= nextAdapterPos(imageAdapterIndex);
 			//mImageFetcher.loadImage(arr[imageAdapterIndex], imageArr[mCurScreen]);
-			System.out.println("next = " + imageAdapterIndex);
+			//System.out.println("next = " + imageAdapterIndex);
 		}else if(mNextScreen<mCurScreen) {
 			imageAdapterIndex= preAdapterPos(imageAdapterIndex);
 			//mImageFetcher.loadImage(arr[imageAdapterIndex], imageArr[mCurScreen]);
-			System.out.println("pre = " + imageAdapterIndex);
+			//System.out.println("pre = " + imageAdapterIndex);
 		}
-System.out.println("mNextScreen=" + mNextScreen);
 		View focusedChild = getFocusedChild();
 		if (focusedChild != null && whichScreen != mCurScreen
 				&& focusedChild == getChildAt(mCurScreen)) {
@@ -330,7 +329,7 @@ System.out.println("mNextScreen=" + mNextScreen);
 		}
 		switch (action & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_MOVE: {
-			System.out.println("Intercept event move");
+			//System.out.println("onInter move..... mode = " + mode);
 			//Matrix m = new Matrix();
     		//m.set(matrix);
     		//RectF rectF = new RectF(0, 0, initImageWidth, initImageHeight);
@@ -370,7 +369,7 @@ System.out.println("mNextScreen=" + mNextScreen);
 		}
 
 		case MotionEvent.ACTION_DOWN: {
-            System.out.println("Intercept event drag");
+			//System.out.println("onInter down.....");
             savedMatrix.set(matrix);
             prev.set(ev.getX(), ev.getY());
             mode = DRAG;
@@ -390,7 +389,7 @@ System.out.println("mNextScreen=" + mNextScreen);
 			break;
 		}
 		case MotionEvent.ACTION_POINTER_DOWN:
-			System.out.println("Intercept event POINTER_DOWN");
+			//System.out.println("onInter point down = "  + mode);
             dist = spacing(ev);
             if (spacing(ev) > 10f) {
             	savedMatrix.set(matrix);
@@ -402,7 +401,7 @@ System.out.println("mNextScreen=" + mNextScreen);
 		case MotionEvent.ACTION_CANCEL:
 		case MotionEvent.ACTION_UP:
         case MotionEvent.ACTION_POINTER_UP:
-        	System.out.println("Intercept event up");
+        	//System.out.println("onInter up.....");
             mode = NONE;
 			// Release the drag
 			mTouchState = TOUCH_STATE_REST;
@@ -429,23 +428,55 @@ System.out.println("mNextScreen=" + mNextScreen);
 			// Remember where the motion event started
 			mLastMotionX = ev.getX();
 			mActivePointerId = ev.getPointerId(0);
-			System.out.println("ontouch event down");
 			break;
 		case MotionEvent.ACTION_MOVE:
-			System.out.println("ontouch event move" + " mode = " + mode);
+			//System.out.println("onTouch move..... mode = " + mode);
+			final float dx = (ev.getX() - prev.x);
 			Matrix m = new Matrix();
     		m.set(matrix);
     		RectF rectF = new RectF(0, 0, initImageWidth, initImageHeight);
     		m.mapRect(rectF);
-			if(rectF.top !=0.0 || rectF.bottom != (float)dm.heightPixels) {
+    		//System.out.println(rectF.left + " " + rectF.right);
+    		if(mode == DRAG) {
+    			if(rectF.left==0.0f) {
+    				if(dx > 0) {
+    					mTouchState = TOUCH_STATE_SCROLLING;
+    					mode = NONE;
+    				} else {
+    					if(rectF.right==dm.widthPixels){
+    						mTouchState = TOUCH_STATE_SCROLLING;
+    						mode = NONE;
+    					} else {
+    						mTouchState = TOUCH_STATE_REST;
+    						mode = DRAG;
+    					}
+    				}
+    			}else {
+    				if(rectF.left<0.0f){
+    					if(dx > 0) {
+    						mTouchState = TOUCH_STATE_REST;
+    						mode = DRAG;
+    					} else {
+    						if(rectF.right==dm.widthPixels) {
+    							mTouchState = TOUCH_STATE_SCROLLING;
+    							mode = NONE;
+    						}else {
+    							mTouchState = TOUCH_STATE_REST;
+    							mode = DRAG;
+    						}
+    					}
+    				} else {
+    					mTouchState = TOUCH_STATE_SCROLLING;
+    					mode = NONE;
+    				}
+    			}
+    		}
+			if(mode == DRAG) {//rectF.top !=0.0 || rectF.bottom != (float)dm.heightPixels && 
 				matrix.set(savedMatrix);
-        		float dx = (ev.getX() - prev.x);
         		if(Math.abs(dx)>5f){
         			float dy = ev.getY() - prev.y;
         			matrix.postTranslate(dx, dy);
         		}
-        		//mTouchState = TOUCH_STATE_REST;
-        		System.out.println(rectF.left + "  " + rectF.right);
 			}
 			if (mTouchState == TOUCH_STATE_SCROLLING && mode != ZOOM) {
 				// Scroll to follow the motion event
@@ -488,12 +519,14 @@ System.out.println("mNextScreen=" + mNextScreen);
 			break;
 		case MotionEvent.ACTION_UP:
         case MotionEvent.ACTION_POINTER_UP:
-        	System.out.println("ontouch event up");
+        	//System.out.println("onTouch up.....");
 			if (mTouchState == TOUCH_STATE_SCROLLING) {
 				final VelocityTracker velocityTracker = mVelocityTracker;
-				velocityTracker.computeCurrentVelocity(1000);
-				final int velocityX = (int) velocityTracker.getXVelocity();
-
+				int velocityX = 0;
+				if(velocityTracker != null) {
+					velocityTracker.computeCurrentVelocity(1000);
+					velocityX = (int) velocityTracker.getXVelocity();
+				}
 				final int screenWidth = getWidth();
 				// final int whichScreen = (mScrollX + (screenWidth / 2)) /
 				// screenWidth;
@@ -521,7 +554,6 @@ System.out.println("mNextScreen=" + mNextScreen);
 			releaseVelocityTracker();
 			break;
 		case MotionEvent.ACTION_CANCEL:
-			System.out.println("ontouch event cancle");
 			if (mTouchState == TOUCH_STATE_SCROLLING) {
 				final int screenWidth = getWidth();
 				final int whichScreen = (getScrollX() + (screenWidth / 2))
@@ -616,7 +648,7 @@ System.out.println("mNextScreen=" + mNextScreen);
 	
 	public void updateResolution(String path, int w, int h) {
 		System.out.println("cur bitmap width = " + w + " height = " + h);
-		if(isInitFlingGallery) {
+		/*if(isInitFlingGallery) {
 			String src = (String)arr[currentImageIndex];
 			if(src.equalsIgnoreCase(path)) {
 				isInitFlingGallery = false;
@@ -627,12 +659,12 @@ System.out.println("mNextScreen=" + mNextScreen);
 				imageArr[mCurScreen].setImageMatrix(matrix);
 			}
 		}else {
-			initImageWidth = w;
-			initImageHeight = h;
-			minZoom();
-			center();
-			imageArr[mCurScreen].setImageMatrix(matrix);
-		}
+		}*/
+		initImageWidth = w;
+		initImageHeight = h;
+		minZoom();
+		center();
+		imageArr[mCurScreen].setImageMatrix(matrix);
 		
 	}
 	
@@ -641,7 +673,7 @@ System.out.println("mNextScreen=" + mNextScreen);
         curScaleR = minScaleR;
         System.out.println("minScaleR = " + minScaleR);
         matrix = new Matrix();
-        int deltX = 0;
+        /*int deltX = 0;
 		int deltY = 0;
 		Matrix m = new Matrix();
 		m.set(matrix);
@@ -658,7 +690,8 @@ System.out.println("mNextScreen=" + mNextScreen);
         //MAX_SCALE = Math.max((float) initImageWidth / (float) dm.widthPixels, (float) initImageHeight / (float) dm.heightPixels);;
         if (minScaleR < 1.0f) {
             matrix.postScale(minScaleR, minScaleR);
-        }
+        }*/
+        matrix.postScale(minScaleR, minScaleR);
     }
 	
     
@@ -730,11 +763,20 @@ System.out.println("mNextScreen=" + mNextScreen);
 	
     public void updateMetrics(DisplayMetrics dm) {
 		this.dm = dm;
+		if(imageArr != null) {
+			minZoom();
+			center();
+			imageArr[mCurScreen].setImageMatrix(matrix);
+		}
     }
     
 
 	public void setOrientation(int orientation) {
 		this.orientation = orientation;
+	}
+	
+	public String getCurrentItem() {
+		return arr[imageAdapterIndex];
 	}
 	
 	/**

@@ -160,6 +160,10 @@ public class Guide extends Activity implements OnClickListener,
 		case MotionEvent.ACTION_DOWN:
 			lastX = (int)event.getX();
 			if(event.getY() >= height * 2/3 && (event.getX() >width/3 && event.getX()<= width *2/3) && currentIndex == 2) {
+				boolean shutCutFlag = settings.getBoolean("CREATE_SHUT_CUT", false);
+				if(!shutCutFlag) {
+					createShutcut(this, "com.sky.drovik.player", ".media.Guide");
+		        }
 				startActivity(new Intent(this, Welcome.class));
 				StatService.onEvent(Guide.this, "首次安装", "点击完成向导按钮", 1);
 	        	Guide.this.finish();
