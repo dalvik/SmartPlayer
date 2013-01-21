@@ -768,6 +768,11 @@ System.out.println("mNextScreen=" + mNextScreen);
 		this.orientation = orientation;
 	}
 	
+	
+	public String getCurrentItem() {
+		return arr[preSelectIndex];
+	}
+	
 	/**
 	 * ÉèÖÃÆÁÄ»ÇĞ»»¼àÌıÆ÷
 	 * 

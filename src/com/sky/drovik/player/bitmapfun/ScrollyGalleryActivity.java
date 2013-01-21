@@ -141,13 +141,13 @@ public class ScrollyGalleryActivity extends FragmentActivity implements OnLoadIm
         return true;
     }
     
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.set_wallpaper:
                 //NavUtils.navigateUpFromSameTask(this);
-            	Bitmap b = null;//mImageFetcher.processBitmap(mGallery.getCurrentItem());
-            	System.out.println("b= " + b);
+            	Bitmap b = mImageFetcher.processBitmap(imageScrollLayout.getCurrentItem());
             	if(b == null) {
             		return false;
             	}
