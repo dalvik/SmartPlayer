@@ -87,6 +87,7 @@
     <string name="no_network_connection_toast">无网络连接</string>
     
     <string name="drovik_head_label_msg">相册</string>
+    <string name="drovik_frame_image_local_str">本地</string>
     <string name="drovik_frame_image_beauty_str">美图</string>
     <string name="drovik_frame_image_scenery_str">风景</string>
     <string name="drovik_frame_image_other_str">其他</string>

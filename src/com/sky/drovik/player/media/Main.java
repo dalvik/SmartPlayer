@@ -61,6 +61,7 @@ import com.sky.drovik.player.AppContext;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.adpter.ListViewImageAdapter;
+import com.sky.drovik.player.adpter.ListViewLocalAdapter;
 import com.sky.drovik.player.adpter.ListViewOtherImageAdapter;
 import com.sky.drovik.player.adpter.ListViewSceneryImageAdapter;
 import com.sky.drovik.player.app.Res;
@@ -107,6 +108,14 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	private RadioButton fbVideo;
 	private ImageView fbSetting;
 	
+	//local image contentvew
+	private PullToRefreshListView localImageListView;
+	private ListViewLocalAdapter localImageListViewAdapter;
+	private static List<BaseImage> localImageListViewData = new ArrayList<BaseImage>();
+	private View localImageListViewFooter;
+	private TextView localImageListViewFootMore;
+	private ProgressBar localImageListViewFootProgress;
+	
 	//beayty image contentvew
 	private PullToRefreshListView beautyImageListView;
 	private ListViewImageAdapter beautyImageListViewAdapter;
@@ -132,21 +141,24 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	private ProgressBar otherImageListViewFootProgress;
 		
 	//handler
+	private Handler localImageListViewHandler;
 	private Handler beautyImageListViewHandler;
 	private Handler sceneryImageListViewHandler;
 	private Handler otherImageListViewHandler;
 	
 	
 	//top buttons
+	private Button frameLocalButton;
 	private Button frameBeautyButton;
 	private Button frameSceneryButton;
 	private Button frameOtherButton;
 	
+	private int localImageListSumData;
 	private int beautyImageListSumData;
 	private int sceneryImageListSumData;
 	private int otherImageListSumData;
 	
-	private int curImageCatalog = BaseImage.CATALOG_BEAUTY;
+	private int curImageCatalog = BaseImage.CATALOG_LOCAL;
 	
 	private AppContext appContext;//全局Context
 	
@@ -155,6 +167,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
     private int mImageThumbWidth;
     private int mImageThumbHeight;
     
+    private List<BaseImage> localImageListTmp = null;
     private List<BaseImage> beautyImageListTmp = null;
     private List<BaseImage> sceneryImageListTmp = null;
     private List<BaseImage> otherImageListTmp = null;
@@ -265,7 +278,8 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 					if(mCurSel == pos) {
 		    			switch (pos) {
 						case 0://image
-							beautyImageListView.clickRefresh();
+							localImageListView.clickRefresh();
+							//beautyImageListView.clickRefresh();
 							StatService.onEvent(Main.this, "主界面", "点击图像按钮");
 							break;	
 						case 1://video
@@ -325,6 +339,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	
     private void initFrameListView() {
     	//初始化listview控件
+    	this.initLocalListView();
 		this.initImageListView();
 		this.initSceneryListView();
 		this.initOtherListView();
@@ -512,21 +527,29 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
      * 初始化主页的按钮
      */
     private void initFrameButton() {
+    	frameLocalButton = (Button)findViewById(R.id.frame_btn_local);
     	frameBeautyButton = (Button)findViewById(R.id.frame_btn_beauty);
     	frameSceneryButton = (Button)findViewById(R.id.frame_btn_scenery);
     	frameOtherButton = (Button)findViewById(R.id.frame_btn_other);
     	
+    	frameLocalButton.setOnClickListener(frameNewsBtnClick(frameLocalButton, BaseImage.CATALOG_LOCAL));
     	frameBeautyButton.setOnClickListener(frameNewsBtnClick(frameBeautyButton, BaseImage.CATALOG_BEAUTY));
     	frameSceneryButton.setOnClickListener(frameNewsBtnClick(frameSceneryButton, BaseImage.CATALOG_SCENERY));
     	frameOtherButton.setOnClickListener(frameNewsBtnClick(frameOtherButton, BaseImage.CATALOG_OTHER));
     	
-    	frameBeautyButton.setFocusable(true);
-    	frameBeautyButton.setEnabled(false);
+    	frameLocalButton.setFocusable(true);
+    	frameLocalButton.setEnabled(false);
     }
     
     private View.OnClickListener frameNewsBtnClick(final Button btn,final int catalog){
     	return new View.OnClickListener() {
 			public void onClick(View v) {
+				if(btn == frameLocalButton){
+					frameLocalButton.setEnabled(false);
+					StatService.onEvent(Main.this, "主界面", "美图按钮");
+		    	}else{
+		    		frameLocalButton.setEnabled(true);
+		    	}
 				if(btn == frameBeautyButton){
 					frameBeautyButton.setEnabled(false);
 					StatService.onEvent(Main.this, "主界面", "美图按钮");
@@ -546,8 +569,21 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		    		frameOtherButton.setEnabled(true);
 		    	}
 		    	curImageCatalog = catalog;
-		    	if(btn == frameBeautyButton) {
+		    	if(btn == frameLocalButton) {
+		    		localImageListView.setVisibility(View.VISIBLE);
+		    		beautyImageListView.setVisibility(View.GONE);
+		    		sceneryImageListView.setVisibility(View.GONE);
+		    		otherImageListView.setVisibility(View.GONE);
+		    		if(localImageListViewData.size() == 0) {
+		    			loadLocalImageListData(curImageCatalog, 0, localImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
+		    		} else {
+		    			localImageListViewFootMore.setText(R.string.load_more);
+		    			localImageListViewFootProgress.setVisibility(View.GONE);
+		    			loadImageListData(curImageCatalog, 0, localImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
+		    		}
+		    	} else if(btn == frameBeautyButton) {
 		    		beautyImageListView.setVisibility(View.VISIBLE);
+		    		localImageListView.setVisibility(View.GONE);
 		    		sceneryImageListView.setVisibility(View.GONE);
 		    		otherImageListView.setVisibility(View.GONE);
 		    		if(beautyImageListViewData.size() == 0) {
@@ -555,12 +591,13 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		    		} else {
 		    			beautyImageListViewFootMore.setText(R.string.load_more);
 		    			beautyImageListViewFootProgress.setVisibility(View.GONE);
-		    			loadSceneryImageListData(curImageCatalog, 0, beautyImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
+		    			loadImageListData(curImageCatalog, 0, beautyImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
 		    		}
 		    	} else if(btn == frameSceneryButton ){
+		    		sceneryImageListView.setVisibility(View.VISIBLE);
+		    		localImageListView.setVisibility(View.GONE);
 		    		beautyImageListView.setVisibility(View.GONE);
 		    		otherImageListView.setVisibility(View.GONE);
-		    		sceneryImageListView.setVisibility(View.VISIBLE);
 		    		if(sceneryImageListViewData.size() == 0) {
 		    			loadSceneryImageListData(curImageCatalog, 0, sceneryImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
 		    		} else {
@@ -569,9 +606,10 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		    			loadSceneryImageListData(curImageCatalog, 0, sceneryImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
 		    		}
 		    	} else if(btn == frameOtherButton ){
+		    		otherImageListView.setVisibility(View.VISIBLE);
+		    		localImageListView.setVisibility(View.GONE);
 		    		beautyImageListView.setVisibility(View.GONE);
 		    		sceneryImageListView.setVisibility(View.GONE);
-		    		otherImageListView.setVisibility(View.VISIBLE);
 		    		if(otherImageListViewData.size() == 0) {
 		    			loadOtherImageListData(curImageCatalog, 0, otherImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
 		    		} else {
@@ -589,6 +627,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
      */
     private void initFrameListViewData() {
     	 //初始化Handler
+    	localImageListViewHandler = this.getListViewHandler(localImageListView, localImageListViewAdapter, localImageListViewFootMore, localImageListViewFootProgress, AppContext.PAGE_SIZE);
         beautyImageListViewHandler = this.getListViewHandler(beautyImageListView, beautyImageListViewAdapter, beautyImageListViewFootMore, beautyImageListViewFootProgress, AppContext.PAGE_SIZE);
         sceneryImageListViewHandler = this.getListViewHandler(sceneryImageListView, sceneryImageListViewAdapter, sceneryImageListViewFootMore, sceneryImageListViewFootProgress, AppContext.PAGE_SIZE);
         otherImageListViewHandler = this.getListViewHandler(otherImageListView, otherImageListViewAdapter, otherImageListViewFootMore, otherImageListViewFootProgress, AppContext.PAGE_SIZE);
@@ -651,6 +690,118 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
     	};
     }
 
+    //init local image listview
+    private void initLocalListView() {
+    	localImageListViewAdapter = new ListViewLocalAdapter(this, localImageListViewData,  R.layout.layout_local_list_item, mImageFetcher);
+    	localImageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
+    	localImageListViewFootMore = (TextView)localImageListViewFooter.findViewById(R.id.list_view_foot_more);
+    	localImageListViewFootProgress = (ProgressBar)localImageListViewFooter.findViewById(R.id.list_view_foot_progress);
+    	localImageListView = (PullToRefreshListView)findViewById(R.id.frame_list_view_local_image);
+    	localImageListView.addFooterView(localImageListViewFooter);
+    	localImageListView.setAdapter(localImageListViewAdapter);
+    	localImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+          	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+          		//点击头部、底部栏无效
+          		if(position == 0){
+          			return;
+          		}
+          		if(view == localImageListViewFooter) {
+					localImageListViewFootMore.setText(R.string.load_ing);
+					localImageListViewFootProgress.setVisibility(View.VISIBLE);
+					//当前pageIndex
+					int pageIndex = localImageListSumData/AppContext.PAGE_SIZE;
+					loadImageListData(curImageCatalog, pageIndex, localImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
+          			return;
+          		}
+          		//Intent i = new Intent(appContext, FlingGalleryActivity.class);
+          		Intent i = new Intent(appContext, ScrollyGalleryActivity.class);
+          		//final Intent i = new Intent(appContext, ImageDetailActivity.class);
+                i.putExtra(ImageDetailActivity.EXTRA_IMAGE, 0);
+                if(position - 1>=0 && position - 1 < localImageListViewData.size()) {
+                	photoIndex = position - 1;
+                	BeautyImage beautyImage = (BeautyImage) localImageListViewData.get(position-1);
+                	curPhotoName = beautyImage.getName();
+                	if(beautyImage.getId()>0 && queryPoints(appContext)<= 0 && !beautyImage.getChannel().contains(channelId)) {
+                		StatService.onEvent(Main.this, "主界面", "打开相册 " + curPhotoName+ " 注册框");
+                		showErrDialog();//id==0表示审核 >0 注册  没有包含channel的话 也表示需要注册了。所以通过审核以后需要将channel值0
+                		return;
+                	}
+                	i.putExtra(ImageDetailActivity.LIST_SIZE, beautyImage.getSrcSize());
+                	//new add when add imageflinggallery
+                	i.putExtra(FlingGalleryActivity.IMAGE_SRC_LIST, beautyImage.getSrcArr());//文件地址列表
+                }else {
+                	photoIndex = position - 1;
+                	i.putExtra(ImageDetailActivity.LIST_SIZE, 0);
+                	i.putExtra(FlingGalleryActivity.IMAGE_SRC_LIST, new String[0]);
+                	
+                }
+                i.putExtra(ImageDetailActivity.CATA_LOG, curImageCatalog);
+                /*if (com.sky.drovik.player.bitmapfun.Utils.hasJellyBean()) {
+                    // makeThumbnailScaleUpAnimation() looks kind of ugly here as the loading spinner may
+                    // show plus the thumbnail image in GridView is cropped. so using
+                    // makeScaleUpAnimation() instead.
+                    ActivityOptions options =
+                            ActivityOptions.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
+                    startActivity(i, options.toBundle());
+                } else {
+                    startActivity(i);
+                }*/
+                startActivity(i);
+           		
+                //startActivity(i);
+          		//跳转到新闻详情
+          		//UIHelper.showNewsRedirect(view.getContext(), news);
+          	}        	
+  		});
+    	localImageListView.setOnScrollListener(new OnScrollListener() {
+			
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				localImageListView.onScrollStateChanged(view, scrollState);		
+				//数据为空--不用继续下面代码了
+				if(localImageListViewData.size() == 0) return;
+				//判断是否滚动到底部
+				 if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
+	                  mImageFetcher.setPauseWork(true);
+	             } else {
+	                  mImageFetcher.setPauseWork(false);
+	             }
+				boolean scrollEnd = false;
+				try{
+					if(view.getPositionForView(localImageListViewFooter) == view.getLastVisiblePosition()) {
+						scrollEnd = true;
+					}
+				} catch (Exception e) {
+					scrollEnd = false;
+				}
+				int imageListDataState = StringUtils.toInt(localImageListView.getTag());
+				if(scrollEnd && imageListDataState == UIHelper.LISTVIEW_DATA_MORE) {
+					localImageListViewFootMore.setText(R.string.load_ing);
+					localImageListViewFootProgress.setVisibility(View.VISIBLE);
+					//当前pageIndex
+					int pageIndex = localImageListSumData/AppContext.PAGE_SIZE;
+					loadImageListData(curImageCatalog, pageIndex, localImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
+				}
+			}
+			
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem,
+					int visibleItemCount, int totalItemCount) {
+				localImageListView.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+				if(localImageListViewData.size()<=0) {
+					localImageListView.onScrollStateChanged(view, SCROLL_STATE_TOUCH_SCROLL);
+				}
+			}
+		});
+    	localImageListView.setOnRefreshListner(new OnRefreshListener() {
+			
+			@Override
+			public void onRefresh() {
+				loadLocalImageListData(curImageCatalog, 0, localImageListViewHandler, UIHelper.LISTVIEW_ACTION_REFRESH);
+			}
+		});
+    }
+    
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	private void initImageListView() {
     	beautyImageListViewAdapter = new ListViewImageAdapter(this, beautyImageListViewData,  R.layout.layout_image_list_item, mImageFetcher);
@@ -954,15 +1105,17 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		case UIHelper.LISTVIEW_ACTION_REFRESH:
 		case UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG:
 			switch (objtype) {
+				case UIHelper.LISTVIEW_DATATYPE_LOCAL:
+					List<BaseImage> localImageList = (List<BaseImage>)obj;
+					localImageListSumData = what;
+					localImageListViewData.clear();//先清除原有数据
+					localImageListViewData.addAll(localImageList);
+				break;
 				case UIHelper.LISTVIEW_DATATYPE_BEAUTY:
 					List<BaseImage> beaytyImageList = (List<BaseImage>)obj;
 					beautyImageListSumData = what;
 					beautyImageListViewData.clear();//先清除原有数据
 					beautyImageListViewData.addAll(beaytyImageList);
-					/*if(beautyImageListViewData.size()>0) {
-						beautyImageListView.requestFocusFromTouch();
-						beautyImageListView.setSelection(0);
-					}*/
 					break;
 				case UIHelper.LISTVIEW_DATATYPE_SCENERY:
 					List<BaseImage> sceneryImageList = (List<BaseImage>)obj;
@@ -980,6 +1133,24 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 			break;
 		case UIHelper.LISTVIEW_ACTION_SCROLL:
 			switch (objtype) {
+			case UIHelper.LISTVIEW_DATATYPE_LOCAL:
+				List<BaseImage> localImageList = (List<BaseImage>)obj;
+				localImageListSumData += what;
+				if(localImageListViewData.size() > 0){
+					for(BaseImage image : localImageList){
+						boolean b = false;
+						for(BaseImage newsImage : localImageListViewData){
+							if(image.equals(newsImage)){
+								b = true;
+								break;
+							}
+						}
+						if(!b) localImageListViewData.add(image);
+					}
+				}else{
+					localImageListViewData.addAll(localImageList);
+				}
+				break;
 			case UIHelper.LISTVIEW_DATATYPE_BEAUTY:
 				List<BaseImage> beaytyImageList = (List<BaseImage>)obj;
 				beautyImageListSumData += what;
@@ -1037,6 +1208,60 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 			}
     	}
     }
+    
+    private void loadLocalImageListData(final int catalog,final int pageIndex, final Handler handler,final int action){ 
+		mHeadProgress.setVisibility(ProgressBar.VISIBLE);		
+		new Thread(){
+			public void run() {				
+				Message msg = new Message();
+				boolean isRefresh = false;
+				if(action == UIHelper.LISTVIEW_ACTION_REFRESH || action == UIHelper.LISTVIEW_ACTION_SCROLL) {
+					isRefresh = true;
+				}
+				if(pageIndex ==0) {
+					try {					
+						localImageListTmp = appContext.getLocalImageList(catalog, pageIndex, isRefresh);
+						List<BaseImage> tmp = null;
+						if(localImageListTmp.size()<=AppContext.PAGE_SIZE) {
+							tmp = localImageListTmp.subList(0, localImageListTmp.size());
+						}else {
+							tmp = localImageListTmp.subList(0, AppContext.PAGE_SIZE);
+						}
+						msg.what = tmp.size();
+						msg.obj = tmp;
+					} catch (Exception e) {
+						e.printStackTrace();
+						msg.what = -1;
+						msg.obj = e;
+					}
+				} else {
+					List<BaseImage> tmp = new ArrayList<BaseImage>();
+					for(int i=AppContext.PAGE_SIZE * pageIndex; i<AppContext.PAGE_SIZE * (pageIndex +1);i++) {
+						if(i<localImageListTmp.size()) {
+							tmp.add(localImageListTmp.get(i));
+						}
+					}
+					msg.what = tmp.size();
+					if(msg.what == 0) {
+						msg.what = 1;
+					}
+					msg.obj = tmp;
+					try {
+						Thread.sleep(1500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+						msg.what = -1;
+						msg.obj = e;
+					}
+				}
+				msg.arg1 = action;
+				msg.arg2 = UIHelper.LISTVIEW_DATATYPE_BEAUTY;
+                if(curImageCatalog == catalog) {
+                	handler.sendMessage(msg);
+                }
+			}
+		}.start();
+	} 
     
     private void loadImageListData(final int catalog,final int pageIndex, final Handler handler,final int action){ 
 		mHeadProgress.setVisibility(ProgressBar.VISIBLE);		

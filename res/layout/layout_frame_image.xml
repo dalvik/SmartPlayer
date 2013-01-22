@@ -3,12 +3,22 @@
     android:orientation="vertical" 
     android:layout_width="fill_parent" 
     android:layout_height="fill_parent">
+    
 	<LinearLayout 
 		android:layout_width="fill_parent" 
 		android:layout_height="35.0dip"
 		android:orientation="horizontal" 
 		android:gravity="center_vertical">
 
+	    <Button
+     	    android:id="@+id/frame_btn_local"
+     	    style="@style/frame_button"
+     	    android:text="@string/drovik_frame_image_local_str" />
+
+     	<ImageView android:layout_width="wrap_content" 
+     	    android:layout_height="fill_parent" 
+     	    android:background="@drawable/frame_button_cutline"/>
+     	
      	<Button
      	    android:id="@+id/frame_btn_beauty"
      	    style="@style/frame_button"
@@ -33,6 +43,10 @@
          	android:text="@string/drovik_frame_image_other_str"/>
     </LinearLayout>
 
+	<com.sky.drovik.widget.PullToRefreshListView
+	  	android:id="@+id/frame_list_view_local_image"
+	    style="@style/widget_listview"
+	    android:visibility="gone"/>
 	
 	<com.sky.drovik.widget.PullToRefreshListView
 	  	android:id="@+id/frame_list_view_beayty_image"

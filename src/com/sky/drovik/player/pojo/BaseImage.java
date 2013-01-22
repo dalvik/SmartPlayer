@@ -4,11 +4,15 @@ import android.graphics.Bitmap;
 
 public abstract class BaseImage {
 
-	public static final int CATALOG_BEAUTY = 0;
+	public static final int CATALOG_LOCAL = 0;
 	
-	public static final int CATALOG_SCENERY = 1;
+	public static final int CATALOG_BEAUTY = 1;
 	
-	public static final int CATALOG_OTHER = 2;
+	public static final int CATALOG_SCENERY = 2;
+	
+	public static final int CATALOG_OTHER = 3;
+	
+	public static final String TYPE_LOCAL = "local";
 	
 	public static final String TYPE_BEAUTY = "beauty";
 	

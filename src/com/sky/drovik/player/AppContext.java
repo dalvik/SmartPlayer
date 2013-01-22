@@ -46,9 +46,9 @@ public class AppContext extends Application {
 	private int loginUid = 0;	//µÇÂ¼ÓÃ»§µÄid
 	private Hashtable<String, Object> memCacheRegion = new Hashtable<String, Object>();
 	
-	private String[] catalogArr = {"image_beauty.xml","image_scenery.xml", "image_other.xml"};
+	private String[] catalogArr = {"local","image_beauty.xml","image_scenery.xml", "image_other.xml"};
 	
-	private static String [] fileArr = {"dat_0", "dat_1", "dat_2"};
+	private static String [] fileArr = {"dat","dat_0", "dat_1", "dat_2"};
 	
 	private static String workPath = null; 
 	
@@ -279,6 +279,11 @@ public class AppContext extends Application {
 		if(workPath == null || workPath.length() <= 0) {
 			workPath = getFilesDir().getAbsolutePath();
 		}
+	}
+	
+	public List<BaseImage> getLocalImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
+		getWorkPathInstance();
+		return new BeautyImageEngine(pageIndex>=0?this.getSharedPreferences(BeautyImage.class.getName(), Context.MODE_PRIVATE):null).fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]), catalog);
 	}
 	
 	public List<BaseImage> getBeautyImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
