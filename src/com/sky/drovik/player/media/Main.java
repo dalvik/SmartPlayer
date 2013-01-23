@@ -506,6 +506,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		List<MovieInfo> videoList = media.getVideoListByPage(current_page * page_count, page_count);
 		movieList.addAll(videoList);
 	}
+	
 	public List<List<Map<String,Object>>> getChildList(){   
 		childList.clear();
         List<HisInfo> list = FileUtil.fetchDeviceFromFile(this);
@@ -632,8 +633,8 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
         sceneryImageListViewHandler = this.getListViewHandler(sceneryImageListView, sceneryImageListViewAdapter, sceneryImageListViewFootMore, sceneryImageListViewFootProgress, AppContext.PAGE_SIZE);
         otherImageListViewHandler = this.getListViewHandler(otherImageListView, otherImageListViewAdapter, otherImageListViewFootMore, otherImageListViewFootProgress, AppContext.PAGE_SIZE);
         //º”‘ÿ ˝æ›				
-		if(beautyImageListViewData.size() == 0) {
-			loadImageListData(curImageCatalog, 0, beautyImageListViewHandler, UIHelper.LISTVIEW_ACTION_INIT);
+		if(localImageListViewData.size() == 0) {
+			loadLocalImageListData(curImageCatalog, 0, beautyImageListViewHandler, UIHelper.LISTVIEW_ACTION_INIT);
 		}
     }
     

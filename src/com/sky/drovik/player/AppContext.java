@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -17,10 +18,12 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
 
 import com.drovik.utils.URLs;
 import com.sky.drovik.player.engine.BeautyImage;
 import com.sky.drovik.player.engine.BeautyImageEngine;
+import com.sky.drovik.player.engine.LocalImageEngine;
 import com.sky.drovik.player.engine.OtherImageEngine;
 import com.sky.drovik.player.engine.SceneryImageEngine;
 import com.sky.drovik.player.exception.AppException;
@@ -283,7 +286,10 @@ public class AppContext extends Application {
 	
 	public List<BaseImage> getLocalImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {
 		getWorkPathInstance();
-		return new BeautyImageEngine(pageIndex>=0?this.getSharedPreferences(BeautyImage.class.getName(), Context.MODE_PRIVATE):null).fetchImage(URLs.makeUrl(false, "SmartPlayer", catalogArr[catalog]), catalog);
+		if(Environment.getExternalStorageState().equalsIgnoreCase(Environment.MEDIA_MOUNTED)){
+			return new LocalImageEngine(this, pageIndex>=0?this.getSharedPreferences(BeautyImage.class.getName(), Context.MODE_PRIVATE):null).loadLocalImage();
+		}
+		return new ArrayList<BaseImage>();
 	}
 	
 	public List<BaseImage> getBeautyImageList(int catalog, int pageIndex, boolean isRefresh) throws AppException {

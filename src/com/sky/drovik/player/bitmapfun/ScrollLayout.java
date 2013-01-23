@@ -507,7 +507,7 @@ public class ScrollLayout extends FrameLayout {
 			}
 			if (mTouchState == TOUCH_STATE_SCROLLING && mode != ZOOM) {
 				// Scroll to follow the motion event
-				final int pointerIndex = ev.findPointerIndex(mActivePointerId);
+				//final int pointerIndex = ev.findPointerIndex(mActivePointerId);
 				final float x = ev.getX();
 				final float deltaX = mLastMotionX - x;
 				mLastMotionX = x;
