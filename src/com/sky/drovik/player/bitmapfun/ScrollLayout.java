@@ -770,7 +770,7 @@ System.out.println("mNextScreen=" + mNextScreen);
 	
 	
 	public String getCurrentItem() {
-		return arr[preSelectIndex];
+		return arr[imageAdapterIndex];
 	}
 	
 	/**
