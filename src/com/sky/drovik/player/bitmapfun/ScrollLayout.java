@@ -329,7 +329,6 @@ public class ScrollLayout extends FrameLayout {
 		}
 		switch (action & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_MOVE: {
-			//System.out.println("onInter move..... mode = " + mode);
 			//Matrix m = new Matrix();
     		//m.set(matrix);
     		//RectF rectF = new RectF(0, 0, initImageWidth, initImageHeight);
@@ -369,7 +368,6 @@ public class ScrollLayout extends FrameLayout {
 		}
 
 		case MotionEvent.ACTION_DOWN: {
-			//System.out.println("onInter down.....");
             savedMatrix.set(matrix);
             prev.set(ev.getX(), ev.getY());
             mode = DRAG;
@@ -389,7 +387,6 @@ public class ScrollLayout extends FrameLayout {
 			break;
 		}
 		case MotionEvent.ACTION_POINTER_DOWN:
-			//System.out.println("onInter point down = "  + mode);
             dist = spacing(ev);
             if (spacing(ev) > 10f) {
             	savedMatrix.set(matrix);
@@ -401,7 +398,6 @@ public class ScrollLayout extends FrameLayout {
 		case MotionEvent.ACTION_CANCEL:
 		case MotionEvent.ACTION_UP:
         case MotionEvent.ACTION_POINTER_UP:
-        	//System.out.println("onInter up.....");
             mode = NONE;
 			// Release the drag
 			mTouchState = TOUCH_STATE_REST;
@@ -430,7 +426,6 @@ public class ScrollLayout extends FrameLayout {
 			mActivePointerId = ev.getPointerId(0);
 			break;
 		case MotionEvent.ACTION_MOVE:
-			//System.out.println("onTouch move..... mode = " + mode);
 			final float dx = (ev.getX() - prev.x);
 			Matrix m = new Matrix();
     		m.set(matrix);
@@ -469,6 +464,38 @@ public class ScrollLayout extends FrameLayout {
     					mTouchState = TOUCH_STATE_SCROLLING;
     					mode = NONE;
     				}
+    			}
+    		}
+    		if(rectF.left==0.0f) {
+    			if(dx > 0) {
+    				mTouchState = TOUCH_STATE_SCROLLING;
+    				mode = NONE;
+    			} else {
+    				if(rectF.right==dm.widthPixels){
+    	    			mTouchState = TOUCH_STATE_SCROLLING;
+    	    			mode = NONE;
+        			} else {
+        				mTouchState = TOUCH_STATE_REST;
+        				mode = DRAG;
+        			}
+    			}
+    		}else {
+    			if(rectF.left<0.0f){
+    				if(dx > 0) {
+    					mTouchState = TOUCH_STATE_REST;
+        				mode = DRAG;
+        			} else {
+        				if(rectF.right==dm.widthPixels) {
+        					mTouchState = TOUCH_STATE_SCROLLING;
+        					mode = NONE;
+        				}else {
+        					mTouchState = TOUCH_STATE_REST;
+        					mode = DRAG;
+        				}
+        			}
+    			} else {
+    				mTouchState = TOUCH_STATE_SCROLLING;
+					mode = NONE;
     			}
     		}
 			if(mode == DRAG) {//rectF.top !=0.0 || rectF.bottom != (float)dm.heightPixels && 
@@ -519,7 +546,6 @@ public class ScrollLayout extends FrameLayout {
 			break;
 		case MotionEvent.ACTION_UP:
         case MotionEvent.ACTION_POINTER_UP:
-        	//System.out.println("onTouch up.....");
 			if (mTouchState == TOUCH_STATE_SCROLLING) {
 				final VelocityTracker velocityTracker = mVelocityTracker;
 				int velocityX = 0;
@@ -673,24 +699,9 @@ public class ScrollLayout extends FrameLayout {
         curScaleR = minScaleR;
         System.out.println("minScaleR = " + minScaleR);
         matrix = new Matrix();
-        /*int deltX = 0;
-		int deltY = 0;
-		Matrix m = new Matrix();
-		m.set(matrix);
-		RectF rectF = new RectF(0, 0, initImageWidth, initImageHeight);
-		m.mapRect(rectF);
-		System.out.println(rectF.top + " " + rectF.bottom + " " + rectF.left + "  "+ rectF.right);
-		if(initImageWidth<=dm.widthPixels) {
-			deltX = (dm.widthPixels - (int)initImageWidth)/2;
-		}
-		if(initImageHeight<=dm.heightPixels) {
-			deltY = (dm.heightPixels - (int)initImageHeight)/2;
-		}
-		matrix.preTranslate(deltX, deltY);
-        //MAX_SCALE = Math.max((float) initImageWidth / (float) dm.widthPixels, (float) initImageHeight / (float) dm.heightPixels);;
         if (minScaleR < 1.0f) {
-            matrix.postScale(minScaleR, minScaleR);
-        }*/
+        	minScaleR = 1.0f;
+        }
         matrix.postScale(minScaleR, minScaleR);
     }
 	
