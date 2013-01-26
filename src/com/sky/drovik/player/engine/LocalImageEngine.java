@@ -1,6 +1,5 @@
 package com.sky.drovik.player.engine;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -10,17 +9,14 @@ import org.xmlpull.v1.XmlPullParser;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Xml;
 
 import com.drovik.utils.StringUtils;
 import com.sky.drovik.player.exception.AppException;
 import com.sky.drovik.player.pojo.BaseImage;
-import com.sky.drovik.player.pojo.MovieInfo;
 
 public class LocalImageEngine extends ImageEngine {
 
@@ -31,9 +27,9 @@ public class LocalImageEngine extends ImageEngine {
 			MediaStore.Images.Thumbnails.IMAGE_ID };
 
 	private String[] mediaColumns = new String[] { 
-			MediaStore.Images.Media._ID, 
 			MediaStore.Images.Media.DATA,
-			MediaStore.Images.Media.TITLE
+			MediaStore.Images.Media.DISPLAY_NAME,
+			MediaStore.Images.Media.BUCKET_DISPLAY_NAME
 			};
 	
 	private Context context;
@@ -126,27 +122,16 @@ public class LocalImageEngine extends ImageEngine {
 		List<BaseImage> imageList = new ArrayList<BaseImage>();
 		ContentResolver crs =  context.getContentResolver();
 		cursor = crs.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, mediaColumns, null, null,  MediaStore.Images.Media.DATE_ADDED + " DESC ");// + " LIMIT " + (index * perPageNum) + " , "+ perPageNum);
-		System.out.println("cursor = " + cursor);
+		StringBuffer sb = new StringBuffer();
+		BaseImage info = new BeautyImage();	
 		if(cursor != null && cursor.moveToFirst()){
 			do{
-				BaseImage info = new BeautyImage();
+				sb.delete(0, sb.length());
 				info.setName(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.TITLE)));
 				info.setSrc(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
-				//获取当前Video对应的Id，然后根据该ID获取其Thumb
-				int id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
-				String selection = MediaStore.Images.Thumbnails.IMAGE_ID +"=?";
-				String[] selectionArgs = new String[]{
-						id+""
-				};
-				ContentResolver rs =  context.getContentResolver();
-				Cursor thumbCursor = rs.query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, thumbColumns, selection, selectionArgs, null);
-				if(thumbCursor.moveToFirst()){
-					info.setId((int)cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails._ID)));
-					info.setThumbnail(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails.DATA)));
-				}
+				sb.append(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME))+";");
 				imageList.add(info);
-				thumbCursor.close();
-				System.out.println("image info = " + info.toString());
+				info.setThumbnail(sb.toString());
 			}while(cursor.moveToNext());
 			if(cursor != null) {
 				cursor.close();
