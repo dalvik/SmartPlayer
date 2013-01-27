@@ -59,10 +59,10 @@ public class ListViewLocalAdapter extends BaseAdapter {
 			convertView = listContainer.inflate(itemViewResource, null);
 			itemView = new ListItemView();
 			//获取控件对象
-			itemView.name = (TextView)convertView.findViewById(R.id.image_list_item_name);
-			itemView.intro = (TextView) convertView.findViewById(R.id.image_list_item_intro);
-			itemView.desc = (TextView)convertView.findViewById(R.id.image_list_item_desc);
-			itemView.src= (ImageView)convertView.findViewById(R.id.image_list_item_thumbnail);
+			itemView.name = (TextView)convertView.findViewById(R.id.local_image_list_item_name);
+			itemView.intro = (TextView) convertView.findViewById(R.id.local_image_list_item_intro);
+			itemView.desc = (TextView)convertView.findViewById(R.id.local_image_list_item_desc);
+			itemView.src= (ImageView)convertView.findViewById(R.id.local_image_list_item_thumbnail);
 			
 			//设置控件集到convertView
 			convertView.setTag(itemView);

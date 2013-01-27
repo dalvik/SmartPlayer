@@ -45,12 +45,12 @@
 
 	<com.sky.drovik.widget.PullToRefreshListView
 	  	android:id="@+id/frame_list_view_local_image"
-	    style="@style/widget_listview"
-	    android:visibility="gone"/>
+	    style="@style/widget_listview"/>
 	
 	<com.sky.drovik.widget.PullToRefreshListView
 	  	android:id="@+id/frame_list_view_beayty_image"
-	    style="@style/widget_listview"/>
+	    style="@style/widget_listview"
+	    android:visibility="gone"/>
 	
 	<com.sky.drovik.widget.PullToRefreshListView
 	  	android:id="@+id/frame_list_view_secenry_image"

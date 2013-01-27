@@ -22,9 +22,9 @@ public class LocalImageEngine extends ImageEngine {
 
 	private SharedPreferences photoInfo = null;
 	
-	private String[] thumbColumns = new String[] { 
+	/*private String[] thumbColumns = new String[] { 
 			MediaStore.Images.Thumbnails.DATA,
-			MediaStore.Images.Thumbnails.IMAGE_ID };
+			MediaStore.Images.Thumbnails.IMAGE_ID };*/
 
 	private String[] mediaColumns = new String[] { 
 			MediaStore.Images.Media.DATA,
@@ -123,16 +123,57 @@ public class LocalImageEngine extends ImageEngine {
 		ContentResolver crs =  context.getContentResolver();
 		cursor = crs.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, mediaColumns, null, null,  MediaStore.Images.Media.DATE_ADDED + " DESC ");// + " LIMIT " + (index * perPageNum) + " , "+ perPageNum);
 		StringBuffer sb = new StringBuffer();
-		BaseImage info = new BeautyImage();	
+		BeautyImage info = null;	
+		String bucketName = "";
 		if(cursor != null && cursor.moveToFirst()){
 			do{
-				sb.delete(0, sb.length());
-				info.setName(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.TITLE)));
-				info.setSrc(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
-				sb.append(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME))+";");
-				imageList.add(info);
-				info.setThumbnail(sb.toString());
+				String name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
+				if(!bucketName.equalsIgnoreCase(name)) {
+					if(info != null) {
+						info.setSrcArr(sb.toString().split(";"));
+						int len = info.getSrcArr().length;
+						info.setSrcSize(len);
+						info.setDesc("±¾µØÍ¼Æ¬£¬ÔÝÎÞ¼ò½é");
+						if(photoInfo != null) {
+							int old = photoInfo.getInt(info.getName() + "_photo_number", 0);
+							if(len == old) {
+								info.setHasNew(false);
+							} else {
+								info.setNewImageSize(len-old>0 ? len-old : len);
+								info.setHasNew(true);
+								photoInfo.edit().putInt(info.getName() + "_photo_number", len).commit();
+							}
+						}
+						imageList.add(info);
+					}
+					info = new BeautyImage();	
+					sb.delete(0, sb.length());
+					String fileName = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
+					info.setThumbnail(fileName);
+					sb.append(fileName + ";");
+					bucketName = name;
+				}else {
+					info.setName(name);
+					sb.append(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)) + ";");
+				}
 			}while(cursor.moveToNext());
+			if(info != null) {
+				info.setSrcArr(sb.toString().split(";"));
+				int len = info.getSrcArr().length;
+				info.setSrcSize(len);
+				info.setDesc("À´×Ô´æ´¢¿¨Í¼Æ¬£¬ÔÝÎÞ¼ò½é");
+				if(photoInfo != null) {
+					int old = photoInfo.getInt(info.getName() + "_photo_number", 0);
+					if(len == old) {
+						info.setHasNew(false);
+					} else {
+						info.setNewImageSize(len-old>0 ? len-old : len);
+						info.setHasNew(true);
+						photoInfo.edit().putInt(info.getName() + "_photo_number", len).commit();
+					}
+				}
+				imageList.add(info);
+			}
 			if(cursor != null) {
 				cursor.close();
 			}

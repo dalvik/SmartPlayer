@@ -29,8 +29,8 @@
         android:layout_centerInParent="true"
         
         />
-
-     <com.sky.drovik.views.ReflectTextView
+	 <!-- com.sky.drovik.views.ReflectTextView -->
+     <TextView
         style="@style/style_welcome_bottom_tips"
         android:id="@+id/welcom_bottom_info"
         android:layout_marginBottom="50dip"

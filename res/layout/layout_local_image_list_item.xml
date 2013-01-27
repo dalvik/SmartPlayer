@@ -13,7 +13,7 @@
         android:layout_height="wrap_content">
         
         <ImageView 
-            android:id="@+id/image_list_item_thumbnail"
+            android:id="@+id/local_image_list_item_thumbnail"
 	      	android:layout_width="80.0dip" 
 	        android:layout_height="100.0dip"
 	        android:layout_marginLeft="5dip"
@@ -35,7 +35,7 @@
 	        android:layout_weight="1"
 	        android:layout_gravity="center">
         
-	       	<TextView android:id="@+id/image_list_item_name"  
+	       	<TextView android:id="@+id/local_image_list_item_name"  
 	    		android:layout_width="wrap_content" 
 	           	android:layout_height="wrap_content" 
 	           	android:textSize="@dimen/text_size_18"
@@ -46,7 +46,7 @@
 	            />
 	       	
 	       	<TextView
-	       	    android:id="@+id/image_list_item_intro" 
+	       	    android:id="@+id/local_image_list_item_intro" 
 	    		android:layout_width="wrap_content" 
 	           	android:layout_height="wrap_content"
 	           	android:layout_weight="1" 
@@ -63,7 +63,7 @@
 	        android:layout_weight="1"
 	        android:layout_gravity="center">   
 	       	
-	       	<TextView android:id="@+id/image_list_item_desc"   
+	       	<TextView android:id="@+id/local_image_list_item_desc"   
 	    		android:layout_width="fill_parent" 
 	           	android:layout_height="wrap_content"
 	           	android:layout_marginLeft="5dip"

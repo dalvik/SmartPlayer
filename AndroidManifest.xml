@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sky.drovik.player"
-    android:versionCode="260"
-    android:versionName="2.6.0" >
+    android:versionCode="270"
+    android:versionName="2.7.0" >
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
@@ -127,7 +127,7 @@
         <activity android:name="net.youmi.android.appoffers.YoumiOffersActivity"
 				  android:configChanges="keyboard|keyboardHidden|orientation"/>
         
-        <meta-data android:name="YOUMI_CHANNEL" android:value="10030"/>
+        <meta-data android:name="YOUMI_CHANNEL" android:value="10120"/>
         <!--
         	ym 0
         	91 10110
