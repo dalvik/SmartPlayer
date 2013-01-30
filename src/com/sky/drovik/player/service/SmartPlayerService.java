@@ -1,5 +1,12 @@
 package com.sky.drovik.player.service;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import android.app.Notification;
@@ -15,6 +22,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -22,12 +30,14 @@ import android.os.Message;
 import android.util.Log;
 
 import com.sky.drovik.player.AppContext;
+import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.engine.BeautyImage;
 import com.sky.drovik.player.engine.UpdateManager;
 import com.sky.drovik.player.media.Main;
 import com.sky.drovik.player.pojo.BaseImage;
 import com.sky.drovik.player.pojo.UpdateInfo;
+import com.sky.drovik.player.utils.FileUtil;
 
 public class SmartPlayerService extends Service {
 
@@ -152,17 +162,7 @@ public class SmartPlayerService extends Service {
 		public void run() {
 			Looper.prepare();
 			try {
-				UpdateManager manager =  UpdateManager.getUpdateManager();
-				UpdateInfo updateInfo = manager.checkVersion();
-				PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-				if(updateInfo != null && updateInfo.getVersionCode()>packageInfo.versionCode) {
-					Message msg = new Message();
-					msg.what = new_update_version;
-					currentVersion = packageInfo.versionName;
-					newVersion = updateInfo.getVersionName();
-					packageSize = updateInfo.getPackageSize();
-					handler.sendEmptyMessage(new_update_version);
-				}
+				
 				AppContext appContext = (AppContext)getApplication();
 				List<BaseImage> beautyImageListTmp = appContext.getBeautyImageList(0, -1, true);
 				SharedPreferences photoInfo = appContext.getSharedPreferences(BeautyImage.class.getName(), Context.MODE_PRIVATE);
@@ -183,11 +183,67 @@ public class SmartPlayerService extends Service {
 					msg.obj = updateImageName;
 					handler.sendMessage(msg);
 				}
+				
+				UpdateManager manager =  UpdateManager.getUpdateManager();
+				UpdateInfo updateInfo = manager.checkVersion();
+				PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+				if(updateInfo != null && updateInfo.getVersionCode()>packageInfo.versionCode) {
+					String apkName = getString(R.string.app_name) + "_"+updateInfo.getVersionName()+".apk";
+					//判断是否挂载了SD卡
+					String storageState = Environment.getExternalStorageState();		
+					if(storageState.equals(Environment.MEDIA_MOUNTED)){
+						String savePath = Environment.getExternalStorageDirectory().getAbsolutePath() + FileUtil.parentPath + "update" + File.separator;
+						File file = new File(savePath);
+						if(BuildConfig.DEBUG) {
+							Log.d(TAG, "### save path = " + savePath);
+						}
+						if(!file.exists()){
+							file.mkdirs();
+						}else {
+							File[] allFile = file.listFiles();
+							for(File tmp:allFile) {
+								if(tmp.getName().toLowerCase().endsWith("apk")) {
+									if(!tmp.getName().equalsIgnoreCase(apkName)) {
+										tmp.delete();
+									}
+								}
+							}
+						}
+						String apkFilePath = savePath + apkName;
+						File ApkFile = new File(apkFilePath);
+						//是否已下载更新文件
+						if(!ApkFile.exists()){
+							FileOutputStream fos = new FileOutputStream(ApkFile);
+							URL url = new URL(updateInfo.getDownloadUrl());
+							HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+							conn.connect();
+							InputStream is = conn.getInputStream();
+							byte buf[] = new byte[1024];
+							do{   		   		
+					    		int numread = is.read(buf);
+					    		if(numread <= 0){	
+					    			//下载完成通知安装
+					    			break;
+					    		}
+					    		fos.write(buf,0,numread);
+					    		fos.flush();
+					    	}while(true);//点击取消就停止下载
+							fos.close();
+							is.close();
+						}
+					}
+					
+					Message msg = new Message();
+					msg.what = new_update_version;
+					currentVersion = packageInfo.versionName;
+					newVersion = updateInfo.getVersionName();
+					packageSize = updateInfo.getPackageSize();
+					handler.sendEmptyMessage(new_update_version);
+				}
 			} catch (Exception e) {
 				//e.printStackTrace();
 				Log.d(TAG, "### CheckVersion = " + e.getLocalizedMessage());
-			}/**/
+			}
 		}
-		
 	}
 }

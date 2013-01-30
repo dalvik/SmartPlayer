@@ -221,7 +221,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	
 	private String curPhotoName = ""; //当前相册名称
 	
-	private boolean isCheck = false;// 审核
+	private boolean isCheck = true;// 审核
 	
 	//ym
 	public static final String KEY_POINTS="BEYING";

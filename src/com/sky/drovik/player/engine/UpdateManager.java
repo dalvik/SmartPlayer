@@ -35,12 +35,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
-import com.drovik.utils.FileUtil;
 import com.drovik.utils.NetworkUtil;
 import com.drovik.utils.URLs;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.pojo.UpdateInfo;
+import com.sky.drovik.player.utils.FileUtil;
 import com.sky.drovik.views.DownLoadProgressBar;
 
 public class UpdateManager {
@@ -340,7 +340,7 @@ public class UpdateManager {
 		@Override
 		public void run() {
 			try {
-				String apkName = context.getPackageName() + "_"+updateInfo.getVersionName()+".apk";
+				String apkName = context.getString(R.string.app_name) + "_"+updateInfo.getVersionName()+".apk";
 				//判断是否挂载了SD卡
 				String storageState = Environment.getExternalStorageState();		
 				if(storageState.equals(Environment.MEDIA_MOUNTED)){
@@ -351,6 +351,15 @@ public class UpdateManager {
 					}
 					if(!file.exists()){
 						file.mkdirs();
+					}else {
+						File[] allFile = file.listFiles();
+						for(File tmp:allFile) {
+							if(tmp.getName().toLowerCase().endsWith("apk")) {
+								if(!tmp.getName().equalsIgnoreCase(apkName)) {
+									tmp.delete();
+								}
+							}
+						}
 					}
 					apkFilePath = savePath + apkName;
 				}
@@ -407,7 +416,7 @@ public class UpdateManager {
 		}
 	};
 	
-	/**
+		/**
 	    * 安装apk
 	    * @param url
 	    */

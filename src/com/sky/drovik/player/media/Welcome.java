@@ -3,6 +3,8 @@ package com.sky.drovik.player.media;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -99,6 +101,13 @@ public class Welcome extends Activity implements OnClickListener {
 		findViewById(R.id.welcome_top_info).setAnimation(AnimationUtils.loadAnimation(this, R.anim.welcome_toptext_rotate));
 		bottomInfo = (TextView) findViewById(R.id.welcom_bottom_info);
 		handler.sendEmptyMessage(1);
+		try {
+			PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+			 TextView version = (TextView)findViewById(R.id.welcom_top_version_info);
+			 version.setText(packageInfo.versionName);
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
 		///startService(new Intent(this, SmartPlayerService.class));
 		//handler.sendEmptyMessageDelayed(FADE_IN, 10);
 	}
