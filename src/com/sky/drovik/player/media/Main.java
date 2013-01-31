@@ -232,8 +232,10 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		YoumiOffersManager.init(this, "d56c188174986b81", "07603ef9797423c0");
-		YoumiPointsManager.setUserID(this.getPackageName());
+		if(isCheck) {
+			YoumiOffersManager.init(this, "d56c188174986b81", "07603ef9797423c0");
+			YoumiPointsManager.setUserID(this.getPackageName());
+		}
 		setContentView(R.layout.layout_main);
 		appContext = (AppContext)getApplication();
 		try {
