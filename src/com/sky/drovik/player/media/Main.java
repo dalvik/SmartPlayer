@@ -12,6 +12,7 @@ import net.youmi.android.appoffers.EarnedPointsNotifier;
 import net.youmi.android.appoffers.EarnedPointsOrder;
 import net.youmi.android.appoffers.YoumiOffersManager;
 import net.youmi.android.appoffers.YoumiPointsManager;
+import net.youmi.push.android.YoumiPush;
 import android.annotation.TargetApi;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
@@ -235,6 +236,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		if(isCheck) {
 			YoumiOffersManager.init(this, "d56c188174986b81", "07603ef9797423c0");
 			YoumiPointsManager.setUserID(this.getPackageName());
+			YoumiPush.startYoumiPush(this, "d56c188174986b81", "07603ef9797423c0", false);
 		}
 		setContentView(R.layout.layout_main);
 		appContext = (AppContext)getApplication();
@@ -260,7 +262,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
         	boolean flag = intent.getBooleanExtra("check_update", false);
         	UpdateManager.getUpdateManager().checkAppUpdate(this, flag);
         }
-        if(isCheck) {
+        if(!isCheck) {
         	frameBeautyButton.setVisibility(View.INVISIBLE);
         	frameSceneryButton.setVisibility(View.INVISIBLE);
         	frameOtherButton.setVisibility(View.INVISIBLE);

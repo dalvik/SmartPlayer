@@ -44,6 +44,9 @@ public class OtherImageEngine extends ImageEngine {
 					}else if(image != null) {
 						if(tag.equalsIgnoreCase("id")) {
 							image.setId(StringUtils.toInt(xmlPullParser.nextText(),0));
+							//TODO
+							// del
+							image.setId(1);
 						} else if(tag.equalsIgnoreCase("name")) {
 							image.setName(xmlPullParser.nextText().trim());
 						} else if(tag.equalsIgnoreCase("thumbnail")) {

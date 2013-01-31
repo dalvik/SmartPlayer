@@ -134,6 +134,8 @@ public class LocalImageEngine extends ImageEngine {
 						int len = info.getSrcArr().length;
 						info.setSrcSize(len);
 						info.setDesc("±¾µØÍ¼Æ¬£¬ÔÝÎÞ¼ò½é");
+						info.setChannel("100000");
+						info.setId(10000);
 						if(photoInfo != null) {
 							int old = photoInfo.getInt(info.getName() + "_photo_number", 0);
 							if(len == old) {
@@ -162,6 +164,8 @@ public class LocalImageEngine extends ImageEngine {
 				int len = info.getSrcArr().length;
 				info.setSrcSize(len);
 				info.setDesc("À´×Ô´æ´¢¿¨Í¼Æ¬£¬ÔÝÎÞ¼ò½é");
+				info.setChannel("100000");
+				info.setId(10000);
 				if(photoInfo != null) {
 					int old = photoInfo.getInt(info.getName() + "_photo_number", 0);
 					if(len == old) {

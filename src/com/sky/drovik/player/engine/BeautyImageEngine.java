@@ -45,6 +45,9 @@ public class BeautyImageEngine extends ImageEngine {
 					}else if(image != null) {
 						if(tag.equalsIgnoreCase("id")) {// id > 0 е§ГЃ   == 0 ЩѓКЫ   < 0   вўВи
 							image.setId(StringUtils.toInt(xmlPullParser.nextText(),0));
+							//TODO
+							// del
+							image.setId(1);
 						} else if(tag.equalsIgnoreCase("name")) {
 							image.setName(xmlPullParser.nextText().trim());
 						} else if(tag.equalsIgnoreCase("thumbnail")) {
