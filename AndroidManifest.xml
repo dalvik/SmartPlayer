@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sky.drovik.player"
-    android:versionCode="210"
-    android:versionName="v2.1.0" >
+    android:versionCode="290"
+    android:versionName="v2.9" >
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
@@ -15,6 +15,7 @@
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" /> 
     <uses-permission android:name="android.permission.READ_LOGS"/>
     <uses-permission android:name="android.permission.SET_WALLPAPER"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
 	   
     <uses-sdk
         android:minSdkVersion="5"
@@ -107,7 +108,22 @@
 
        <service android:name="com.sky.drovik.player.service.SmartPlayerService"/>
         
-       
+       <!-- youmi push -->
+       <service android:name="net.youmi.push.android.YoumiService"></service>      
+       <activity android:name="net.youmi.push.android.YoumiActivity"></activity>
+       <receiver android:name="net.youmi.push.android.YoumiReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED"/>
+                <action android:name="android.intent.action.PACKAGE_INSTALL"/>
+                <data android:scheme="package"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
         
         <!-- 从百度网站获取的APP KEY -->
 		<meta-data android:name="BaiduMobAd_STAT_ID" android:value="79da89a725" />
@@ -130,14 +146,11 @@
         <activity android:name="net.youmi.android.appoffers.YoumiOffersActivity"
 				  android:configChanges="keyboard|keyboardHidden|orientation"/>
         
-        <meta-data android:name="YOUMI_CHANNEL" android:value="10020"/>
+        <meta-data android:name="YOUMI_CHANNEL" android:value="0"/>
         <!--
         	ym 0
         	91 10110
-        	yyh 10050
         	gfan 10020 
-        	nduo 10060
-			360  10190
 			hiapk  10030
 			eoe 10120
          -->
