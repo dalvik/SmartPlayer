@@ -16,6 +16,8 @@
 
 package com.sky.drovik.player.media;
 
+import java.io.File;
+
 import net.youmi.android.appoffers.CheckStatusNotifier;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
@@ -27,6 +29,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -36,6 +39,7 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.Video;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
@@ -47,6 +51,7 @@ import com.sky.drovik.factory.IRegisterFoctory;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.app.Res;
+import com.sky.drovik.player.ffmpeg.JniUtils;
 
 public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener , CheckStatusNotifier {
 
@@ -64,6 +69,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
 
     private final VideoView mVideoView;
     private final View mProgressView;
+    
     private final Uri mUri;
     private final ContentResolver mContentResolver;
     private Context context;
@@ -71,6 +77,9 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     private boolean isDeviceInvalid;
     
     private static final boolean DEBUG = true;
+
+    //add image video view
+    private ImageView videoImageView = null;
     
     Handler mHandler = new Handler();
 
@@ -83,6 +92,12 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
             }
         }
     };
+    
+    private Handler myHandler = new Handler() {
+		public void handleMessage(android.os.Message msg) {
+				videoImageView.invalidate();
+		};
+	};
     
       static class MyMediaController extends MediaController {
 
@@ -159,7 +174,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
         mContentResolver = context.getContentResolver();
         mVideoView = (VideoView) rootView.findViewById(Res.id.surface_view);
         mProgressView = rootView.findViewById(Res.id.progress_indicator);
-
+        videoImageView = (ImageView) rootView.findViewById(Res.id.video_image_view);
         mUri = videoUri;
 
         // For streams that we expect to be slow to start up, show a
@@ -298,13 +313,14 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     public boolean onError(MediaPlayer player, int arg1, int arg2) {
         mHandler.removeCallbacksAndMessages(null);
         mProgressView.setVisibility(View.GONE);
-        //ªÒ»°◊¢≤·◊¥Ã¨ Œ¥◊¢≤·Ã· æ◊¢≤· “—◊¢≤·  Ã· æ‘›Œﬁ∑®Ω‚¬Î
+        //ªÒ»°◊¢≤·◊¥Ã¨ Œ¥◊¢≤·Ã· æ◊¢≤· “—◊¢≤·  Ω‚¬Î
         StatService.onEvent(context, " ”∆µ≤•∑≈ ß∞‹", mUri.getPath());
         foctory = new DrovikRegisterFactory();
-        showErrDialog(foctory.isRegister(context));
+        showRegisterDialog(foctory.isRegister(context));
         return true;
     }
 
+    @Override
 	public void onCompletion(MediaPlayer mp) {
 		StatService.onEvent(context, " ”∆µ≤•∑≈ÕÍ≥…", mUri.getPath());
         onCompletion();
@@ -317,38 +333,106 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
 	public void onPlayError() {
 		
 	}
-/**/
-    /*public void onCompletion() {
-        
-    }
-    
-    public void onCompn() {
-        
-    }*/
 
-    private void showErrDialog(boolean status) {
+    private void showRegisterDialog(boolean status) {
     	AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(Res.string.drovik_play_error_tips_str);
         builder.setMessage(status?context.getString(Res.string.drovik_play_error_developer_str):context.getString(Res.string.drovik_play_error_unsupport_format_str));
-        if(!status){
+        if(status){//no register
         	builder.setPositiveButton(Res.string.drovik_play_goto_regester_str, new OnClickListener() {
         		public void onClick(DialogInterface dialog, int which) {
         			onPlayError();
         			if(!isDeviceInvalid) {
         				foctory.gotoRegister(context);
         			} else {
-        				 StatService.onEvent(context, " ”∆µΩ‚¬Î∆˜ ß∞‹", mUri.getPath());
-        				ToastUtils.showToast(context, Res.string.drovik_play_invalid_device_str);
+        				playVieoWithFFmpeg();
         			}
         		}
         	});
+        	builder.setNegativeButton(status?context.getString(Res.string.drovik_play_waitting_for_update_str):context.getString(Res.string.drovik_play_cancle_regester_str), new OnClickListener() {
+        		public void onClick(DialogInterface dialog, int which) {
+        			onPlayError();
+        		}
+        	});
+        	builder.show();
+        }else {// register
+        	playVieoWithFFmpeg();
         }
-        builder.setNegativeButton(status?context.getString(Res.string.drovik_play_waitting_for_update_str):context.getString(Res.string.drovik_play_cancle_regester_str), new OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-            	onPlayError();
-            }
-        });
-        builder.show();
+    }
+    
+    private void playVieoWithFFmpeg() {
+    	int res = JniUtils.openVideoFile(mUri.getPath()); //"/mnt/sdcard/video.mp4"
+    	if(res == JniUtils.open_file_success) {
+    		System.out.println("res = " + res );
+    		int[] resulation = JniUtils.getVideoResolution(); 
+    		final Bitmap mBitmap = Bitmap.createBitmap(resulation[0],  resulation[1], Bitmap.Config.ARGB_8888);
+    		mVideoView.setVisibility(View.GONE);
+    		videoImageView.setVisibility(View.VISIBLE);
+    		videoImageView.setImageBitmap(mBitmap);
+    		System.out.println(resulation[0] +  " --- " + resulation[1]); 
+    		int den = resulation[2]; 
+    		int num = resulation[3]; 
+    		final int frame_rate = den/num;
+    		new Thread(new Runnable() {
+    			@Override 
+    			public void run() { 
+    				int i = 0; 
+    				while((i=JniUtils.drawFrame(mBitmap))==0) { 
+    					myHandler.sendEmptyMessage(1); 
+    					try {
+    						Thread.sleep(frame_rate); 
+    					}
+    					catch (InterruptedException e) { 
+    						// TODOAuto-generated catch block 
+    						e.printStackTrace();
+    					}
+    				}
+    				JniUtils.close();
+    				onCompletion();
+    			}
+    		}).start();
+    	}else {
+    		switch(res) {
+    		case JniUtils.open_file_fail:
+    			StatService.onEvent(context, "≤•∑≈“Ï≥£", "¥ÌŒÛ¬Î£∫" + res + " " + context.getString(R.string.drovik_play_ffmpeg_open_file_fail_str));
+    			if(BuildConfig.DEBUG) {
+    				Log.d(TAG, "≤•∑≈“Ï≥£, ¥ÌŒÛ¬Î£∫" + res + " " + context.getString(R.string.drovik_play_ffmpeg_open_file_fail_str));
+    			}
+    			break;
+    		case JniUtils.get_stream_info_fail:
+    			//ToastUtils.showToast(context, R.string.drovik_play_ffmpeg_get_stream_info_fail_str);
+    			StatService.onEvent(context, "≤•∑≈“Ï≥£", "¥ÌŒÛ¬Î£∫" + res + " " + context.getString(R.string.drovik_play_ffmpeg_get_stream_info_fail_str));
+    			if(BuildConfig.DEBUG) {
+    				Log.d(TAG, "≤•∑≈“Ï≥£, ¥ÌŒÛ¬Î£∫" + res + " " + context.getString(R.string.drovik_play_ffmpeg_get_stream_info_fail_str));
+    			}
+    			break;
+    		case JniUtils.find_video_stream_fail:
+    			//ToastUtils.showToast(context, R.string.drovik_play_ffmpeg_find_video_stream_fail_str);
+    			StatService.onEvent(context, "≤•∑≈“Ï≥£", "¥ÌŒÛ¬Î£∫" + res + " " + context.getString(R.string.drovik_play_ffmpeg_find_video_stream_fail_str));
+    			if(BuildConfig.DEBUG) {
+    				Log.d(TAG, "≤•∑≈“Ï≥£, ¥ÌŒÛ¬Î£∫" + res + " " + context.getString(R.string.drovik_play_ffmpeg_find_video_stream_fail_str));
+    			}
+    			break;
+    		case JniUtils.unsurpport_codec:
+    			//ToastUtils.showToast(context, R.string.drovik_play_ffmpeg_unsurpport_codec_str);
+    			StatService.onEvent(context, "≤•∑≈“Ï≥£", "¥ÌŒÛ¬Î£∫" + res + " " + context.getString(R.string.drovik_play_ffmpeg_unsurpport_codec_str));
+    			if(BuildConfig.DEBUG) {
+    				Log.d(TAG, "≤•∑≈“Ï≥£, ¥ÌŒÛ¬Î£∫" + res + " " + context.getString(R.string.drovik_play_ffmpeg_unsurpport_codec_str));
+    			}
+    			break;
+    		case JniUtils.open_codec_fail:
+    			//ToastUtils.showToast(context, R.string.drovik_play_ffmpeg_open_codec_fail_str);
+    			StatService.onEvent(context, "≤•∑≈“Ï≥£", "¥ÌŒÛ¬Î£∫" + res + " " + context.getString(R.string.drovik_play_ffmpeg_open_codec_fail_str));
+    			if(BuildConfig.DEBUG) {
+    				Log.d(TAG, "≤•∑≈“Ï≥£, ¥ÌŒÛ¬Î£∫" + res + " " + context.getString(R.string.drovik_play_ffmpeg_open_codec_fail_str));
+    			}
+    			break;
+    			default:
+    				break;
+    		}
+    		ToastUtils.showToast(context, R.string.drovik_play_ffmpeg_open_file_fail_str);
+    		onCompletion();
+    	}
     }
     
     @Override

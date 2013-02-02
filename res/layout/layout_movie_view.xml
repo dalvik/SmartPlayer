@@ -9,6 +9,12 @@
             android:layout_height="fill_parent"
             android:layout_centerInParent="true" />
 
+    <ImageView android:id="@+id/video_image_view" 
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+    
     <LinearLayout android:id="@+id/progress_indicator"
             android:orientation="vertical"
             android:layout_centerInParent="true"

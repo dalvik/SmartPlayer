@@ -19,8 +19,8 @@
     <!-- error tips -->
     <!-- unresiger -->
     <string name="drovik_play_error_tips_str">友情提示</string>
-    <string name="drovik_play_error_unsupport_format_str">试用版暂不支持此格式的播放</string>
-    <string name="drovik_play_goto_regester_str">免费激活</string>
+    <string name="drovik_play_error_unsupport_format_str">积分不足，无法播放</string>
+    <string name="drovik_play_goto_regester_str">获取积分</string>
     <string name="drovik_play_regester_success_str">恭喜！您已经激活成功，永久使用！^_^</string>
     <string name="drovik_play_earncore_success_str">恭喜！ <xliff:g id="number">%1$s</xliff:g>的大门永久为您敞开！</string>
     <string name="drovik_play_regester_uncommplete_str">恭喜，还差 <xliff:g id="number">%1$s</xliff:g>分就永久激活啦，加油！</string>
@@ -36,6 +36,17 @@
     <!-- resiger -->
 	<string name="drovik_play_error_developer_str">支持该视频格式的软件即将发布，敬请期待！</string>
     <string name="drovik_play_waitting_for_update_str">耐心等待中~</string>
+    
+    <!-- ffmpeg decoder err code -->
+    <string name="drovik_play_ffmpeg_open_file_fail_str">打开文件失败</string>
+    <string name="drovik_play_ffmpeg_get_stream_info_fail_str">获取文件流失败</string>
+    <string name="drovik_play_ffmpeg_find_video_stream_fail_str">分析视频流异常</string>
+    <string name="drovik_play_ffmpeg_unsurpport_codec_str">不支持的编码方式</string>
+    <string name="drovik_play_ffmpeg_open_codec_fail_str">打开解码器失败</string>
+    <string name="drovik_play_ffmpeg_bitmap_getinfo_error_str">抓取位图信息失败</string>
+    <string name="drovik_play_ffmpeg_bitmap_lockpixels_error_str">锁定位图信息失败</string>
+    <string name="drovik_play_ffmpeg_bitmap_initialize_conversion_error_str">初始化转换失败</string>
+     
     
     <!-- view history list -->
     <string name="drovik_view_history_str">观看记录</string>
