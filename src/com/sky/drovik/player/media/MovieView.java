@@ -21,7 +21,7 @@ public class MovieView extends Activity {
 	private MovieViewControl movieViewControl;
 	 
 	private boolean finishOnCompletion;
-	 
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,5 +50,8 @@ public class MovieView extends Activity {
         return true;
     }
 
-    
+	public void callBackRefresh() {
+		MovieViewControl.refresh();
+
+	}
 }

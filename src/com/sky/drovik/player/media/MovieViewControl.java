@@ -34,6 +34,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Video;
@@ -79,7 +80,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     private static final boolean DEBUG = true;
 
     //add image video view
-    private ImageView videoImageView = null;
+    private static ImageView videoImageView = null;
     
     Handler mHandler = new Handler();
 
@@ -93,7 +94,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
         }
     };
     
-    private Handler myHandler = new Handler() {
+    private static Handler myHandler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 				videoImageView.invalidate();
 		};
@@ -167,7 +168,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
             newView.findViewById(R.id.bar_vol_up).setOnClickListener(mClickListenerInternal);
             newView.findViewById(R.id.bar_vol_down).setOnClickListener(mClickListenerInternal);*/
         }        
- }
+    }
     
     public MovieViewControl(View rootView, Context context, Uri videoUri) {
     	this.context = context;
@@ -221,7 +222,8 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
             });
             builder.show();
         } else {
-            mVideoView.start();
+            //mVideoView.start();
+        	playVieoWithFFmpeg();
         }
     }
 
@@ -376,9 +378,9 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     		new Thread(new Runnable() {
     			@Override 
     			public void run() { 
-    				int i = 0; 
-    				while((i=JniUtils.drawFrame(mBitmap))==0) { 
-    					myHandler.sendEmptyMessage(1); 
+    				Looper.prepare();
+    				int i = JniUtils.drawFrame(mBitmap);
+    				/*while((i===0) { 
     					try {
     						Thread.sleep(frame_rate); 
     					}
@@ -386,7 +388,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     						// TODOAuto-generated catch block 
     						e.printStackTrace();
     					}
-    				}
+    				}*/
     				JniUtils.close();
     				onCompletion();
     			}
@@ -448,4 +450,9 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
 			Log.d(TAG, "isAppInvalid = " + isAppInvalid + "  isInTestMode = " + isInTestMode + "  isDeviceInvalid = " + isDeviceInvalid);
 		}
 	}
+
+	public static void refresh() {
+		myHandler.sendEmptyMessage(1);
+	}
+
 }
