@@ -86,7 +86,8 @@ public class Guide extends Activity implements OnClickListener,
         	
         	initBottomDots();
         }else {
-        	startActivity(new Intent(this, Welcome.class));
+        	//startActivity(new Intent(this, Welcome.class));
+        	startActivity(new Intent(this, Main.class));
         	Guide.this.finish();
         }
 
