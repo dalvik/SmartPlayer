@@ -46,7 +46,7 @@
     <string name="drovik_play_ffmpeg_bitmap_getinfo_error_str">抓取位图信息失败</string>
     <string name="drovik_play_ffmpeg_bitmap_lockpixels_error_str">锁定位图信息失败</string>
     <string name="drovik_play_ffmpeg_bitmap_initialize_conversion_error_str">初始化转换失败</string>
-     
+    <string name="drovik_play_ffmpeg_lower_system_version_str">固件版本太低，最低系统版本要求2.2</string> 
     
     <!-- view history list -->
     <string name="drovik_view_history_str">观看记录</string>

@@ -379,7 +379,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     			@Override 
     			public void run() { 
     				Looper.prepare();
-    				int i = JniUtils.drawFrame(mBitmap);
+    				int i = JniUtils.decodeMedia(mBitmap);
     				/*while((i===0) { 
     					try {
     						Thread.sleep(frame_rate); 

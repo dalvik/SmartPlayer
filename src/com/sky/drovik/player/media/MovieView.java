@@ -12,9 +12,6 @@ import com.sky.drovik.player.app.Res;
 
 public class MovieView extends Activity {
 
-	static {
-		System.loadLibrary("ffmpeg");
-	}
 	
 	private VideoView videoView = null;
 	

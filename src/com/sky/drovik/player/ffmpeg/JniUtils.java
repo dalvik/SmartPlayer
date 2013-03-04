@@ -4,6 +4,14 @@ import android.graphics.Bitmap;
 
 public class JniUtils {
 
+	static {
+		try {
+			System.loadLibrary("ffmpeg");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
 	public final static int open_file_fail = -1;
 	public final static int open_file_success = 0;
 	public final static int	get_stream_info_fail = -2;
@@ -29,8 +37,27 @@ public class JniUtils {
 	
 	public static native int[] getVideoResolution();
 	
-	public static native int drawFrame(Bitmap bitmap);
+	public static native int decodeMedia(Bitmap bitmap);
+	/**
+	 * 获取播放状态
+	 * -1  停止
+	 * 0    暂定
+	 * 2  播放
+	 * @return 
+	 */
+	public static native int getPlayState();
+	
+	public static native int setPlay();
+	
+	public static native int setStop();
+	
+	public static native int setPause();
+	
+	public static native int seek();
+	
+	public static native int getCurrentPos();
 	
 	public static native int close();
+	
 	
 }

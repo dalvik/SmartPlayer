@@ -71,6 +71,7 @@ import com.sky.drovik.player.bitmapfun.ImageCache.ImageCacheParams;
 import com.sky.drovik.player.bitmapfun.ImageDetailActivity;
 import com.sky.drovik.player.bitmapfun.ImageFetcher;
 import com.sky.drovik.player.bitmapfun.ScrollyGalleryActivity;
+import com.sky.drovik.player.bitmapfun.Utils;
 import com.sky.drovik.player.engine.BeautyImage;
 import com.sky.drovik.player.engine.HistoryListAdpater;
 import com.sky.drovik.player.engine.ImageLoaderTask;
@@ -495,13 +496,17 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 			
 			@Override
 			public void onClick(View v) {
-				Integer index = (Integer) v.getTag();
-				MovieInfo info = movieList.get(index);
-				HisInfo hisInfo = new HisInfo(System.currentTimeMillis(), info.title.toString(), info.path);
-				List<HisInfo> list = FileUtil.fetchDeviceFromFile(appContext);
-				FileUtil.addNewHisInfo(list, hisInfo);
-				FileUtil.persistentDevice(appContext, list);
-				startActivity(info.intent);
+				if(Utils.hasFroyo()){
+					Integer index = (Integer) v.getTag();
+					MovieInfo info = movieList.get(index);
+					HisInfo hisInfo = new HisInfo(System.currentTimeMillis(), info.title.toString(), info.path);
+					List<HisInfo> list = FileUtil.fetchDeviceFromFile(appContext);
+					FileUtil.addNewHisInfo(list, hisInfo);
+					FileUtil.persistentDevice(appContext, list);
+					startActivity(info.intent);
+				}else {
+					ToastUtils.showToast(appContext, R.string.drovik_play_ffmpeg_lower_system_version_str);
+				}
 			}
 		});
 		imageInfo.imageView = imageViewItem;
