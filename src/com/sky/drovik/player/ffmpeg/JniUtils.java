@@ -33,11 +33,13 @@ public class JniUtils {
 		int Java_com_sky_drovik_player_ffmpeg_JniUtils_openVideoFile(JNIEnv * env, jobject this,jstring name) {
 
 	 */
-	public static native int openVideoFile(String fileName);
+	public static native int[] openVideoFile(String fileName);
 	
 	public static native int[] getVideoResolution();
 	
 	public static native int decodeMedia(Bitmap bitmap);
+	
+	public static native int display(Bitmap bitmap);
 	/**
 	 * »ñÈ¡²¥·Å×´Ì¬
 	 * -1  Í£Ö¹

@@ -96,7 +96,16 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     
     private static Handler myHandler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
+			switch(msg.what) {
+			case 100:
 				videoImageView.invalidate();
+				System.out.println("refresh");
+				myHandler.sendEmptyMessageDelayed(100, 10);
+				break;
+				default:
+					break;
+			}
+				
 		};
 	};
     
@@ -363,10 +372,11 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     }
     
     private void playVieoWithFFmpeg() {
-    	int res = JniUtils.openVideoFile(mUri.getPath()); //"/mnt/sdcard/video.mp4"
+    	int[] resulation = JniUtils.openVideoFile(mUri.getPath()); //"/mnt/sdcard/video.mp4"
+    	int res = 0;
     	if(res == JniUtils.open_file_success) {
     		System.out.println("res = " + res );
-    		int[] resulation = JniUtils.getVideoResolution(); 
+    		//int[] resulation = JniUtils.getVideoResolution(); 
     		final Bitmap mBitmap = Bitmap.createBitmap(resulation[0],  resulation[1], Bitmap.Config.ARGB_8888);
     		mVideoView.setVisibility(View.GONE);
     		videoImageView.setVisibility(View.VISIBLE);
@@ -375,11 +385,14 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     		int den = resulation[2]; 
     		int num = resulation[3]; 
     		final int frame_rate = den/num;
+    		JniUtils.decodeMedia(mBitmap);
+    		myHandler.sendEmptyMessageDelayed(100, 10);
     		new Thread(new Runnable() {
     			@Override 
     			public void run() { 
     				Looper.prepare();
-    				int i = JniUtils.decodeMedia(mBitmap);
+    				
+    				int i = JniUtils.display(mBitmap);
     				/*while((i===0) { 
     					try {
     						Thread.sleep(frame_rate); 
@@ -388,9 +401,9 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     						// TODOAuto-generated catch block 
     						e.printStackTrace();
     					}
-    				}*/
+    				}
     				JniUtils.close();
-    				onCompletion();
+    				onCompletion();*/
     			}
     		}).start();
     	}else {
