@@ -97,10 +97,8 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     private static Handler myHandler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			switch(msg.what) {
-			case 100:
+			case 1:
 				videoImageView.invalidate();
-				System.out.println("refresh");
-				myHandler.sendEmptyMessageDelayed(100, 10);
 				break;
 				default:
 					break;
@@ -464,8 +462,9 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
 		}
 	}
 
-	public static void refresh() {
-		myHandler.sendEmptyMessage(1);
+	public static void refresh(int msg) {
+		myHandler.sendEmptyMessage(msg);
+		//myHandler.sendEmptyMessageDelayed(100, 10);
 	}
 
 }

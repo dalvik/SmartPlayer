@@ -47,8 +47,9 @@ public class MovieView extends Activity {
         return true;
     }
 
-	public void callBackRefresh() {
-		MovieViewControl.refresh();
+	public void callBackRefresh(int msg) {
+		System.out.println("---------" + msg);
+		MovieViewControl.refresh(msg);
 
 	}
 }
