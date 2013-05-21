@@ -16,7 +16,6 @@
 
 package com.sky.drovik.player.media;
 
-import java.io.IOException;
 import java.util.Map;
 
 import net.youmi.android.appoffers.CheckStatusNotifier;
@@ -26,13 +25,11 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -44,24 +41,23 @@ import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.app.Res;
 import com.sky.drovik.player.ffmpeg.JniUtils;
-import com.sky.drovik.player.media.VideoController.VideoPlayerControl;
 
-public class VideoViewControl implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener,
-		CheckStatusNotifier {
+public class VideoViewControl implements MediaPlayer.OnErrorListener,
+		MediaPlayer.OnCompletionListener, CheckStatusNotifier {
 
 	@SuppressWarnings("unused")
 	private static final String TAG = "MovieViewControl";
-    private Map<String, String> mHeaders;
-    private int mCurrentState = STATE_IDLE;
-    private int mTargetState  = STATE_IDLE;
-    private static final int STATE_ERROR              = -1;
-    private static final int STATE_IDLE               = 0;
-    private static final int STATE_PREPARING          = 1;
-    private static final int STATE_PREPARED           = 2;
-    private static final int STATE_PLAYING            = 3;
-    private static final int STATE_PAUSED             = 4;
-    private static final int STATE_PLAYBACK_COMPLETED = 5;
-    
+	private Map<String, String> mHeaders;
+	private int mCurrentState = STATE_IDLE;
+	private int mTargetState = STATE_IDLE;
+	private static final int STATE_ERROR = -1;
+	private static final int STATE_IDLE = 0;
+	private static final int STATE_PREPARING = 1;
+	private static final int STATE_PREPARED = 2;
+	private static final int STATE_PLAYING = 3;
+	private static final int STATE_PAUSED = 4;
+	private static final int STATE_PLAYBACK_COMPLETED = 5;
+
 	private static final int HALF_MINUTE = 30 * 1000;
 	private static final int TWO_MINUTES = 4 * HALF_MINUTE;
 
@@ -87,11 +83,13 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
 
 	Runnable mPlayingChecker = new Runnable() {
 		public void run() {
-			/*
-			 * if (mVideoView.isPlaying()) {
-			 * mProgressView.setVisibility(View.GONE); } else {
-			 * mHandler.postDelayed(mPlayingChecker, 250); }
-			 */
+
+			if (mVideoSurfaceView.isPlaying()) {
+				mProgressView.setVisibility(View.GONE);
+			} else {
+				mHandler.postDelayed(mPlayingChecker, 250);
+			}
+
 		}
 	};
 
@@ -107,7 +105,8 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
 		// progress spinner until playback starts.
 		mVideoSurfaceView.setOnErrorListener(this);
 		mVideoSurfaceView.setOnCompletionListener(this);
-		mVideoSurfaceView.setMediaController(new VideoController(context), rootView);
+		mVideoSurfaceView.setMediaController(new VideoController(context),
+				rootView);
 		mVideoSurfaceView.setVideoURI(mUri);
 		// make the video view handle keys for seeking and pausing
 		mVideoSurfaceView.requestFocus();
@@ -117,9 +116,8 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
 		context.sendBroadcast(i);
 		mVideoSurfaceView.start();
 		// playVieoWithFFmpeg();
+		//mHandler.postDelayed(mPlayingChecker, 250);
 	}
-
-
 
 	public void onPause() {
 		mHandler.removeCallbacksAndMessages(null);
@@ -127,6 +125,7 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
 	}
 
 	public void onResume() {
+		mVideoSurfaceView.resume();
 		StatService.onResume(context);
 	}
 
@@ -136,7 +135,8 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
 		// »ñÈ¡×¢²á×´Ì¬ Î´×¢²áÌáÊ¾×¢²á ÒÑ×¢²á ½âÂë
 		StatService.onEvent(context, "ÊÓÆµ²¥·ÅÊ§°Ü", mUri.getPath());
 		foctory = new DrovikRegisterFactory();
-		showRegisterDialog(foctory.isRegister(context));
+		//showRegisterDialog(foctory.isRegister(context));
+		onCompletion();
 		return true;
 	}
 
@@ -147,11 +147,11 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
 	}
 
 	public void onCompletion() {
-
+		System.out.println("onCompletion");
 	}
 
 	public void onPlayError() {
-
+		System.out.println("onPlayError");
 	}
 
 	private void showRegisterDialog(boolean status) {
@@ -345,5 +345,4 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
 		}
 	}
 
-     
 }

@@ -263,7 +263,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
         	boolean flag = intent.getBooleanExtra("check_update", false);
         	UpdateManager.getUpdateManager().checkAppUpdate(this, flag);
         }
-        if(!isCheck) {
+        if(isCheck) {
         	frameBeautyButton.setVisibility(View.INVISIBLE);
         	frameSceneryButton.setVisibility(View.INVISIBLE);
         	frameOtherButton.setVisibility(View.INVISIBLE);

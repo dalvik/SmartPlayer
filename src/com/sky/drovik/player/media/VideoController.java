@@ -4,19 +4,16 @@ import java.util.Formatter;
 import java.util.Locale;
 
 import android.content.Context;
-import android.graphics.PixelFormat;
+import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -29,12 +26,11 @@ import com.sky.drovik.player.R;
 
 public class VideoController extends FrameLayout{
 
+	private final static int VOICE_DOWN = 10;
+	private final static int VOICE_UP = 20;
     private VideoPlayerControl  mPlayer;
     private Context             mContext;
     private View                mRoot;
-    private WindowManager       mWindowManager;
-    private Window              mWindow;
-    private WindowManager.LayoutParams mDecorLayoutParams;
     private ProgressBar         mProgress;
     private TextView            mEndTime, mCurrentTime;
     private boolean             mShowing;
@@ -42,29 +38,29 @@ public class VideoController extends FrameLayout{
     private static final int    sDefaultTimeout = 3000;
     private static final int    FADE_OUT = 1;
     private static final int    SHOW_PROGRESS = 2;
-    private boolean             mUseFastForward;
-    private boolean             mFromXml;
-    private boolean             mListenersSet;
-    private View.OnClickListener mNextListener, mPrevListener;
+    //private boolean             mUseFastForward;
     StringBuilder               mFormatBuilder;
     Formatter                   mFormatter;
     private ImageButton         mPauseButton;
-    private ImageButton         mFfwdButton;
-    private ImageButton         mRewButton;
+    //private ImageButton         mFfwdButton;
+   // private ImageButton         mRewButton;
     private ImageButton         mNextButton;
     private ImageButton         mPrevButton;
     
-    
+    private ImageButton			mVoiceUpButton;
+    private ImageButton			mVoiceDownButton;
+    private AudioManager internalAm;
+    private boolean directionProgress = false;//pre
     public VideoController(Context context) {
         this(context, true);
+        internalAm = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
     }
     
     public VideoController(Context context, AttributeSet attrs) {
         super(context, attrs);
         mRoot = this;
         mContext = context;
-        mUseFastForward = true;
-        mFromXml = true;
+        internalAm = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
     }
 
     @Override
@@ -76,46 +72,9 @@ public class VideoController extends FrameLayout{
     public VideoController(Context context, boolean useFastForward) {
         super(context);
         mContext = context;
-        mUseFastForward = useFastForward;
-        //initFloatingWindowLayout();
-        //initFloatingWindow();
+        internalAm = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
     }
 
-    private void initFloatingWindowLayout() {
-        mDecorLayoutParams = new WindowManager.LayoutParams();
-        WindowManager.LayoutParams p = mDecorLayoutParams;
-        p.gravity = Gravity.TOP;
-        p.height = LayoutParams.WRAP_CONTENT;
-        p.x = 0;
-        p.format = PixelFormat.TRANSLUCENT;
-        p.type = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL;
-        p.flags |= WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-                | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH;
-        p.token = null;
-        p.windowAnimations = 0; // android.R.style.DropDownAnimationDown;
-    }
-    
-    private void initFloatingWindow() {
-        mWindowManager = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
-        /*mWindow = PolicyManager.makeNewWindow(mContext);
-        mWindow.setWindowManager(mWindowManager, null, null);
-        mWindow.requestFeature(Window.FEATURE_NO_TITLE);
-        mDecor = mWindow.getDecorView();
-        mDecor.setOnTouchListener(mTouchListener);
-        mWindow.setContentView(this);
-        mWindow.setBackgroundDrawableResource(android.R.color.transparent);
-        
-        // While the media controller is up, the volume control keys should
-        // affect the media stream type
-        mWindow.setVolumeControlStream(AudioManager.STREAM_MUSIC);
-*/
-        setFocusable(true);
-        setFocusableInTouchMode(true);
-        setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
-        requestFocus();
-    }
-    
     @Override
     public boolean onTrackballEvent(MotionEvent ev) {
         show(sDefaultTimeout);
@@ -125,7 +84,6 @@ public class VideoController extends FrameLayout{
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         show(sDefaultTimeout);
-        System.out.println("ontourch");
         return true;
     }
     
@@ -158,7 +116,6 @@ public class VideoController extends FrameLayout{
             if (mPauseButton != null) {
                 mPauseButton.requestFocus();
             }
-            disableUnsupportedButtons();
             //mWindowManager.addView(mDecor, mDecorLayoutParams);
             if(mRoot != null) {
             	mRoot.setVisibility(View.VISIBLE);
@@ -179,24 +136,7 @@ public class VideoController extends FrameLayout{
         }
     }
     
-    private void disableUnsupportedButtons() {
-        try {
-            if (mPauseButton != null && !mPlayer.canPause()) {
-                mPauseButton.setEnabled(false);
-            }
-            if (mRewButton != null && !mPlayer.canSeekBackward()) {
-                mRewButton.setEnabled(false);
-            }
-            if (mFfwdButton != null && !mPlayer.canSeekForward()) {
-                mFfwdButton.setEnabled(false);
-            }
-        } catch (IncompatibleClassChangeError ex) {
-            // We were given an old version of the interface, that doesn't have
-            // the canPause/canSeekXYZ methods. This is OK, it just means we
-            // assume the media can be paused and seeked, and so we don't disable
-            // the buttons.
-        }
-    }
+
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -212,6 +152,16 @@ public class VideoController extends FrameLayout{
                         sendMessageDelayed(msg, 1000 - (pos % 1000));
                     }
                     break;
+                case VOICE_UP:
+                	internalAm.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_RAISE, 1);
+                	show();
+                	break;
+                case VOICE_DOWN:
+                	internalAm.adjustStreamVolume(AudioManager.STREAM_MUSIC,AudioManager.ADJUST_LOWER, 1);
+                	show();
+                	break;
+                	default:
+                		break;
             }
         }
     };
@@ -352,11 +302,10 @@ public class VideoController extends FrameLayout{
     };
     
     private void updatePausePlay() {
-        if (mRoot == null || mPauseButton == null)
-            return;
-
+        if (mRoot == null || mPauseButton == null){
+        	return;
+        }
         if (mPlayer.isPlaying()) {
-        	//TODO
             mPauseButton.setImageResource(R.drawable.ic_media_pause);
         } else {
             mPauseButton.setImageResource(R.drawable.ic_media_play);
@@ -375,30 +324,11 @@ public class VideoController extends FrameLayout{
     
     @Override
     public void setEnabled(boolean enabled) {
-        if (mPauseButton != null) {
-            mPauseButton.setEnabled(enabled);
-        }
-        if (mFfwdButton != null) {
-            mFfwdButton.setEnabled(enabled);
-        }
-        if (mRewButton != null) {
-            mRewButton.setEnabled(enabled);
-        }
-        if (mNextButton != null) {
-            mNextButton.setEnabled(enabled && mNextListener != null);
-        }
-        if (mPrevButton != null) {
-            mPrevButton.setEnabled(enabled && mPrevListener != null);
-        }
-        if (mProgress != null) {
-            mProgress.setEnabled(enabled);
-        }
-        disableUnsupportedButtons();
         super.setEnabled(enabled);
     }
 
     
-    private View.OnClickListener mRewListener = new View.OnClickListener() {
+    /*private View.OnClickListener mRewListener = new View.OnClickListener() {
         public void onClick(View v) {
             int pos = mPlayer.getCurrentPosition();
             pos -= 5000; // milliseconds
@@ -418,70 +348,124 @@ public class VideoController extends FrameLayout{
 
             show(sDefaultTimeout);
         }
+    };*/
+    
+   
+    private View.OnLongClickListener mPreLongListener = new View.OnLongClickListener() {
+    	@Override
+    	public boolean onLongClick(View v) {
+    		directionProgress = false;
+    		mHandler.post(updateProgressTask);
+    		return false;
+    	}
     };
+   
+    private View.OnLongClickListener mNextLongListener = new View.OnLongClickListener() {
+    	@Override
+    	public boolean onLongClick(View v) {
+    		directionProgress = true;
+    		mHandler.post(updateProgressTask);
+    		return false;
+    	}
+    };
+   
+
+    private View.OnClickListener mVoiceUpListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			sendMessage(VOICE_UP);
+		}
+	};
+	
+	private View.OnClickListener mVoiceDownListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			sendMessage(VOICE_DOWN);
+		}
+	};
+	
+	
+    private View.OnClickListener mVideoNextListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			show(sDefaultTimeout);
+		}
+	};
+	
+	private View.OnTouchListener mVideoPreOnTouchListener = new OnTouchListener() {
+		
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			if(event.getAction() == MotionEvent.ACTION_UP) {
+				mHandler.removeCallbacks(updateProgressTask);
+			}
+			return false;
+		}
+	};
+	
+	private View.OnTouchListener mVideoNextOnTouchListener = new OnTouchListener() {
+		
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			if(event.getAction() == MotionEvent.ACTION_UP) {
+				mHandler.removeCallbacks(updateProgressTask);
+			}
+			return false;
+		}
+	};
+	
+	private View.OnClickListener mVideoPreListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			show(sDefaultTimeout);
+		}
+	};
+	
     
-    private void installPrevNextListeners() {
-        if (mNextButton != null) {
-            mNextButton.setOnClickListener(mNextListener);
-            mNextButton.setEnabled(mNextListener != null);
-        }
-
-        if (mPrevButton != null) {
-            mPrevButton.setOnClickListener(mPrevListener);
-            mPrevButton.setEnabled(mPrevListener != null);
-        }
-    }
-    
-    public void setPrevNextListeners(View.OnClickListener next, View.OnClickListener prev) {
-        mNextListener = next;
-        mPrevListener = prev;
-        mListenersSet = true;
-
-        if (mRoot != null) {
-            installPrevNextListeners();
-            
-            if (mNextButton != null && !mFromXml) {
-                mNextButton.setVisibility(View.VISIBLE);
-            }
-            if (mPrevButton != null && !mFromXml) {
-                mPrevButton.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
     private void initControllerView(View v) {
         mPauseButton = (ImageButton) v.findViewById(R.id.pause);
         if (mPauseButton != null) {
-            mPauseButton.requestFocus();
             mPauseButton.setOnClickListener(mPauseListener);
+            mPauseButton.requestFocus();
         }
 
-        mFfwdButton = (ImageButton) v.findViewById(R.id.ffwd);
+       /* mFfwdButton = (ImageButton) v.findViewById(R.id.bar_vol_down);
         if (mFfwdButton != null) {
             mFfwdButton.setOnClickListener(mFfwdListener);
             if (!mFromXml) {
-                mFfwdButton.setVisibility(mUseFastForward ? View.VISIBLE : View.GONE);
+                //mFfwdButton.setVisibility(mUseFastForward ? View.VISIBLE : View.GONE);
             }
         }
 
-        mRewButton = (ImageButton) v.findViewById(R.id.rew);
+        mRewButton = (ImageButton) v.findViewById(R.id.bar_vol_up);
         if (mRewButton != null) {
             mRewButton.setOnClickListener(mRewListener);
             if (!mFromXml) {
-                mRewButton.setVisibility(mUseFastForward ? View.VISIBLE : View.GONE);
+                //mRewButton.setVisibility(mUseFastForward ? View.VISIBLE : View.GONE);
             }
+        }*/
+		mVoiceDownButton = (ImageButton) v.findViewById(R.id.bar_vol_down);
+        if (mVoiceDownButton != null) {
+        	mVoiceDownButton.setOnClickListener(mVoiceDownListener);
         }
-
+		
+        mVoiceUpButton = (ImageButton) v.findViewById(R.id.bar_vol_up);
+        if (mVoiceUpButton != null) {
+        	mVoiceUpButton.setOnClickListener(mVoiceUpListener);
+        }
         // By default these are hidden. They will be enabled when setPrevNextListeners() is called 
         mNextButton = (ImageButton) v.findViewById(R.id.next);
-        if (mNextButton != null && !mFromXml && !mListenersSet) {
-            mNextButton.setVisibility(View.GONE);
-        }
         mPrevButton = (ImageButton) v.findViewById(R.id.prev);
-        if (mPrevButton != null && !mFromXml && !mListenersSet) {
-            mPrevButton.setVisibility(View.GONE);
-        }
-
+        mPrevButton.setOnClickListener(mVideoPreListener);
+        mPrevButton.setOnLongClickListener(mPreLongListener);
+        mPrevButton.setOnTouchListener(mVideoPreOnTouchListener);
+        mNextButton.setOnClickListener(mVideoNextListener);
+        mNextButton.setOnTouchListener(mVideoNextOnTouchListener);
+        mNextButton.setOnLongClickListener(mNextLongListener);
         mProgress = (ProgressBar) v.findViewById(R.id.mediacontroller_progress);
         if (mProgress != null) {
             if (mProgress instanceof SeekBar) {
@@ -496,7 +480,9 @@ public class VideoController extends FrameLayout{
         mFormatBuilder = new StringBuilder();
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
 
-        installPrevNextListeners();
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+        mPauseButton.requestFocus();
     }
 
     public void setMediaPlayer(VideoPlayerControl player) {
@@ -513,6 +499,7 @@ public class VideoController extends FrameLayout{
         View v = makeControllerView();
         view.addView(v,frameParams);
         //addView(v, frameParams);
+        show();
     }
 
     protected View makeControllerView() {
@@ -521,6 +508,29 @@ public class VideoController extends FrameLayout{
         initControllerView(mRoot);
         return mRoot;
     }
+    
+    private void sendMessage(int i) {
+        Message m = Message.obtain(mHandler);
+        m.what = i;
+        m.sendToTarget();
+    }
+    
+    private Runnable updateProgressTask = new Runnable() {
+		
+		@Override
+		public void run() {
+			int pos = mPlayer.getCurrentPosition();
+			if(directionProgress) {
+				pos += 5000; // milliseconds
+			}else{
+				pos -= 5000; // milliseconds
+			}
+            mPlayer.seekTo(pos);
+            setProgress();
+            show(sDefaultTimeout);
+			mHandler.postDelayed(updateProgressTask, 500);
+		}
+	};
     
     public interface VideoPlayerControl {
         void    start();

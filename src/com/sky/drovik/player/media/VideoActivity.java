@@ -11,15 +11,26 @@ import com.sky.drovik.player.app.Res;
 public class VideoActivity extends Activity {
 
 	private VideoViewControl videoViewControl;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_video_view);
-		RelativeLayout rootView = (RelativeLayout)findViewById(Res.id.root);
+		RelativeLayout rootView = (RelativeLayout) findViewById(Res.id.root);
 		Intent intent = getIntent();
-		videoViewControl = new VideoViewControl(rootView, this, intent.getData()) {
-	             
-	        };
+		videoViewControl = new VideoViewControl(rootView, this,
+				intent.getData()) {
+			@Override
+			public void onCompletion() {
+				super.onCompletion();
+				VideoActivity.this.finish();
+			}
+
+			@Override
+			public void onPlayError() {
+				super.onPlayError();
+				VideoActivity.this.finish();
+			}
+		};
 	}
 }

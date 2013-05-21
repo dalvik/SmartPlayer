@@ -23,24 +23,27 @@
             android:paddingTop="4dip" >
 
             <ImageButton
-                android:id="@+id/rew"
-                style="@android:style/MediaButton.Rew" />
+                android:id="@+id/bar_vol_down"
+                style="@android:style/MediaButton"
+                android:src="@drawable/ic_vol_down" />
 
             <ImageButton
                 android:id="@+id/prev"
-                style="@android:style/MediaButton.Previous" />
+                style="@android:style/MediaButton.Rew" />
 
             <ImageButton
                 android:id="@+id/pause"
-                style="@android:style/MediaButton.Play" />
-            
-            <ImageButton
-                android:id="@+id/next"
-                style="@android:style/MediaButton.Next" />
+                style="@android:style/MediaButton.Pause" />
 
             <ImageButton
-                android:id="@+id/ffwd"
+                android:id="@+id/next"
                 style="@android:style/MediaButton.Ffwd" />
+
+
+            <ImageButton
+                android:id="@+id/bar_vol_up"
+                style="@android:style/MediaButton"
+                android:src="@drawable/ic_vol_up" />
         </LinearLayout>
 
         <LinearLayout
