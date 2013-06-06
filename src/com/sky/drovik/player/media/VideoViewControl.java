@@ -41,6 +41,8 @@ import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.app.Res;
 import com.sky.drovik.player.ffmpeg.JniUtils;
+import com.sky.drovik.views.FFGLSurfaceView;
+import com.sky.drovik.views.FFSurfaceView;
 
 public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		MediaPlayer.OnCompletionListener, CheckStatusNotifier {
@@ -68,6 +70,8 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 	private static final String CMDPAUSE = "pause";
 
 	private final FFSurfaceView mVideoSurfaceView;
+	private static FFGLSurfaceView mFfglSurfaceView;
+	
 	private final View mProgressView;
 
 	private RelativeLayout rootView;
@@ -99,14 +103,12 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		this.rootView = rootView;
 		mVideoSurfaceView = (FFSurfaceView) rootView
 				.findViewById(Res.id.surface_view);
+		mFfglSurfaceView = (FFGLSurfaceView) rootView.findViewById(R.id.glsurface_video_view);
 		mProgressView = rootView.findViewById(Res.id.progress_indicator);
 		mUri = videoUri;
-		// For streams that we expect to be slow to start up, show a
-		// progress spinner until playback starts.
 		mVideoSurfaceView.setOnErrorListener(this);
 		mVideoSurfaceView.setOnCompletionListener(this);
-		mVideoSurfaceView.setMediaController(new VideoController(context),
-				rootView);
+		mVideoSurfaceView.setMediaController(new VideoController(context), rootView, false);
 		mVideoSurfaceView.setVideoURI(mUri);
 		// make the video view handle keys for seeking and pausing
 		mVideoSurfaceView.requestFocus();
@@ -115,8 +117,17 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		i.putExtra(CMDNAME, CMDPAUSE);
 		context.sendBroadcast(i);
 		mVideoSurfaceView.start();
-		// playVieoWithFFmpeg();
-		//mHandler.postDelayed(mPlayingChecker, 250);
+
+		
+		/*new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				mFfglSurfaceView.setVisibility(View.VISIBLE);
+			}
+		}).start();
+		 */
+		mHandler.postDelayed(mPlayingChecker, 250);
 	}
 
 	public void onPause() {
@@ -125,7 +136,6 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 	}
 
 	public void onResume() {
-		mVideoSurfaceView.resume();
 		StatService.onResume(context);
 	}
 
@@ -135,8 +145,8 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		// »ñÈ¡×¢²á×´Ì¬ Î´×¢²áÌáÊ¾×¢²á ÒÑ×¢²á ½âÂë
 		StatService.onEvent(context, "ÊÓÆµ²¥·ÅÊ§°Ü", mUri.getPath());
 		foctory = new DrovikRegisterFactory();
-		//showRegisterDialog(foctory.isRegister(context));
-		onCompletion();
+		showRegisterDialog(foctory.isRegister(context));
+		//onCompletion();
 		return true;
 	}
 
@@ -190,6 +200,8 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 	}
 
 	private void playVieoWithFFmpeg() {
+		mFfglSurfaceView.setMediaController(new VideoController(context), rootView, true);
+		mVideoSurfaceView.setVisibility(View.GONE);
 		int[] resulation = JniUtils.openVideoFile(mUri.getPath()); // "/mnt/sdcard/video.mp4"
 		int res = 0;
 		if (res == JniUtils.open_file_success) {
@@ -206,14 +218,8 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 				@Override
 				public void run() {
 					Looper.prepare();
-
 					int i = JniUtils.display(mBitmap);
-					/*
-					 * while((i===0) { try { Thread.sleep(frame_rate); } catch
-					 * (InterruptedException e) { // TODOAuto-generated catch
-					 * block e.printStackTrace(); } } JniUtils.close();
-					 * onCompletion();
-					 */
+					onCompletion();
 				}
 			}).start();
 		} else {
@@ -343,6 +349,10 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 			Log.d(TAG, "isAppInvalid = " + isAppInvalid + "  isInTestMode = "
 					+ isInTestMode + "  isDeviceInvalid = " + isDeviceInvalid);
 		}
+	}
+	
+	public static void refresh() {
+		mFfglSurfaceView.invalid();
 	}
 
 }

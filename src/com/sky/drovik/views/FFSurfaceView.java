@@ -1,4 +1,4 @@
-package com.sky.drovik.player.media;
+package com.sky.drovik.views;
 
 import java.io.IOException;
 import java.util.Map;
@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
 
+import com.sky.drovik.player.media.VideoController;
 import com.sky.drovik.player.media.VideoController.VideoPlayerControl;
 
 @SuppressLint("NewApi")
@@ -237,12 +238,13 @@ public class FFSurfaceView extends SurfaceView implements VideoPlayerControl {
 		}
 	}
 
-    public void setMediaController(VideoController videoController, RelativeLayout view) {
+    public void setMediaController(VideoController videoController, RelativeLayout view, boolean isFFmpeg) {
         if (videoController != null) {
         	videoController.hide();
         }
         rootView = view;
         mVideoController = videoController;
+        mVideoController.setIfFFmpeg(isFFmpeg);
         attachMediaController();
     }
 

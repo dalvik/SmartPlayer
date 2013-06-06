@@ -28,8 +28,7 @@ import com.baidu.mobstat.StatService;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 
-public class Guide extends Activity implements OnClickListener,
-		OnPageChangeListener ,OnTouchListener{
+public class Guide extends Activity implements OnClickListener, OnPageChangeListener ,OnTouchListener{
 
 	private ViewPager viewPager;
 

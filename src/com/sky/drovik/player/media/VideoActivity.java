@@ -7,11 +7,11 @@ import android.widget.RelativeLayout;
 
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.app.Res;
+import com.sky.drovik.views.FFGLSurfaceView;
 
 public class VideoActivity extends Activity {
 
 	private VideoViewControl videoViewControl;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -32,5 +32,12 @@ public class VideoActivity extends Activity {
 				VideoActivity.this.finish();
 			}
 		};
+	}
+	
+	public void callBackRefresh(int msg) {
+		if(msg == 2) {
+			System.out.println("video play over!");
+			VideoActivity.this.finish();
+		}
 	}
 }

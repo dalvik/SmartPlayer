@@ -51,6 +51,9 @@ public class VideoController extends FrameLayout{
     private ImageButton			mVoiceDownButton;
     private AudioManager internalAm;
     private boolean directionProgress = false;//pre
+    
+    private boolean isFFmpeg = false;
+    
     public VideoController(Context context) {
         this(context, true);
         internalAm = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -147,9 +150,16 @@ public class VideoController extends FrameLayout{
                     break;
                 case SHOW_PROGRESS:
                     pos = setProgress();
-                    if (!mDragging && mShowing && mPlayer.isPlaying()) {
-                        msg = obtainMessage(SHOW_PROGRESS);
-                        sendMessageDelayed(msg, 1000 - (pos % 1000));
+                    if(isFFmpeg) {
+                    	if (!mDragging && mShowing) {
+                    		msg = obtainMessage(SHOW_PROGRESS);
+                    		sendMessageDelayed(msg, 1000 - (pos % 1000));
+                    	}
+                    }else {
+                    	if (!mDragging && mShowing && mPlayer.isPlaying()) {
+                    		msg = obtainMessage(SHOW_PROGRESS);
+                    		sendMessageDelayed(msg, 1000 - (pos % 1000));
+                    	}
                     }
                     break;
                 case VOICE_UP:
@@ -182,25 +192,30 @@ public class VideoController extends FrameLayout{
     }
     
     private int setProgress() {
-        if (mPlayer == null || mDragging) {
-            return 0;
-        }
-        int position = mPlayer.getCurrentPosition();
-        int duration = mPlayer.getDuration();
-        if (mProgress != null) {
-            if (duration > 0) {
-                // use long to avoid overflow
-                long pos = 1000L * position / duration;
-                mProgress.setProgress( (int) pos);
-            }
-            int percent = mPlayer.getBufferPercentage();
-            mProgress.setSecondaryProgress(percent * 10);
-        }
-
-        if (mEndTime != null)
-            mEndTime.setText(stringForTime(duration));
-        if (mCurrentTime != null)
-            mCurrentTime.setText(stringForTime(position));
+    	int position = 0;
+    	if(isFFmpeg) {
+    		
+    	}else {
+    		if (mPlayer == null || mDragging) {
+    			return 0;
+    		}
+    		position = mPlayer.getCurrentPosition();
+    		int duration = mPlayer.getDuration();
+    		if (mProgress != null) {
+    			if (duration > 0) {
+    				// use long to avoid overflow
+    				long pos = 1000L * position / duration;
+    				mProgress.setProgress( (int) pos);
+    			}
+    			int percent = mPlayer.getBufferPercentage();
+    			mProgress.setSecondaryProgress(percent * 10);
+    		}
+    		
+    		if (mEndTime != null)
+    			mEndTime.setText(stringForTime(duration));
+    		if (mCurrentTime != null)
+    			mCurrentTime.setText(stringForTime(position));
+    	}
 
         return position;
     }
@@ -222,19 +237,31 @@ public class VideoController extends FrameLayout{
             }
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
-            if (uniqueDown && !mPlayer.isPlaying()) {
-                mPlayer.start();
-                updatePausePlay();
-                show(sDefaultTimeout);
-            }
+        	if(isFFmpeg) {
+        		if (uniqueDown) {
+        			mPlayer.start();
+        			updatePausePlay();
+        			show(sDefaultTimeout);
+        		}
+        	}else {
+        		if (uniqueDown && !mPlayer.isPlaying()) {
+        			mPlayer.start();
+        			updatePausePlay();
+        			show(sDefaultTimeout);
+        		}
+        	}
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_MEDIA_STOP
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
-            if (uniqueDown && mPlayer.isPlaying()) {
-                mPlayer.pause();
-                updatePausePlay();
-                show(sDefaultTimeout);
-            }
+        	if(isFFmpeg) {
+        		
+        	}else {
+        		if (uniqueDown && mPlayer.isPlaying()) {
+        			mPlayer.pause();
+        			updatePausePlay();
+        			show(sDefaultTimeout);
+        		}
+        	}
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
                 || keyCode == KeyEvent.KEYCODE_VOLUME_UP
@@ -273,12 +300,15 @@ public class VideoController extends FrameLayout{
                 // the progress bar's position.
                 return;
             }
-
-            long duration = mPlayer.getDuration();
-            long newposition = (duration * progress) / 1000L;
-            mPlayer.seekTo( (int) newposition);
-            if (mCurrentTime != null)
-                mCurrentTime.setText(stringForTime( (int) newposition));
+            if(isFFmpeg) {
+            	
+            }else {
+            	long duration = mPlayer.getDuration();
+            	long newposition = (duration * progress) / 1000L;
+            	mPlayer.seekTo( (int) newposition);
+            	if (mCurrentTime != null)
+            		mCurrentTime.setText(stringForTime( (int) newposition));
+            }
         }
 
         public void onStopTrackingTouch(SeekBar bar) {
@@ -305,19 +335,27 @@ public class VideoController extends FrameLayout{
         if (mRoot == null || mPauseButton == null){
         	return;
         }
-        if (mPlayer.isPlaying()) {
-            mPauseButton.setImageResource(R.drawable.ic_media_pause);
-        } else {
-            mPauseButton.setImageResource(R.drawable.ic_media_play);
+        if(isFFmpeg) {
+        	
+        }else{
+        	if (mPlayer.isPlaying()) {
+        		mPauseButton.setImageResource(R.drawable.ic_media_pause);
+        	} else {
+        		mPauseButton.setImageResource(R.drawable.ic_media_play);
+        	}
         }
     }
     
     private void doPauseResume() {
-        if (mPlayer.isPlaying()) {
-            mPlayer.pause();
-        } else {
-            mPlayer.start();
-        }
+    	if(isFFmpeg) {
+    		
+    	}else {
+    		if (mPlayer.isPlaying()) {
+    			mPlayer.pause();
+    		} else {
+    			mPlayer.start();
+    		}
+    	}
         updatePausePlay();
     }
 
@@ -532,7 +570,16 @@ public class VideoController extends FrameLayout{
 		}
 	};
     
-    public interface VideoPlayerControl {
+    public boolean isIfFFmpeg() {
+		return isFFmpeg;
+	}
+
+	public void setIfFFmpeg(boolean isFFmpeg) {
+		this.isFFmpeg = isFFmpeg;
+	}
+
+
+	public interface VideoPlayerControl {
         void    start();
         void    pause();
         int     getDuration();

@@ -61,5 +61,12 @@ public class JniUtils {
 	
 	public static native int close();
 	
+	//native gl 
+	public static native void ffmpegGLResize(int w, int h);
+	
+	public static native void ffmpegGLRender();
+	
+	public static native void ffmpegGLClose();
+	
 	
 }
