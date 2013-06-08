@@ -8,15 +8,14 @@
         android:id="@+id/surface_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_centerInParent="true"
-        
-        android:visibility="gone" />
+        android:layout_centerInParent="true"/>
 
     <com.sky.drovik.views.FFGLSurfaceView
         android:id="@+id/glsurface_video_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:visibility="gone"  />
     
     <LinearLayout
         android:id="@+id/progress_indicator"

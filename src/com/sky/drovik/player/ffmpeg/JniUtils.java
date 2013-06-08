@@ -37,9 +37,9 @@ public class JniUtils {
 	
 	public static native int[] getVideoResolution();
 	
-	public static native int decodeMedia(Bitmap bitmap);
+	public static native int decodeMedia();
 	
-	public static native int display(Bitmap bitmap);
+	public static native int display();
 	/**
 	 * »ñÈ¡²¥·Å×´Ì¬
 	 * -1  Í£Ö¹

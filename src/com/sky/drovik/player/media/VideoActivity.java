@@ -37,6 +37,7 @@ public class VideoActivity extends Activity {
 	public void callBackRefresh(int msg) {
 		if(msg == 2) {
 			System.out.println("video play over!");
+			videoViewControl.onCompletion();
 			VideoActivity.this.finish();
 		}
 	}

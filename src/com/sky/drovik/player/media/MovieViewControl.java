@@ -383,14 +383,14 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     		int den = resulation[2]; 
     		int num = resulation[3]; 
     		final int frame_rate = den/num;
-    		JniUtils.decodeMedia(mBitmap);
+    		JniUtils.decodeMedia();
     		myHandler.sendEmptyMessageDelayed(100, 10);
     		new Thread(new Runnable() {
     			@Override 
     			public void run() { 
     				Looper.prepare();
     				
-    				int i = JniUtils.display(mBitmap);
+    				int i = JniUtils.display();
     				/*while((i===0) { 
     					try {
     						Thread.sleep(frame_rate); 

@@ -50,6 +50,11 @@ public class FFGLSurfaceView extends GLSurfaceView {
 		setRenderer(new MyRenderer());
 		//setRenderMode(RENDERMODE_WHEN_DIRTY);
 		setRenderMode(RENDERMODE_CONTINUOUSLY);
+		setFocusable(true);
+		setFocusableInTouchMode(true);
+		requestFocus();
+		mCurrentState = STATE_IDLE;
+		mTargetState = STATE_IDLE;
 	}
 
 
@@ -71,6 +76,7 @@ public class FFGLSurfaceView extends GLSurfaceView {
         mVideoController = videoController;
         mVideoController.setIfFFmpeg(isFFmpeg);
         attachMediaController();
+        mCurrentState = STATE_PLAYING;
     }
 
 	private void attachMediaController() {
@@ -152,19 +158,15 @@ public class FFGLSurfaceView extends GLSurfaceView {
 		@Override
 		public void onSurfaceCreated(GL10 gl, EGLConfig c) { 
 			System.out.println("---onSurfaceCreated-----");
-			
-			
 		}
 
 		@Override
 		public void onSurfaceChanged(GL10 gl, int w, int h) {
-			System.out.println("---onSurfaceChanged-----");
 			JniUtils.ffmpegGLResize(w, h);
 		}
 
 		@Override
 		public void onDrawFrame(GL10 gl) {
-			System.out.println("----onDrawFrame-----");
 			JniUtils.ffmpegGLRender();
 		}
 

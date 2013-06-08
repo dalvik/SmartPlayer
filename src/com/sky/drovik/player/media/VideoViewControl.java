@@ -47,7 +47,6 @@ import com.sky.drovik.views.FFSurfaceView;
 public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		MediaPlayer.OnCompletionListener, CheckStatusNotifier {
 
-	@SuppressWarnings("unused")
 	private static final String TAG = "MovieViewControl";
 	private Map<String, String> mHeaders;
 	private int mCurrentState = STATE_IDLE;
@@ -85,18 +84,6 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 
 	Handler mHandler = new Handler();
 
-	Runnable mPlayingChecker = new Runnable() {
-		public void run() {
-
-			if (mVideoSurfaceView.isPlaying()) {
-				mProgressView.setVisibility(View.GONE);
-			} else {
-				mHandler.postDelayed(mPlayingChecker, 250);
-			}
-
-		}
-	};
-
 	public VideoViewControl(RelativeLayout rootView, Context context,
 			Uri videoUri) {
 		this.context = context;
@@ -106,10 +93,11 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		mFfglSurfaceView = (FFGLSurfaceView) rootView.findViewById(R.id.glsurface_video_view);
 		mProgressView = rootView.findViewById(Res.id.progress_indicator);
 		mUri = videoUri;
-		mVideoSurfaceView.setOnErrorListener(this);
+		/*mVideoSurfaceView.setOnErrorListener(this);
 		mVideoSurfaceView.setOnCompletionListener(this);
 		mVideoSurfaceView.setMediaController(new VideoController(context), rootView, false);
 		mVideoSurfaceView.setVideoURI(mUri);
+		System.out.println(mUri.toString());
 		// make the video view handle keys for seeking and pausing
 		mVideoSurfaceView.requestFocus();
 
@@ -117,17 +105,8 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		i.putExtra(CMDNAME, CMDPAUSE);
 		context.sendBroadcast(i);
 		mVideoSurfaceView.start();
-
-		
-		/*new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				mFfglSurfaceView.setVisibility(View.VISIBLE);
-			}
-		}).start();
-		 */
-		mHandler.postDelayed(mPlayingChecker, 250);
+*/
+		playVieoWithFFmpeg();
 	}
 
 	public void onPause() {
@@ -202,24 +181,23 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 	private void playVieoWithFFmpeg() {
 		mFfglSurfaceView.setMediaController(new VideoController(context), rootView, true);
 		mVideoSurfaceView.setVisibility(View.GONE);
+		mFfglSurfaceView.requestFocus();
+		mFfglSurfaceView.setVisibility(View.VISIBLE);
 		int[] resulation = JniUtils.openVideoFile(mUri.getPath()); // "/mnt/sdcard/video.mp4"
 		int res = 0;
 		if (res == JniUtils.open_file_success) {
 			System.out.println("res = " + res);
-			// int[] resulation = JniUtils.getVideoResolution();
-			final Bitmap mBitmap = Bitmap.createBitmap(resulation[0],
-					resulation[1], Bitmap.Config.ARGB_8888);
 			System.out.println(resulation[0] + " --- " + resulation[1]);
 			int den = resulation[2];
 			int num = resulation[3];
 			final int frame_rate = den / num;
-			JniUtils.decodeMedia(mBitmap);
+			JniUtils.decodeMedia();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					Looper.prepare();
-					int i = JniUtils.display(mBitmap);
-					onCompletion();
+					int i = JniUtils.display();
+					/*onCompletion();*/
 				}
 			}).start();
 		} else {
