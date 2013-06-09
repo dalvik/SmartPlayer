@@ -169,7 +169,7 @@
         <activity android:name="net.youmi.android.appoffers.YoumiOffersActivity"
 				  android:configChanges="keyboard|keyboardHidden|orientation"/>
         
-        <meta-data android:name="YOUMI_CHANNEL" android:value="10020"/>
+        <meta-data android:name="YOUMI_CHANNEL" android:value="10120"/>
         <!--
         	ym 0
         	91 10110

@@ -1,9 +1,13 @@
 package com.sky.drovik.views;
 
+import java.util.Map;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -12,8 +16,9 @@ import android.widget.RelativeLayout;
 
 import com.sky.drovik.player.ffmpeg.JniUtils;
 import com.sky.drovik.player.media.VideoController;
+import com.sky.drovik.player.media.VideoController.VideoPlayerControl;
 
-public class FFGLSurfaceView extends GLSurfaceView {
+public class FFGLSurfaceView extends GLSurfaceView implements VideoPlayerControl {
 	// all possible internal states
 	private static final int STATE_ERROR = -1;
 	private static final int STATE_IDLE = 0;
@@ -33,19 +38,23 @@ public class FFGLSurfaceView extends GLSurfaceView {
 	
 	private VideoController mVideoController;
 	private RelativeLayout rootView;
+	private Uri mUri;
+	private Context mContext;
 	
 	public FFGLSurfaceView(Context context) {
 		super(context);
-		setUpRender();
+		this.mContext = context;
+		//setUpRender();
 	}
 	
 	public FFGLSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		setUpRender();
+		this.mContext = context;
+		//setUpRender();
 	}
 
 
-	private void setUpRender() {
+	public void setUpRender() {
 		setEGLContextClientVersion(2);
 		setRenderer(new MyRenderer());
 		//setRenderMode(RENDERMODE_WHEN_DIRTY);
@@ -79,6 +88,32 @@ public class FFGLSurfaceView extends GLSurfaceView {
         mCurrentState = STATE_PLAYING;
     }
 
+	public int setVideoURI(Uri uri) {
+		setVideoURI(uri, null);
+		return mCurrentState;
+	}
+	
+	public void setVideoURI(Uri uri, Map<String, String> headers) {
+		mUri = uri;
+		openVideo();
+	}
+	
+	private void openVideo() {
+		if (mUri == null) {
+			return;
+		}
+		Intent i = new Intent("com.android.music.musicservicecommand");
+		i.putExtra("command", "pause");
+		mContext.sendBroadcast(i);
+		int[] resulation = JniUtils.openVideoFile(mUri.getPath());
+		if(resulation[0]>0) {
+			attachMediaController();
+			mCurrentState = STATE_PREPARING;
+		}else{
+			mCurrentState = STATE_ERROR;
+		}
+	}
+	
 	private void attachMediaController() {
 		if (mVideoController != null) {
 			//View anchorView = this.getParent() instanceof View ? (View)this.getParent() : this;
@@ -170,6 +205,69 @@ public class FFGLSurfaceView extends GLSurfaceView {
 			JniUtils.ffmpegGLRender();
 		}
 
+	}
+
+	@Override
+	public void start() {
+		if (isInPlaybackState()) {
+			JniUtils.decodeMedia();
+            mCurrentState = STATE_PLAYING;
+        }
+        mTargetState = STATE_PLAYING;
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getDuration() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getCurrentPosition() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void seekTo(int pos) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isPlaying() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int getBufferPercentage() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean canPause() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canSeekBackward() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canSeekForward() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 }

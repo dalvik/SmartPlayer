@@ -93,19 +93,17 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		mFfglSurfaceView = (FFGLSurfaceView) rootView.findViewById(R.id.glsurface_video_view);
 		mProgressView = rootView.findViewById(Res.id.progress_indicator);
 		mUri = videoUri;
-		/*mVideoSurfaceView.setOnErrorListener(this);
+		mVideoSurfaceView.setOnErrorListener(this);
 		mVideoSurfaceView.setOnCompletionListener(this);
 		mVideoSurfaceView.setMediaController(new VideoController(context), rootView, false);
 		mVideoSurfaceView.setVideoURI(mUri);
-		System.out.println(mUri.toString());
-		// make the video view handle keys for seeking and pausing
 		mVideoSurfaceView.requestFocus();
 
 		Intent i = new Intent(SERVICECMD);
 		i.putExtra(CMDNAME, CMDPAUSE);
 		context.sendBroadcast(i);
 		mVideoSurfaceView.start();
-*/
+/**/
 		playVieoWithFFmpeg();
 	}
 
@@ -180,24 +178,31 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 
 	private void playVieoWithFFmpeg() {
 		mFfglSurfaceView.setMediaController(new VideoController(context), rootView, true);
-		mVideoSurfaceView.setVisibility(View.GONE);
-		mFfglSurfaceView.requestFocus();
-		mFfglSurfaceView.setVisibility(View.VISIBLE);
-		int[] resulation = JniUtils.openVideoFile(mUri.getPath()); // "/mnt/sdcard/video.mp4"
-		int res = 0;
+		int state = mFfglSurfaceView.setVideoURI(mUri);
+		if(state != -1) {
+			mVideoSurfaceView.setVisibility(View.GONE);
+			mFfglSurfaceView.setVisibility(View.VISIBLE);
+			rootView.requestLayout();
+			rootView.invalidate();
+			mFfglSurfaceView.setUpRender();
+			mFfglSurfaceView.requestFocus();
+			mFfglSurfaceView.start();
+		}
+		///int[] resulation = JniUtils.openVideoFile(mUri.getPath()); // "/mnt/sdcard/video.mp4"
+		/*int res = 0;
 		if (res == JniUtils.open_file_success) {
 			System.out.println("res = " + res);
 			System.out.println(resulation[0] + " --- " + resulation[1]);
 			int den = resulation[2];
 			int num = resulation[3];
-			final int frame_rate = den / num;
+			//final int frame_rate = den / num;
 			JniUtils.decodeMedia();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
 					Looper.prepare();
 					int i = JniUtils.display();
-					/*onCompletion();*/
+					onCompletion();
 				}
 			}).start();
 		} else {
@@ -310,8 +315,8 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 			}
 			ToastUtils.showToast(context,
 					R.string.drovik_play_ffmpeg_open_file_fail_str);
-			onCompletion();
-		}
+			onCompletion();*/
+	//	}
 	}
 
 	@Override
