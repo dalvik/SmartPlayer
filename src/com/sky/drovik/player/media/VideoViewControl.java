@@ -19,28 +19,26 @@ package com.sky.drovik.player.media;
 import java.util.Map;
 
 import net.youmi.android.appoffers.CheckStatusNotifier;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.content.pm.ConfigurationInfo;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.baidu.mobstat.StatService;
-import com.drovik.utils.ToastUtils;
 import com.sky.drovik.factory.DrovikRegisterFactory;
 import com.sky.drovik.factory.IRegisterFoctory;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.app.Res;
-import com.sky.drovik.player.ffmpeg.JniUtils;
 import com.sky.drovik.views.FFGLSurfaceView;
 import com.sky.drovik.views.FFSurfaceView;
 
@@ -104,7 +102,9 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		context.sendBroadcast(i);
 		mVideoSurfaceView.start();
 /**/
-		playVieoWithFFmpeg();
+
+/**/
+		//playVieoWithFFmpeg();
 	}
 
 	public void onPause() {
@@ -334,8 +334,8 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		}
 	}
 	
-	public static void refresh() {
-		mFfglSurfaceView.invalid();
-	}
+	//public static void refresh() {
+		//mFfglSurfaceView.invalid();
+	//}
 
 }

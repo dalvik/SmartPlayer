@@ -1,6 +1,5 @@
 package com.sky.drovik.player.ffmpeg;
 
-import android.graphics.Bitmap;
 
 public class JniUtils {
 
@@ -27,37 +26,37 @@ public class JniUtils {
 	private JniUtils() {
 	}
 
-	// FFmpeg
-	//open video file
-	/*
-		int Java_com_sky_drovik_player_ffmpeg_JniUtils_openVideoFile(JNIEnv * env, jobject this,jstring name) {
-
-	 */
 	public static native int[] openVideoFile(String fileName);
 	
 	public static native int[] getVideoResolution();
+
+	public static native int decodeMedia();//start decode av thread
 	
-	public static native int decodeMedia();
+	public static native int display();//display video view
 	
-	public static native int display();
-	/**
-	 * 获取播放状态
-	 * -1  停止
-	 * 0    暂定
-	 * 2  播放
-	 * @return 
-	 */
-	public static native int getPlayState();
+	public static native boolean canPlay();
+	
+	public static native boolean isPlaying();
 	
 	public static native int setPlay();
 	
 	public static native int setStop();
 	
+	public static native boolean canPause();
+	
+	public static native boolean isPause();
+	
 	public static native int setPause();
 	
-	public static native int seek();
+	public static native boolean canSeekForward();
 	
-	public static native int getCurrentPos();
+	public static native boolean canSeekBackward();
+	
+	public static native int seekTo(int msec);
+	
+	public static native int getDuration();
+	
+	public static native int getCurrentPosition();
 	
 	public static native int close();
 	

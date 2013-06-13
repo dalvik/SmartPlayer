@@ -35,6 +35,12 @@ public class FFGLSurfaceView extends GLSurfaceView implements VideoPlayerControl
 	// of STATE_PAUSED.
 	private int mCurrentState = STATE_IDLE;
 	private int mTargetState = STATE_IDLE;
+	private int mDuration;
+	private int mSeekWhenPrepared; // recording the seek position while preparing
+	private int mCurrentBufferPercentage;
+	private boolean mCanPause;
+	private boolean mCanSeekBack;
+	private boolean mCanSeekForward;
 	
 	private VideoController mVideoController;
 	private RelativeLayout rootView;
@@ -56,13 +62,15 @@ public class FFGLSurfaceView extends GLSurfaceView implements VideoPlayerControl
 
 	public void setUpRender() {
 		setEGLContextClientVersion(2);
+		setEGLConfigChooser(5, 6, 5, 0, 0, 0); 
+
 		setRenderer(new MyRenderer());
 		//setRenderMode(RENDERMODE_WHEN_DIRTY);
 		setRenderMode(RENDERMODE_CONTINUOUSLY);
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 		requestFocus();
-		mCurrentState = STATE_IDLE;
+		mCurrentState = STATE_PLAYING;
 		mTargetState = STATE_IDLE;
 	}
 
@@ -70,11 +78,8 @@ public class FFGLSurfaceView extends GLSurfaceView implements VideoPlayerControl
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
+		mCurrentState = STATE_IDLE;
 		JniUtils.ffmpegGLClose();
-	}
-	
-	public void invalid() {
-		//requestRender();
 	}
 	
     public void setMediaController(VideoController videoController, RelativeLayout view, boolean isFFmpeg) {
@@ -211,6 +216,7 @@ public class FFGLSurfaceView extends GLSurfaceView implements VideoPlayerControl
 	public void start() {
 		if (isInPlaybackState()) {
 			JniUtils.decodeMedia();
+			JniUtils.display();
             mCurrentState = STATE_PLAYING;
         }
         mTargetState = STATE_PLAYING;
@@ -218,56 +224,69 @@ public class FFGLSurfaceView extends GLSurfaceView implements VideoPlayerControl
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
-		
+        if (isInPlaybackState()) {
+            if (JniUtils.isPause()) {
+            	JniUtils.setPause();
+                mCurrentState = STATE_PAUSED;
+            }
+        }
+        mTargetState = STATE_PAUSED;
 	}
 
 	@Override
 	public int getDuration() {
-		// TODO Auto-generated method stub
-		return 0;
+        if (isInPlaybackState()) {
+            if (mDuration > 0) {
+                return mDuration;
+            }
+            mDuration = JniUtils.getDuration();
+            return mDuration;
+        }
+        mDuration = -1;
+        return mDuration;
 	}
 
 	@Override
 	public int getCurrentPosition() {
-		// TODO Auto-generated method stub
+		if (isInPlaybackState()) {
+            return JniUtils.getCurrentPosition();
+        }
 		return 0;
 	}
 
 	@Override
-	public void seekTo(int pos) {
-		// TODO Auto-generated method stub
-		
+	public void seekTo(int msec) {
+		if (isInPlaybackState()) {
+			JniUtils.seekTo(msec);
+            mSeekWhenPrepared = 0;
+        } else {
+            mSeekWhenPrepared = msec;
+        }
 	}
 
 	@Override
 	public boolean isPlaying() {
-		// TODO Auto-generated method stub
-		return false;
+		return isInPlaybackState() && JniUtils.isPlaying();
 	}
 
 	@Override
 	public int getBufferPercentage() {
-		// TODO Auto-generated method stub
-		return 0;
+		return mCurrentBufferPercentage;
 	}
 
 	@Override
 	public boolean canPause() {
-		// TODO Auto-generated method stub
-		return false;
+		return mCanPause;
 	}
 
 	@Override
 	public boolean canSeekBackward() {
-		// TODO Auto-generated method stub
-		return false;
+		return mCanSeekBack;
 	}
 
 	@Override
 	public boolean canSeekForward() {
-		// TODO Auto-generated method stub
-		return false;
+		return mCanSeekForward;
 	}
 	
 }
