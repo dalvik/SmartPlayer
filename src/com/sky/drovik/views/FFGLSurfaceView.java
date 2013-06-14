@@ -216,8 +216,8 @@ public class FFGLSurfaceView extends GLSurfaceView implements VideoPlayerControl
 	public void start() {
 		if (isInPlaybackState()) {
 			JniUtils.decodeMedia();
+			mCurrentState = STATE_PLAYING;
 			JniUtils.display();
-            mCurrentState = STATE_PLAYING;
         }
         mTargetState = STATE_PLAYING;
 	}

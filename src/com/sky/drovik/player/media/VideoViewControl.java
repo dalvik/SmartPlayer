@@ -29,6 +29,7 @@ import android.content.pm.ConfigurationInfo;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -39,6 +40,7 @@ import com.sky.drovik.factory.IRegisterFoctory;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.app.Res;
+import com.sky.drovik.player.ffmpeg.JniUtils;
 import com.sky.drovik.views.FFGLSurfaceView;
 import com.sky.drovik.views.FFSurfaceView;
 
@@ -91,7 +93,7 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		mFfglSurfaceView = (FFGLSurfaceView) rootView.findViewById(R.id.glsurface_video_view);
 		mProgressView = rootView.findViewById(Res.id.progress_indicator);
 		mUri = videoUri;
-		mVideoSurfaceView.setOnErrorListener(this);
+	/*	mVideoSurfaceView.setOnErrorListener(this);
 		mVideoSurfaceView.setOnCompletionListener(this);
 		mVideoSurfaceView.setMediaController(new VideoController(context), rootView, false);
 		mVideoSurfaceView.setVideoURI(mUri);
@@ -101,10 +103,10 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		i.putExtra(CMDNAME, CMDPAUSE);
 		context.sendBroadcast(i);
 		mVideoSurfaceView.start();
-/**/
+*/
 
 /**/
-		//playVieoWithFFmpeg();
+		playVieoWithFFmpeg();
 	}
 
 	public void onPause() {
@@ -184,8 +186,8 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 			mFfglSurfaceView.setVisibility(View.VISIBLE);
 			rootView.requestLayout();
 			rootView.invalidate();
-			mFfglSurfaceView.setUpRender();
 			mFfglSurfaceView.requestFocus();
+			mFfglSurfaceView.setUpRender();
 			mFfglSurfaceView.start();
 		}
 		///int[] resulation = JniUtils.openVideoFile(mUri.getPath()); // "/mnt/sdcard/video.mp4"
