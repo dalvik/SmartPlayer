@@ -1,11 +1,8 @@
 package com.sky.drovik.player.media;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.youmi.android.appoffers.CheckStatusNotifier;
 import net.youmi.android.appoffers.EarnedPointsNotifier;
@@ -25,29 +22,19 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
-import android.text.TextUtils.TruncateAt;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -71,17 +58,11 @@ import com.sky.drovik.player.bitmapfun.ImageCache.ImageCacheParams;
 import com.sky.drovik.player.bitmapfun.ImageDetailActivity;
 import com.sky.drovik.player.bitmapfun.ImageFetcher;
 import com.sky.drovik.player.bitmapfun.ScrollyGalleryActivity;
-import com.sky.drovik.player.bitmapfun.Utils;
 import com.sky.drovik.player.engine.BeautyImage;
-import com.sky.drovik.player.engine.HistoryListAdpater;
-import com.sky.drovik.player.engine.ImageLoaderTask;
 import com.sky.drovik.player.engine.UpdateManager;
 import com.sky.drovik.player.exception.StringUtils;
 import com.sky.drovik.player.pojo.BaseImage;
-import com.sky.drovik.player.pojo.FileUtil;
-import com.sky.drovik.player.pojo.HisInfo;
 import com.sky.drovik.player.pojo.MovieInfo;
-import com.sky.drovik.views.ControlPanel;
 import com.sky.drovik.views.LazyScrollView;
 import com.sky.drovik.widget.PullToRefreshListView;
 import com.sky.drovik.widget.PullToRefreshListView.OnRefreshListener;
@@ -141,7 +122,9 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	private View otherImageListViewFooter;
 	private TextView otherImageListViewFootMore;
 	private ProgressBar otherImageListViewFootProgress;
-		
+	
+	//video info
+	
 	//handler
 	private Handler localImageListViewHandler;
 	private Handler beautyImageListViewHandler;
@@ -174,51 +157,10 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
     private List<BaseImage> sceneryImageListTmp = null;
     private List<BaseImage> otherImageListTmp = null;
     
-    //video list
-    private final int MENU_DELETE = Menu.FIRST;
-	
-	private final int MENU_CLEAR = Menu.FIRST + 1;
-	
-	private final int MENU_CANCLE = Menu.FIRST + 2;
-	
-	private int group = 0;
-	
-	private int child = 0;
-	
-    private LazyScrollView waterFallScrollView;
-	
-	private LinearLayout waterFallContainer;
-	
-	private List<LinearLayout> waterFallItems;
-	
-	private List<MovieInfo> movieList = new ArrayList<MovieInfo>();
-	
-	private ProgressDialog progressDialog = null;
-
-	private int column_count = 4;// 显示列数
-	
-	private int page_count = column_count * 4;// 每次加载15张图片
-
-	private int current_page = 0;
-	
 	public static int itemWidth;
 	
 	private final int update = 1;
 	
-	private ControlPanel rightControlPanel = null;
-	
-	private View rightView = null;
-	
-	private List<Map<String,Object>> parentList=new ArrayList<Map<String,Object>>();   
-	       
-	private List<List<Map<String,Object>>> childList = new ArrayList<List<Map<String,Object>>>();
-	
-	private int[] listName = {R.string.drovik_view_history_str};
-	
-	private ExpandableListView expandableListView = null;
-	
-	private HistoryListAdpater adapter;   
-
 	private static int photoIndex = 0;
 	
 	private String curPhotoName = ""; //当前相册名称
@@ -263,7 +205,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
         	boolean flag = intent.getBooleanExtra("check_update", false);
         	UpdateManager.getUpdateManager().checkAppUpdate(this, flag);
         }
-        if(isCheck) {
+        if(!isCheck) {
         	frameBeautyButton.setVisibility(View.INVISIBLE);
         	frameSceneryButton.setVisibility(View.INVISIBLE);
         	frameOtherButton.setVisibility(View.INVISIBLE);
@@ -354,191 +296,11 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		this.initImageListView();
 		this.initSceneryListView();
 		this.initOtherListView();
-		this.initVideoView();
+		//this.initVideoView();
 		//加载listview数据
 		this.initFrameListViewData();
     }
     
-    private void initVideoView() {
-    	LinearLayout layout = (LinearLayout) findViewById(R.id.container);
-		DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
-		itemWidth = dm.widthPixels / column_count;// 根据屏幕大小计算每列大小
-		initLayout(layout);
-    }
-    
-    private void initLayout(LinearLayout layout) {
-		waterFallScrollView = (LazyScrollView) layout.findViewById(R.id.lazyScrollView);
-		waterFallContainer = (LinearLayout) layout.findViewById(R.id.waterFallContainer);
-		LayoutInflater factory = LayoutInflater.from(this);
-        rightView = factory.inflate(R.layout.layout_reight_menu, null);
-        expandableListView = (ExpandableListView) rightView.findViewById(R.id.history_list);
-		parentList =getParentList(); 
-		childList = getChildList();  
-        adapter = new HistoryListAdpater(this, parentList, childList);   
-        expandableListView.setAdapter(adapter);
-        expandableListView.expandGroup(0);
-        expandableListView.setGroupIndicator(null);   
-        expandableListView.setDivider(null); 
-        expandableListView.setOnChildClickListener(new android.widget.ExpandableListView.OnChildClickListener() {
-			
-			@Override
-			public boolean onChildClick(ExpandableListView parent, View v,
-					int groupPosition, int childPosition, long id) {
-				String title = childList.get(groupPosition).get(childPosition).get("title").toString();
-				String path = childList.get(groupPosition).get(childPosition).get("path").toString();
-				HisInfo hisInfo = new HisInfo(System.currentTimeMillis(), title, path);
-				List<HisInfo> list = FileUtil.fetchDeviceFromFile(appContext);
-				FileUtil.addNewHisInfo(list, hisInfo);
-				FileUtil.persistentDevice(appContext, list);
-				
-				Intent intent = new Intent("com.sky.drovik.action.PLAYVER_VIEW");
-		        intent.setDataAndType(Uri.fromFile(new File(path)), "video/*"); 
-		        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		        startActivity(intent);
-				return true;
-			}
-		});
-        
-        registerForContextMenu(expandableListView);
-        int w = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
-        int h = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
-        rightView.measure(w, h);
-        int width = rightView.getMeasuredWidth(); //
-        rightControlPanel = new ControlPanel(this, waterFallScrollView,  width + ControlPanel.HANDLE_WIDTH, LayoutParams.FILL_PARENT);
-		layout.addView(rightControlPanel);
-		rightControlPanel.fillPanelContainer(rightView);
-		
-		waterFallItems = new ArrayList<LinearLayout>();
-		waterFallScrollView.getView();
-		waterFallScrollView.setOnScrollListener(new com.sky.drovik.views.LazyScrollView.OnScrollListener() {
-			
-			@Override
-			public void onTop() {
-				if(BuildConfig.DEBUG) {
-					Log.d(TAG, "### onTop");
-				}
-			}
-			
-			@Override
-			public void onScroll() {
-				if(BuildConfig.DEBUG) {
-					Log.d(TAG, "### onScroll");
-				}
-			}
-			
-			@Override
-			public void onBottom() {
-				if(BuildConfig.DEBUG) {
-					Log.d(TAG, "### onBottom");
-				}
-				addItemToContainer(++current_page, page_count);
-			}
-		});
-		
-		for(int i=0;i<column_count;i++) {
-			LinearLayout itemLayout = new LinearLayout(this);
-			LinearLayout.LayoutParams itemParam = new LinearLayout.LayoutParams(itemWidth, LayoutParams.WRAP_CONTENT, 1);
-			itemLayout.setPadding(2, 2, 2, 2);
-			itemLayout.setOrientation(LinearLayout.VERTICAL);
-			itemLayout.setLayoutParams(itemParam);
-			waterFallItems.add(itemLayout);
-			waterFallContainer.addView(itemLayout);
-		}
-		// 第一次加载
-		loadImageFiles();
-		addItemToContainer(current_page, page_count);
-	}
-	
-	public List<Map<String,Object>> getParentList(){   
-		        List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();   
-		        for(int i=0;i<listName.length;i++){   
-		             Map<String, Object> curGroupMap = new HashMap<String, Object>();   
-		             list.add(curGroupMap);   
-		             curGroupMap.put("list", getText(listName[i]));   
-		       }   
-		        return list;   
-	}   
-	
-	private void addItemToContainer(int pageindex, int pagecount) {
-		int j = 0;
-		int imageCount = movieList.size();
-		for (int i = pageindex * pagecount; i < pagecount * (pageindex + 1)
-				&& i < imageCount; i++) {
-			j = j >= column_count ? j = 0 : j;
-			addImage(movieList.get(i), i, j++);
-		}
-	}
-	
-	private void addImage(MovieInfo imageInfo, int index, int columnIndex) {
-		ImageView imageViewItem = (ImageView) LayoutInflater.from(this).inflate(
-				R.layout.layout_movie_list_item, null);
-		waterFallItems.get(columnIndex).addView(imageViewItem);
-		LinearLayout.LayoutParams ig = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		ig.gravity = Gravity.CENTER;
-		imageViewItem.setLayoutParams(ig);
-		TextView textView = new TextView(appContext);
-		LinearLayout.LayoutParams itemParam = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		itemParam.gravity = Gravity.CENTER;
-		itemParam.weight = 1;
-		textView.setGravity(Gravity.CENTER);
-		textView.setLayoutParams(itemParam);
-		textView.setEllipsize(TruncateAt.END);
-		textView.setShadowLayer(1.5f, 1.5f, 1.5f, 0xff000000);
-		textView.setTextColor(0xffffffff);
-		textView.setBackgroundResource(R.drawable.cer_shape_status_bkgnd);
-		textView.setMaxWidth(itemWidth);
-		textView.setSingleLine();
-		textView.setText(imageInfo.title);
-		waterFallItems.get(columnIndex).addView(textView);
-		imageViewItem.setTag(index);
-		imageViewItem.setOnClickListener(new android.view.View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if(Utils.hasFroyo()){
-					Integer index = (Integer) v.getTag();
-					MovieInfo info = movieList.get(index);
-					HisInfo hisInfo = new HisInfo(System.currentTimeMillis(), info.title.toString(), info.path);
-					List<HisInfo> list = FileUtil.fetchDeviceFromFile(appContext);
-					FileUtil.addNewHisInfo(list, hisInfo);
-					FileUtil.persistentDevice(appContext, list);
-					startActivity(info.intent);
-				}else {
-					ToastUtils.showToast(appContext, R.string.drovik_play_ffmpeg_lower_system_version_str);
-				}
-			}
-		});
-		imageInfo.imageView = imageViewItem;
-		if(imageInfo.thumbnailPath != null && imageInfo.magic_id != 0) {
-			ImageLoaderTask imageLoaderTask = new ImageLoaderTask(this, imageViewItem);
-			imageLoaderTask.execute(imageInfo);
-		}
-	}
-	
-	private void loadImageFiles() {// 分页装载视频信息
-		MediaList media = new MediaList(this);
-		List<MovieInfo> videoList = media.getVideoListByPage(current_page * page_count, page_count);
-		movieList.addAll(videoList);
-	}
-	
-	public List<List<Map<String,Object>>> getChildList(){   
-		childList.clear();
-        List<HisInfo> list = FileUtil.fetchDeviceFromFile(this);
-         for (int i = 0; i < listName.length; i++) {   
-             List<Map<String, Object>> children = new ArrayList<Map<String, Object>>(); 
-             for(HisInfo h:list) {
-            	 Map<String, Object> curChildMap = new HashMap<String, Object>();   
-            	 children.add(curChildMap);   
-            	 curChildMap.put("title", h.getName());
-            	 curChildMap.put("path", h.getPath());
-             }
-             childList.add(children);   
-        }   
-        return childList;   
-           
-    }   
-	
     /**
      * 初始化主页的按钮
      */
@@ -562,24 +324,20 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 			public void onClick(View v) {
 				if(btn == frameLocalButton){
 					frameLocalButton.setEnabled(false);
-					StatService.onEvent(Main.this, "主界面", "美图按钮");
 		    	}else{
 		    		frameLocalButton.setEnabled(true);
 		    	}
 				if(btn == frameBeautyButton){
 					frameBeautyButton.setEnabled(false);
-					StatService.onEvent(Main.this, "主界面", "美图按钮");
 		    	}else{
 		    		frameBeautyButton.setEnabled(true);
 		    	}
 		    	if(btn == frameSceneryButton){
 		    		frameSceneryButton.setEnabled(false);
-		    		StatService.onEvent(Main.this, "主界面", "风景按钮");
 		    	}else{
 		    		frameSceneryButton.setEnabled(true);
 		    	}
 		    	if(btn == frameOtherButton){
-		    		StatService.onEvent(Main.this, "主界面", "其他按钮");
 		    		frameOtherButton.setEnabled(false);
 		    	}else{
 		    		frameOtherButton.setEnabled(true);
@@ -820,7 +578,6 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		});
     }
     
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	private void initImageListView() {
     	beautyImageListViewAdapter = new ListViewImageAdapter(this, beautyImageListViewData,  R.layout.layout_image_list_item, mImageFetcher);
     	beautyImageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
@@ -1444,8 +1201,6 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
     public void onResume() {
         super.onResume();
         StatService.onResume(this);
-        childList = getChildList();  
-		adapter.notifyDataSetChanged();
         mImageFetcher.setExitTasksEarly(false);
     }
 
@@ -1478,7 +1233,6 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 					//recordOrder(context, (EarnedPointsOrder) pointsList.get(i));
 				}
 			} else {
-				infoMsg("onPullPoints:pointsList is null");
 			}
 		} catch (Exception e) {
 			if(BuildConfig.DEBUG && DEBUG) {
@@ -1510,7 +1264,6 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 					}*/
 					//ToastUtils.showToast(context, R.string.drovik_play_regester_success_str);
 					Toast.makeText(context, context.getString(R.string.drovik_play_earncore_success_str, curPhotoName), Toast.LENGTH_SHORT).show();
-					StatService.onEvent(Main.this, "主界面", "成功注册 " + curPhotoName);
 				}
 			}
 		} catch (Exception e) {
@@ -1531,10 +1284,6 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		return sp.getInt(curPhotoName, 0);
 	}
 	
-	private void infoMsg(String msg) {
-		Log.e("MyPointsManager", msg);
-		StatService.onEvent(Main.this, "主界面", "注册失败 " + msg);
-	}
 	
 	private void showErrDialog() {
     	AlertDialog.Builder builder = new AlertDialog.Builder(Main.this);
@@ -1570,47 +1319,6 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		}
 	}
 	
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
-		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
-		group = ExpandableListView.getPackedPositionGroup(info.packedPosition);
-		child = ExpandableListView.getPackedPositionChild(info.packedPosition);
-		if(type == 0) {
-			menu.setHeaderTitle(parentList.get(group).get("list").toString());
-			menu.add(0, MENU_CLEAR, 2, getString(R.string.drovik_context_menu_clear_str));
-			menu.add(0, MENU_CANCLE, 3, getString(R.string.drovik_context_menu_cancle_str));
-		}else {
-			menu.setHeaderTitle(childList.get(group).get(child).get("title").toString());
-			menu.add(0, MENU_DELETE, 1, getString(R.string.drovik_context_menu_delete_str));
-			menu.add(0, MENU_CANCLE, 3, getString(R.string.drovik_context_menu_cancle_str));
-		}
-	}
-	
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		switch(item.getItemId()) {
-		case MENU_DELETE:
-			List<HisInfo> list1 = FileUtil.fetchDeviceFromFile(this);
-			FileUtil.removeHisInfo(list1, childList.get(group).get(child).get("path").toString());
-			FileUtil.persistentDevice(this, list1);
-			childList = getChildList();
-			adapter.notifyDataSetChanged();
-			break;
-		case MENU_CLEAR:
-			List<HisInfo> list = FileUtil.fetchDeviceFromFile(this);
-			list.clear();
-			FileUtil.persistentDevice(this, list);
-			childList = getChildList();
-			adapter.notifyDataSetChanged();
-			break;
-			default:
-				break;
-		}
-		return super.onContextItemSelected(item);
-	}
 	
 	public static String getImgagePath(int position, int catalog) {
 		if(catalog == BaseImage.CATALOG_BEAUTY) {

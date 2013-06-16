@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.sax.StartElementListener;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
@@ -27,6 +28,8 @@ public class ListViewImageAdapter extends BaseAdapter {
 	private int itemViewResource;// 自定义项视图源
 
 	private ImageFetcher mImageFetcher;
+	
+	private ImageView[] star;
 	
 	public ListViewImageAdapter(Context context, List<BaseImage> data,
 			int resource, ImageFetcher mImageFetcher) {
@@ -63,7 +66,12 @@ public class ListViewImageAdapter extends BaseAdapter {
 			itemView.intro = (TextView) convertView.findViewById(R.id.image_list_item_intro);
 			itemView.desc = (TextView)convertView.findViewById(R.id.image_list_item_desc);
 			itemView.src= (ImageView)convertView.findViewById(R.id.image_list_item_thumbnail);
-			
+			star = new ImageView[5];
+			star[0] = (ImageView)convertView.findViewById(R.id.ic_star_gray_0);
+			star[1] = (ImageView)convertView.findViewById(R.id.ic_star_gray_1);
+			star[2] = (ImageView)convertView.findViewById(R.id.ic_star_gray_2);
+			star[3] = (ImageView)convertView.findViewById(R.id.ic_star_gray_3);
+			star[4] = (ImageView)convertView.findViewById(R.id.ic_star_gray_4);
 			//设置控件集到convertView
 			convertView.setTag(itemView);
 		}else {
@@ -87,6 +95,15 @@ public class ListViewImageAdapter extends BaseAdapter {
 		ssb.setSpan(new ForegroundColorSpan(Color.RED), firstStart, firstStart + getIntLength(image.getSrcSize()), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		ssb.setSpan(new ForegroundColorSpan(Color.RED), secondStart, secondStart + getIntLength(image.getNewImageSize()), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		itemView.intro.setText(ssb);
+		int starLevel = image.getStarLevel();
+		int num = starLevel/2;
+		int den = starLevel % 2;
+		for(int i=0;i<num;i++) {
+			star[i].setImageResource(R.drawable.ic_star);
+		}
+		if(den != 0) {
+			star[num].setImageResource(R.drawable.ic_star_half);
+		}
 		mImageFetcher.loadImage(image.getThumbnail(), itemView.src);
 		return convertView;
 	}

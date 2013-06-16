@@ -71,5 +71,44 @@
 	           	android:maxLines="2"
 	            android:textColor="@color/black"/>
        	</LinearLayout>
+       	
+       	<LinearLayout 
+	    	android:orientation="horizontal" 
+	        android:layout_width="fill_parent"  
+	        android:layout_height="fill_parent"
+	        android:layout_weight="1"
+	        android:layout_marginBottom="5dip"
+	        android:layout_gravity="bottom">   
+	       	    <ImageView 
+		            android:id="@+id/ic_star_gray_0"
+			      	android:layout_width="wrap_content" 
+			        android:layout_height="wrap_content"
+			        android:layout_marginLeft="5dip"
+			        android:background="@drawable/ic_star_gray"/>
+	       	     <ImageView 
+		            android:id="@+id/ic_star_gray_1"
+			      	android:layout_width="wrap_content" 
+			        android:layout_height="wrap_content"
+			        android:layout_marginLeft="5dip"
+			        android:background="@drawable/ic_star_gray"/>
+	       	     <ImageView 
+		            android:id="@+id/ic_star_gray_2"
+			      	android:layout_width="wrap_content" 
+			        android:layout_height="wrap_content"
+			        android:layout_marginLeft="5dip"
+			        android:background="@drawable/ic_star_gray"/>
+	       	     <ImageView 
+		            android:id="@+id/ic_star_gray_3"
+			      	android:layout_width="wrap_content" 
+			        android:layout_height="wrap_content"
+			        android:layout_marginLeft="5dip"
+			        android:background="@drawable/ic_star_gray"/>
+	       	     <ImageView 
+		            android:id="@+id/ic_star_gray_4"
+			      	android:layout_width="wrap_content" 
+			        android:layout_height="wrap_content"
+			        android:layout_marginLeft="5dip"
+			        android:background="@drawable/ic_star_gray"/>
+       	</LinearLayout>
 	</LinearLayout>
 </LinearLayout> 

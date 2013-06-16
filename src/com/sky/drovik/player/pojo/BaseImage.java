@@ -35,6 +35,8 @@ public abstract class BaseImage {
 	
 	private String channel;
 	
+	private int starLevel;
+	
 	public BaseImage() {
 		super();
 	}
@@ -130,6 +132,15 @@ public abstract class BaseImage {
 		int result = 1;
 		result = prime * result + ((src == null) ? 0 : src.hashCode());
 		return result;
+	}
+
+	
+	public int getStarLevel() {
+		return starLevel;
+	}
+
+	public void setStarLevel(int starLevel) {
+		this.starLevel = starLevel;
 	}
 
 	@Override

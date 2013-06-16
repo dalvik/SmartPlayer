@@ -91,7 +91,7 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		mFfglSurfaceView = (FFGLSurfaceView) rootView.findViewById(R.id.glsurface_video_view);
 		mProgressView = rootView.findViewById(Res.id.progress_indicator);
 		mUri = videoUri;
-		mVideoSurfaceView.setOnErrorListener(this);
+		/*mVideoSurfaceView.setOnErrorListener(this);
 		mVideoSurfaceView.setOnCompletionListener(this);
 		mVideoSurfaceView.setMediaController(new VideoController(context), rootView, false);
 		mVideoSurfaceView.setVideoURI(mUri);
@@ -101,10 +101,10 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		i.putExtra(CMDNAME, CMDPAUSE);
 		context.sendBroadcast(i);
 		mVideoSurfaceView.start();
-/**/
+*/
 
 /**/
-		//playVieoWithFFmpeg();
+		playVieoWithFFmpeg();
 	}
 
 	public void onPause() {

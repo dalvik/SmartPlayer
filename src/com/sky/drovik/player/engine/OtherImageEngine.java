@@ -77,6 +77,12 @@ public class OtherImageEngine extends ImageEngine {
 							}
 						}else if(tag.equalsIgnoreCase("channel")) {
 							image.setChannel(xmlPullParser.nextText().trim());
+						}else if(tag.equalsIgnoreCase("star")) {
+							try {
+								image.setStarLevel(Integer.parseInt(xmlPullParser.nextText().trim()));
+							} catch (Exception e) {
+								image.setStarLevel(5);
+							}
 						}
 					}
 					break;
