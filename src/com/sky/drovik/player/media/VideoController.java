@@ -239,7 +239,6 @@ public class VideoController extends FrameLayout{
         } else if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
         	if(isFFmpeg) {
         		if (uniqueDown) {
-        			mPlayer.start();
         			updatePausePlay();
         			show(sDefaultTimeout);
         		}
