@@ -16,7 +16,7 @@ import com.sky.drovik.player.pojo.BaseImage;
 
 public class ListViewSceneryImageAdapter extends BaseAdapter {
 
-	private Context context;// 运行上下文
+	//private Context context;// 运行上下文
 	private List<BaseImage> listItems;// 数据集合
 	private LayoutInflater listContainer;// 视图容器
 	private int itemViewResource;// 自定义项视图源
@@ -25,7 +25,7 @@ public class ListViewSceneryImageAdapter extends BaseAdapter {
 	
 	public ListViewSceneryImageAdapter(Context context, List<BaseImage> data,
 			int resource, ImageFetcher mImageFetcher) {
-		this.context = context;
+		//this.context = context;
 		this.listContainer = LayoutInflater.from(context);
 		listItems = data;
 		itemViewResource = resource;

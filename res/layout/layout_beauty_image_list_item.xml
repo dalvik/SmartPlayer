@@ -61,6 +61,7 @@
 	        android:layout_width="fill_parent"  
 	        android:layout_height="fill_parent"
 	        android:layout_weight="1"
+	        android:layout_marginBottom="3dip"
 	        android:layout_gravity="center">   
 	       	
 	       	<TextView android:id="@+id/image_list_item_desc"   
@@ -77,8 +78,8 @@
 	        android:layout_width="fill_parent"  
 	        android:layout_height="fill_parent"
 	        android:layout_weight="1"
-	        android:layout_marginBottom="5dip"
-	        android:layout_gravity="bottom">   
+	        android:layout_marginBottom="2dip"
+	        android:layout_gravity="center">   
 	       	    <ImageView 
 		            android:id="@+id/ic_star_gray_0"
 			      	android:layout_width="wrap_content" 

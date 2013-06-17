@@ -48,7 +48,7 @@ import com.sky.drovik.entity.UIHelper;
 import com.sky.drovik.player.AppContext;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
-import com.sky.drovik.player.adpter.ListViewImageAdapter;
+import com.sky.drovik.player.adpter.ListViewBeautyImageAdapter;
 import com.sky.drovik.player.adpter.ListViewLocalAdapter;
 import com.sky.drovik.player.adpter.ListViewOtherImageAdapter;
 import com.sky.drovik.player.adpter.ListViewSceneryImageAdapter;
@@ -101,7 +101,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	
 	//beayty image contentvew
 	private PullToRefreshListView beautyImageListView;
-	private ListViewImageAdapter beautyImageListViewAdapter;
+	private ListViewBeautyImageAdapter beautyImageListViewAdapter;
 	private static List<BaseImage> beautyImageListViewData = new ArrayList<BaseImage>();
 	private View beautyImageListViewFooter;
 	private TextView beautyImageListViewFootMore;
@@ -579,7 +579,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
     }
     
 	private void initImageListView() {
-    	beautyImageListViewAdapter = new ListViewImageAdapter(this, beautyImageListViewData,  R.layout.layout_image_list_item, mImageFetcher);
+    	beautyImageListViewAdapter = new ListViewBeautyImageAdapter(this, beautyImageListViewData,  R.layout.layout_beauty_image_list_item, mImageFetcher);
     	beautyImageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
     	beautyImageListViewFootMore = (TextView)beautyImageListViewFooter.findViewById(R.id.list_view_foot_more);
     	beautyImageListViewFootProgress = (ProgressBar)beautyImageListViewFooter.findViewById(R.id.list_view_foot_progress);

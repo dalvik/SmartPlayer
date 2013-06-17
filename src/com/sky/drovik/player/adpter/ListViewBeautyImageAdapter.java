@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.sax.StartElementListener;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
@@ -20,20 +19,18 @@ import com.sky.drovik.player.bitmapfun.ImageFetcher;
 import com.sky.drovik.player.engine.BeautyImage;
 import com.sky.drovik.player.pojo.BaseImage;
 
-public class ListViewImageAdapter extends BaseAdapter {
+public class ListViewBeautyImageAdapter extends BaseAdapter {
 
-	private Context context;// 运行上下文
+	//private Context context;// 运行上下文
 	private List<BaseImage> listItems;// 数据集合
 	private LayoutInflater listContainer;// 视图容器
 	private int itemViewResource;// 自定义项视图源
 
 	private ImageFetcher mImageFetcher;
 	
-	private ImageView[] star;
-	
-	public ListViewImageAdapter(Context context, List<BaseImage> data,
+	public ListViewBeautyImageAdapter(Context context, List<BaseImage> data,
 			int resource, ImageFetcher mImageFetcher) {
-		this.context = context;
+		//this.context = context;
 		this.listContainer = LayoutInflater.from(context);
 		listItems = data;
 		itemViewResource = resource;
@@ -66,12 +63,11 @@ public class ListViewImageAdapter extends BaseAdapter {
 			itemView.intro = (TextView) convertView.findViewById(R.id.image_list_item_intro);
 			itemView.desc = (TextView)convertView.findViewById(R.id.image_list_item_desc);
 			itemView.src= (ImageView)convertView.findViewById(R.id.image_list_item_thumbnail);
-			star = new ImageView[5];
-			star[0] = (ImageView)convertView.findViewById(R.id.ic_star_gray_0);
-			star[1] = (ImageView)convertView.findViewById(R.id.ic_star_gray_1);
-			star[2] = (ImageView)convertView.findViewById(R.id.ic_star_gray_2);
-			star[3] = (ImageView)convertView.findViewById(R.id.ic_star_gray_3);
-			star[4] = (ImageView)convertView.findViewById(R.id.ic_star_gray_4);
+			itemView.star[0]= (ImageView)convertView.findViewById(R.id.ic_star_gray_0);
+			itemView.star[1] = (ImageView)convertView.findViewById(R.id.ic_star_gray_1);
+			itemView.star[2] = (ImageView)convertView.findViewById(R.id.ic_star_gray_2);
+			itemView.star[3] = (ImageView)convertView.findViewById(R.id.ic_star_gray_3);
+			itemView.star[4] = (ImageView)convertView.findViewById(R.id.ic_star_gray_4);
 			//设置控件集到convertView
 			convertView.setTag(itemView);
 		}else {
@@ -95,14 +91,17 @@ public class ListViewImageAdapter extends BaseAdapter {
 		ssb.setSpan(new ForegroundColorSpan(Color.RED), firstStart, firstStart + getIntLength(image.getSrcSize()), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		ssb.setSpan(new ForegroundColorSpan(Color.RED), secondStart, secondStart + getIntLength(image.getNewImageSize()), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 		itemView.intro.setText(ssb);
+		for(int i=0;i<itemView.star.length;i++) {
+			itemView.star[i].setImageResource(R.drawable.ic_star_gray);
+		}
 		int starLevel = image.getStarLevel();
 		int num = starLevel/2;
 		int den = starLevel % 2;
 		for(int i=0;i<num;i++) {
-			star[i].setImageResource(R.drawable.ic_star);
+			itemView.star[i].setImageResource(R.drawable.ic_star);
 		}
 		if(den != 0) {
-			star[num].setImageResource(R.drawable.ic_star_half);
+			itemView.star[num].setImageResource(R.drawable.ic_star_half);
 		}
 		mImageFetcher.loadImage(image.getThumbnail(), itemView.src);
 		return convertView;
@@ -113,6 +112,8 @@ public class ListViewImageAdapter extends BaseAdapter {
 		public TextView name;
 		public TextView intro;
 		public TextView desc;
+
+		public ImageView star[] = new ImageView[5];
 	}
 
 	private int getIntLength(int num) {
