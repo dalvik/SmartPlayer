@@ -26,11 +26,16 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.drovik.utils.BitmapUtil;
 import com.sky.drovik.player.BuildConfig;
+import com.sky.drovik.player.R;
+import com.sky.drovik.player.engine.BitmapCache;
+import com.sky.drovik.player.pojo.MovieInfo;
 
 /**
  * This class wraps up completing some arbitrary long running work when loading a bitmap to an
@@ -51,6 +56,8 @@ public abstract class ImageWorker {
 
     protected Resources mResources;
 
+    private Context context;
+    
     private static final int MESSAGE_CLEAR = 0;
     private static final int MESSAGE_INIT_DISK_CACHE = 1;
     private static final int MESSAGE_FLUSH = 2;
@@ -59,6 +66,7 @@ public abstract class ImageWorker {
     private OnLoadImageListener loadImageListener;
     
     protected ImageWorker(Context context) {
+    	this.context = context;
         mResources = context.getResources();
     }
 
@@ -102,6 +110,37 @@ public abstract class ImageWorker {
         }
     }
 
+    public void loadVideoThumbnail(Object data, ImageView imageView) {
+    	if (data == null) {
+            return;
+        }
+
+        Bitmap bitmap = null;
+
+        MovieInfo info = (MovieInfo) data;
+        if (mImageCache != null) {
+            bitmap = mImageCache.getBitmapFromMemCache(String.valueOf(info.thumbnailPath));
+        }
+        if (bitmap != null) {
+            // Bitmap found in memory cache
+            imageView.setImageBitmap(bitmap);
+        } else if (cancelPotentialWork2(data, imageView)) {
+        	ImageLoaderTask imageLoaderTask = new ImageLoaderTask(context, imageView);
+        	final AsyncThumbnailDrawable asyncDrawable = new AsyncThumbnailDrawable(mResources, mLoadingBitmap, imageLoaderTask);
+        	imageView.setImageDrawable(asyncDrawable);
+			imageLoaderTask.execute(info);
+
+            //final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
+           // final AsyncDrawable asyncDrawable = new AsyncDrawable(mResources, mLoadingBitmap, task);
+           // imageView.setImageDrawable(asyncDrawable);
+
+            // NOTE: This uses a custom version of AsyncTask that has been pulled from the
+            // framework and slightly modified. Refer to the docs at the top of the class
+            // for more info on what was changed.
+           // task.executeOnExecutor(AsyncTask.DUAL_THREAD_EXECUTOR, data);
+        }
+    }
+    
     /**
      * Set placeholder bitmap that shows when the the background thread is running.
      *
@@ -451,5 +490,118 @@ public abstract class ImageWorker {
     public interface OnLoadImageListener {
     	
     	public void updateResolution(String path, int w, int h);
+    }
+    
+    private class ImageLoaderTask extends AsyncTask<MovieInfo, Void, Bitmap>{
+
+    	private MovieInfo imageInfo;
+    	
+    	private final WeakReference<ImageView> imageViewReference;
+
+    	public ImageLoaderTask(Context context, ImageView imageView) {
+    		imageViewReference = new WeakReference<ImageView>(imageView);
+    	}
+    	
+    	@Override
+    	protected Bitmap doInBackground(MovieInfo... params) {
+    		imageInfo = params[0];
+    		if(imageInfo == null || imageInfo.thumbnailPath.length()==0) {
+    			return null;
+    		}
+    		Bitmap bitmap = null;
+    		if (mImageCache != null && !isCancelled() && getAttachedImageView() != null) {
+                bitmap = mImageCache.getBitmapFromDiskCache(imageInfo.thumbnailPath);
+            }
+    		if (bitmap == null && !isCancelled() && getAttachedImageView() != null ) {
+                 bitmap = loadImageFile();
+            }
+    		if (bitmap != null && mImageCache != null) {
+                mImageCache.addBitmapToCache(imageInfo.thumbnailPath, bitmap);
+            }
+    		return bitmap;
+    	}
+
+    	private Bitmap loadImageFile() {
+    		try {
+    			Bitmap bitmap = MediaStore.Video.Thumbnails.getThumbnail(context.getContentResolver(), imageInfo.magic_id, MediaStore.Video.Thumbnails.MICRO_KIND, null);
+    			if(bitmap != null) {
+    				Bitmap bitmapImage = BitmapUtil.getRoundedCornerBitmap(bitmap, 10.0f);
+    				if(bitmap != null && !bitmap.isRecycled()) {
+    					bitmap.recycle();
+    					bitmap = null;
+    				}
+    				return bitmapImage;
+    			}
+    		} catch (Exception e) {
+    			Log.e(this.getClass().getSimpleName(), "fetchDrawable failed", e);
+    		}
+    		return null;
+    	}
+
+    	@Override
+    	protected void onPostExecute(Bitmap bitmap) {
+    		if (isCancelled()) {
+    			bitmap = null;
+    		}
+			final ImageView imageView = getAttachedImageView();
+	        if (bitmap != null && imageView != null) {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "onPostExecute - setting bitmap");
+                }
+                setImageBitmap(imageView, bitmap);
+	        }else if(imageView != null){
+	        	imageView.setImageBitmap(mLoadingBitmap);
+	        }
+    	}
+    	
+        private ImageView getAttachedImageView() {
+            final ImageView imageView = imageViewReference.get();
+            final ImageLoaderTask imageLoaderTask = getVideoThumbnailWorkerTask(imageView);
+            if (this == imageLoaderTask) {
+                return imageView;
+            }
+            return null;
+        }
+    }
+    
+    private static ImageLoaderTask getVideoThumbnailWorkerTask(ImageView imageView) {
+        if (imageView != null) {
+            final Drawable drawable = imageView.getDrawable();
+            if (drawable instanceof AsyncThumbnailDrawable) {
+                final AsyncThumbnailDrawable asyncDrawable = (AsyncThumbnailDrawable) drawable;
+                return asyncDrawable.getBitmapWorkerTask();
+            }
+        }
+        return null;
+    }
+    
+    public static boolean cancelPotentialWork2(Object data, ImageView imageView) {
+        final ImageLoaderTask bitmapWorkerTask = getVideoThumbnailWorkerTask(imageView);
+        if (bitmapWorkerTask != null) {
+            final Object bitmapData = bitmapWorkerTask.imageInfo;
+            if (bitmapData == null || !bitmapData.equals(data)) {
+                bitmapWorkerTask.cancel(true);
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "cancelPotentialWork - cancelled work for " + data);
+                }
+            } else {
+                // The same work is already in progress.
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private static class AsyncThumbnailDrawable extends BitmapDrawable {
+        private final WeakReference<ImageLoaderTask> bitmapWorkerTaskReference;
+
+        public AsyncThumbnailDrawable(Resources res, Bitmap bitmap, ImageLoaderTask bitmapWorkerTask) {
+            super(res, bitmap);
+            bitmapWorkerTaskReference =    new WeakReference<ImageLoaderTask>(bitmapWorkerTask);
+        }
+
+        public ImageLoaderTask getBitmapWorkerTask() {
+            return bitmapWorkerTaskReference.get();
+        }
     }
 }

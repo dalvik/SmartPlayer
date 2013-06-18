@@ -13,7 +13,6 @@ import net.youmi.push.android.YoumiPush;
 import android.annotation.TargetApi;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -28,7 +27,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -50,6 +48,7 @@ import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.adpter.ListViewBeautyImageAdapter;
 import com.sky.drovik.player.adpter.ListViewLocalAdapter;
+import com.sky.drovik.player.adpter.ListViewLocalVideoAdapter;
 import com.sky.drovik.player.adpter.ListViewOtherImageAdapter;
 import com.sky.drovik.player.adpter.ListViewSceneryImageAdapter;
 import com.sky.drovik.player.app.Res;
@@ -63,7 +62,6 @@ import com.sky.drovik.player.engine.UpdateManager;
 import com.sky.drovik.player.exception.StringUtils;
 import com.sky.drovik.player.pojo.BaseImage;
 import com.sky.drovik.player.pojo.MovieInfo;
-import com.sky.drovik.views.LazyScrollView;
 import com.sky.drovik.widget.PullToRefreshListView;
 import com.sky.drovik.widget.PullToRefreshListView.OnRefreshListener;
 import com.sky.drovik.widget.ScrollLayout;
@@ -87,50 +85,57 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	private ProgressBar mHeadProgress;
 
 	//footer
-	private RadioButton fbImage;
-	private RadioButton fbVideo;
-	private ImageView fbSetting;
+	private RadioButton footBarImage;
+	private RadioButton footBarVideo;
+	private ImageView footBarSetting;
+	
 	
 	//local image contentvew
 	private PullToRefreshListView localImageListView;
-	private ListViewLocalAdapter localImageListViewAdapter;
-	private static List<BaseImage> localImageListViewData = new ArrayList<BaseImage>();
 	private View localImageListViewFooter;
 	private TextView localImageListViewFootMore;
 	private ProgressBar localImageListViewFootProgress;
+	private ListViewLocalAdapter localImageListViewAdapter;
+	private static List<BaseImage> localImageListViewData = new ArrayList<BaseImage>();
 	
 	//beayty image contentvew
 	private PullToRefreshListView beautyImageListView;
+	private TextView beautyImageListViewFootMore;
+	private View beautyImageListViewFooter;
+	private ProgressBar beautyImageListViewFootProgress;
 	private ListViewBeautyImageAdapter beautyImageListViewAdapter;
 	private static List<BaseImage> beautyImageListViewData = new ArrayList<BaseImage>();
-	private View beautyImageListViewFooter;
-	private TextView beautyImageListViewFootMore;
-	private ProgressBar beautyImageListViewFootProgress;
 	
 	//scenery image contentvew
 	private PullToRefreshListView sceneryImageListView;
+	private TextView sceneryImageListViewFootMore;
+	private View sceneryImageListViewFooter;
+	private ProgressBar sceneryImageListViewFootProgress;
 	private ListViewSceneryImageAdapter sceneryImageListViewAdapter;
 	private static List<BaseImage> sceneryImageListViewData = new ArrayList<BaseImage>();
-	private View sceneryImageListViewFooter;
-	private TextView sceneryImageListViewFootMore;
-	private ProgressBar sceneryImageListViewFootProgress;
 		
 	//other image contentvew
 	private PullToRefreshListView otherImageListView;
+	private TextView otherImageListViewFootMore;
+	private View otherImageListViewFooter;
+	private ProgressBar otherImageListViewFootProgress;
 	private ListViewOtherImageAdapter otherImageListViewAdapter;
 	private static List<BaseImage> otherImageListViewData = new ArrayList<BaseImage>();
-	private View otherImageListViewFooter;
-	private TextView otherImageListViewFootMore;
-	private ProgressBar otherImageListViewFootProgress;
 	
 	//video info
+	private PullToRefreshListView localVideoListView;
+	private TextView localVideoListViewFootMore;
+	private View localVideoListViewFooter;
+	private ProgressBar localVideoListViewFootProgress;
+	private ListViewLocalVideoAdapter localVideoListViewAdapter;
+	private static List<MovieInfo> localVideoListViewData = new ArrayList<MovieInfo>();
 	
 	//handler
 	private Handler localImageListViewHandler;
 	private Handler beautyImageListViewHandler;
 	private Handler sceneryImageListViewHandler;
 	private Handler otherImageListViewHandler;
-	
+	private Handler localVideoListViewHandler;
 	
 	//top buttons
 	private Button frameLocalButton;
@@ -142,8 +147,10 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	private int beautyImageListSumData;
 	private int sceneryImageListSumData;
 	private int otherImageListSumData;
+	private int localVideoListSumData;
 	
 	private int curImageCatalog = BaseImage.CATALOG_LOCAL;
+	private int curVideoCatalog = MovieInfo.CATALOG_LOCAL_VIDEO;
 	
 	private AppContext appContext;//全局Context
 	
@@ -228,15 +235,14 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
     		mButtons[i].setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
 					int pos = (Integer)(v.getTag());
-					if(mCurSel == pos) {
+					if(mCurSel != pos) {
 		    			switch (pos) {
 						case 0://image
 							localImageListView.clickRefresh();
 							//beautyImageListView.clickRefresh();
-							StatService.onEvent(Main.this, "主界面", "点击图像按钮");
 							break;	
 						case 1://video
-							StatService.onEvent(Main.this, "主界面", "点击视频按钮");
+							localVideoListView.clickRefresh();
 							break;
 						case 2://settings
 							break;
@@ -285,9 +291,9 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	}
 
 	private void initFootBar() {
-		fbImage = (RadioButton)findViewById(R.id.main_footbar_image);
-		fbVideo = (RadioButton)findViewById(R.id.main_footbar_video);
-    	fbSetting = (ImageView)findViewById(R.id.main_footbar_setting);
+		footBarImage = (RadioButton)findViewById(R.id.main_footbar_image);
+		footBarVideo = (RadioButton)findViewById(R.id.main_footbar_video);
+    	footBarSetting = (ImageView)findViewById(R.id.main_footbar_setting);
 	}
 	
     private void initFrameListView() {
@@ -296,7 +302,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		this.initImageListView();
 		this.initSceneryListView();
 		this.initOtherListView();
-		//this.initVideoView();
+		this.initLocalVideoListView();
 		//加载listview数据
 		this.initFrameListViewData();
     }
@@ -375,7 +381,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		    		if(sceneryImageListViewData.size() == 0) {
 		    			loadSceneryImageListData(curImageCatalog, 0, sceneryImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
 		    		} else {
-		    			sceneryImageListViewFootMore.setText(R.string.load_more);
+		    			sceneryImageListViewFootMore.setText(R.string.load_ing);
 		    			sceneryImageListViewFootProgress.setVisibility(View.GONE);
 		    			loadSceneryImageListData(curImageCatalog, 0, sceneryImageListViewHandler, UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG);
 		    		}
@@ -405,6 +411,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
         beautyImageListViewHandler = this.getListViewHandler(beautyImageListView, beautyImageListViewAdapter, beautyImageListViewFootMore, beautyImageListViewFootProgress, AppContext.PAGE_SIZE);
         sceneryImageListViewHandler = this.getListViewHandler(sceneryImageListView, sceneryImageListViewAdapter, sceneryImageListViewFootMore, sceneryImageListViewFootProgress, AppContext.PAGE_SIZE);
         otherImageListViewHandler = this.getListViewHandler(otherImageListView, otherImageListViewAdapter, otherImageListViewFootMore, otherImageListViewFootProgress, AppContext.PAGE_SIZE);
+        localVideoListViewHandler = this.getListViewHandler(localVideoListView, localVideoListViewAdapter, localVideoListViewFootMore, localVideoListViewFootProgress, AppContext.PAGE_SIZE);
         //加载数据				
 		if(localImageListViewData.size() == 0) {
 			loadLocalImageListData(curImageCatalog, 0, localImageListViewHandler, UIHelper.LISTVIEW_ACTION_INIT);
@@ -447,17 +454,6 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
     			if(msg.arg1 == UIHelper.LISTVIEW_ACTION_REFRESH) {
     				imageListView.onRefreshComplete(getString(R.string.pull_to_refresh_update) + new Date().toLocaleString());
     				imageListView.setSelection(0);
-    				String info = null;
-    				if(curImageCatalog == BaseImage.CATALOG_BEAUTY) {
-    					info = "刷新美图成功";
-    				}else if(curImageCatalog == BaseImage.CATALOG_SCENERY) {
-    					info = "刷新风景成功";
-    				}else if(curImageCatalog == BaseImage.CATALOG_LOCAL) {
-    					info = "刷新本地成功";
-    				} else {
-    					info = "刷新其他成功";
-    				}
-    				StatService.onEvent(Main.this, "主界面", info);
     			}else if(msg.arg1 == UIHelper.LISTVIEW_ACTION_CHANGE_CATALOG) {
     				imageListView.onRefreshComplete();
     				imageListView.setSelection(0);
@@ -469,10 +465,10 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
     //init local image listview
     private void initLocalListView() {
     	localImageListViewAdapter = new ListViewLocalAdapter(this, localImageListViewData,  R.layout.layout_local_image_list_item, mImageFetcher);
+    	localImageListView = (PullToRefreshListView)findViewById(R.id.frame_list_view_local_image);
     	localImageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
     	localImageListViewFootMore = (TextView)localImageListViewFooter.findViewById(R.id.list_view_foot_more);
     	localImageListViewFootProgress = (ProgressBar)localImageListViewFooter.findViewById(R.id.list_view_foot_progress);
-    	localImageListView = (PullToRefreshListView)findViewById(R.id.frame_list_view_local_image);
     	localImageListView.addFooterView(localImageListViewFooter);
     	localImageListView.setAdapter(localImageListViewAdapter);
     	localImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -482,8 +478,8 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
           			return;
           		}
           		if(view == localImageListViewFooter) {
-					localImageListViewFootMore.setText(R.string.load_ing);
-					localImageListViewFootProgress.setVisibility(View.VISIBLE);
+          			localImageListViewFootMore.setText(R.string.load_ing);
+          			localImageListViewFootProgress.setVisibility(View.VISIBLE);
 					//当前pageIndex
 					int pageIndex = localImageListSumData/AppContext.PAGE_SIZE;
 					loadLocalImageListData(curImageCatalog, pageIndex, localImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
@@ -497,13 +493,12 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
                 	photoIndex = position - 1;
                 	BeautyImage beautyImage = (BeautyImage) localImageListViewData.get(position-1);
                 	curPhotoName = beautyImage.getName();
-                	if(beautyImage.getId()>0 && queryPoints(appContext)<= 0 && !beautyImage.getChannel().contains(channelId)) {
-                		StatService.onEvent(Main.this, "主界面", "打开相册 " + curPhotoName+ " 注册框");
+                	//TODO
+                	/*if(beautyImage.getId()>0 && queryPoints(appContext)<= 0 && !beautyImage.getChannel().contains(channelId)) {
                 		showErrDialog();//id==0表示审核 >0 注册  没有包含channel的话 也表示需要注册了。所以通过审核以后需要将channel值0
                 		return;
-                	}
+                	}*/
                 	i.putExtra(ImageDetailActivity.LIST_SIZE, beautyImage.getSrcSize());
-                	//new add when add imageflinggallery
                 	i.putExtra(FlingGalleryActivity.IMAGE_SRC_LIST, beautyImage.getSrcArr());//文件地址列表
                 }else {
                 	photoIndex = position - 1;
@@ -512,21 +507,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
                 	
                 }
                 i.putExtra(ImageDetailActivity.CATA_LOG, curImageCatalog);
-                /*if (com.sky.drovik.player.bitmapfun.Utils.hasJellyBean()) {
-                    // makeThumbnailScaleUpAnimation() looks kind of ugly here as the loading spinner may
-                    // show plus the thumbnail image in GridView is cropped. so using
-                    // makeScaleUpAnimation() instead.
-                    ActivityOptions options =
-                            ActivityOptions.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
-                    startActivity(i, options.toBundle());
-                } else {
-                    startActivity(i);
-                }*/
                 startActivity(i);
-           		
-                //startActivity(i);
-          		//跳转到新闻详情
-          		//UIHelper.showNewsRedirect(view.getContext(), news);
           	}        	
   		});
     	localImageListView.setOnScrollListener(new OnScrollListener() {
@@ -580,10 +561,10 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
     
 	private void initImageListView() {
     	beautyImageListViewAdapter = new ListViewBeautyImageAdapter(this, beautyImageListViewData,  R.layout.layout_beauty_image_list_item, mImageFetcher);
+    	beautyImageListView = (PullToRefreshListView)findViewById(R.id.frame_list_view_beayty_image);
     	beautyImageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
     	beautyImageListViewFootMore = (TextView)beautyImageListViewFooter.findViewById(R.id.list_view_foot_more);
     	beautyImageListViewFootProgress = (ProgressBar)beautyImageListViewFooter.findViewById(R.id.list_view_foot_progress);
-    	beautyImageListView = (PullToRefreshListView)findViewById(R.id.frame_list_view_beayty_image);
     	beautyImageListView.addFooterView(beautyImageListViewFooter);
     	beautyImageListView.setAdapter(beautyImageListViewAdapter);
     	beautyImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -593,8 +574,8 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
           			return;
           		}
           		if(view == beautyImageListViewFooter) {
-					beautyImageListViewFootMore.setText(R.string.load_ing);
-					beautyImageListViewFootProgress.setVisibility(View.VISIBLE);
+          			beautyImageListViewFootMore.setText(R.string.load_ing);
+          			beautyImageListViewFootProgress.setVisibility(View.VISIBLE);
 					//当前pageIndex
 					int pageIndex = beautyImageListSumData/AppContext.PAGE_SIZE;
 					loadBeautyImageListData(curImageCatalog, pageIndex, beautyImageListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
@@ -655,7 +636,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	             }
 				boolean scrollEnd = false;
 				try{
-					if(view.getPositionForView(beautyImageListViewFooter) == view.getLastVisiblePosition()) {
+					if(view.getPositionForView(beautyImageListViewFootMore) == view.getLastVisiblePosition()) {
 						scrollEnd = true;
 					}
 				} catch (Exception e) {
@@ -692,10 +673,10 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
     //init sencerty
 	private void initSceneryListView() {
 		sceneryImageListViewAdapter = new ListViewSceneryImageAdapter(this, sceneryImageListViewData, R.layout.layout_scenery_image_list_item, mImageFetcher);        
-        sceneryImageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
-        sceneryImageListViewFootMore = (TextView)sceneryImageListViewFooter.findViewById(R.id.list_view_foot_more);
-        sceneryImageListViewFootProgress = (ProgressBar)sceneryImageListViewFooter.findViewById(R.id.list_view_foot_progress);
         sceneryImageListView = (PullToRefreshListView)findViewById(R.id.frame_list_view_secenry_image);
+    	sceneryImageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
+    	sceneryImageListViewFootMore = (TextView)sceneryImageListViewFooter.findViewById(R.id.list_view_foot_more);
+    	sceneryImageListViewFootProgress = (ProgressBar)sceneryImageListViewFooter.findViewById(R.id.list_view_foot_progress);
         sceneryImageListView.addFooterView(sceneryImageListViewFooter);//添加底部视图  必须在setAdapter前
         sceneryImageListView.setAdapter(sceneryImageListViewAdapter); 
         sceneryImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -783,10 +764,10 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	//init other
 	private void initOtherListView() {
 		otherImageListViewAdapter = new ListViewOtherImageAdapter(this, otherImageListViewData, R.layout.layout_other_image_list_item, mImageFetcher);        
-		otherImageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
-		otherImageListViewFootMore = (TextView)otherImageListViewFooter.findViewById(R.id.list_view_foot_more);
-		otherImageListViewFootProgress = (ProgressBar)otherImageListViewFooter.findViewById(R.id.list_view_foot_progress);
 		otherImageListView = (PullToRefreshListView)findViewById(R.id.frame_list_view_other_image);
+    	otherImageListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
+    	otherImageListViewFootMore = (TextView)otherImageListViewFooter.findViewById(R.id.list_view_foot_more);
+    	otherImageListViewFootProgress = (ProgressBar)otherImageListViewFooter.findViewById(R.id.list_view_foot_progress);
 		otherImageListView.addFooterView(otherImageListViewFooter);//添加底部视图  必须在setAdapter前
 		otherImageListView.setAdapter(otherImageListViewAdapter); 
 		otherImageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -869,11 +850,84 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 		});
 		otherImageListView.setOnRefreshListner(new PullToRefreshListView.OnRefreshListener() {
             public void onRefresh() {
-            	loadSceneryImageListData(curImageCatalog, 0, otherImageListViewHandler, UIHelper.LISTVIEW_ACTION_REFRESH);
+            	loadOtherImageListData(curImageCatalog, 0, otherImageListViewHandler, UIHelper.LISTVIEW_ACTION_REFRESH);
             }
         });					
 	}
 	
+	private void initLocalVideoListView() {
+		localVideoListViewAdapter = new ListViewLocalVideoAdapter(this, localVideoListViewData, R.layout.layout_local_video_list_item, mImageFetcher);
+		localVideoListView = (PullToRefreshListView) findViewById(R.id.frame_list_view_local_video);
+    	localVideoListViewFooter = getLayoutInflater().inflate(R.layout.layout_list_view_footer, null);
+    	localVideoListViewFootMore = (TextView)localVideoListViewFooter.findViewById(R.id.list_view_foot_more);
+    	localVideoListViewFootProgress = (ProgressBar)localVideoListViewFooter.findViewById(R.id.list_view_foot_progress);
+		localVideoListView.addFooterView(localVideoListViewFooter);
+		localVideoListView.setAdapter(localVideoListViewAdapter);
+		localVideoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        		//点击头部、底部栏无效
+        		if(position == 0){
+        			return;
+        		}
+          		if(view == localVideoListViewFooter) {
+					localVideoListViewFootMore.setText(R.string.load_ing);
+					localVideoListViewFootProgress.setVisibility(View.VISIBLE);
+					//当前pageIndex
+					int pageIndex = localVideoListSumData/AppContext.PAGE_SIZE;
+					loadLocalVideoListData(curVideoCatalog, pageIndex, localVideoListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
+          			return;
+          		}
+          		if(position - 1>=0 && position - 1 < localVideoListViewData.size()) {
+                	photoIndex = position - 1;
+                	MovieInfo info = (MovieInfo) localVideoListViewData.get(position-1);
+                	startActivity(info.intent);
+                	//TODO
+/*                	if(queryPoints(appContext)<= 0) {
+                		showErrDialog();
+                		return;
+                	}
+*/                }
+        	}        	
+		});
+		localVideoListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+				localVideoListView.onScrollStateChanged(view, scrollState);
+				
+				//数据为空--不用继续下面代码了
+				if(localVideoListViewData.size() == 0) return;
+				//判断是否滚动到底部
+				boolean scrollEnd = false;
+				try {
+					if(view.getPositionForView(localVideoListViewFooter) == view.getLastVisiblePosition())
+						scrollEnd = true;
+				} catch (Exception e) {
+					scrollEnd = false;
+				}
+				
+				int lvDataState = StringUtils.toInt(localVideoListView.getTag());
+				if(scrollEnd && lvDataState==UIHelper.LISTVIEW_DATA_MORE)
+				{
+					localVideoListViewFootMore.setText(R.string.load_ing);
+					localVideoListViewFootProgress.setVisibility(View.VISIBLE);
+					//当前pageIndex
+					int pageIndex = localVideoListSumData/AppContext.PAGE_SIZE;
+					loadLocalVideoListData(curVideoCatalog, pageIndex, localVideoListViewHandler, UIHelper.LISTVIEW_ACTION_SCROLL);
+				}
+			}
+			public void onScroll(AbsListView view, int firstVisibleItem,int visibleItemCount, int totalItemCount) {
+				localVideoListView.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+				if(localVideoListViewData.size()<=0) {
+					localVideoListView.onScrollStateChanged(view, SCROLL_STATE_TOUCH_SCROLL);
+				}
+			}
+		});
+		localVideoListView.setOnRefreshListner(new PullToRefreshListView.OnRefreshListener() {
+            public void onRefresh() {
+            	loadLocalVideoListData(curVideoCatalog, 0, localVideoListViewHandler, UIHelper.LISTVIEW_ACTION_REFRESH);
+            }
+        });		
+	}
     public void handleImageListData(int what,Object obj,int objtype,int actiontype) {
     	switch (actiontype) {
 		case UIHelper.LISTVIEW_ACTION_INIT:
@@ -903,6 +957,12 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 					otherImageListSumData = what;
 					otherImageListViewData.clear();//先清除原有数据
 					otherImageListViewData.addAll(otherImageList);
+					break;
+				case UIHelper.LISTVIEW_DATATYPE_LOCAL_VIDEO:
+					List<MovieInfo> localVideoList = (List<MovieInfo>)obj;
+					localVideoListSumData = what;
+					localVideoListViewData.clear();//先清除原有数据
+					localVideoListViewData.addAll(localVideoList);
 					break;
 			}
 			break;
@@ -978,6 +1038,24 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 					}
 				} else {
 					otherImageListViewData.addAll(otherImageList);
+				}
+				break;
+			case UIHelper.LISTVIEW_DATATYPE_LOCAL_VIDEO:
+				List<MovieInfo> localVideoList = (List<MovieInfo>)obj;
+				localVideoListSumData += what;
+				if(localVideoListViewData.size()>0) {
+					for(MovieInfo info : localVideoList){
+						boolean b = false;
+						for(MovieInfo newInfo : localVideoListViewData){
+							if(info.equals(newInfo)){
+								b = true;
+								break;
+							}
+						}
+						if(!b) localVideoListViewData.add(info);
+					}
+				} else {
+					localVideoListViewData.addAll(localVideoList);
 				}
 				break;
 			}
@@ -1196,6 +1274,32 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 			}
 		}.start();
 	} 
+    
+    private void loadLocalVideoListData(final int catalog,final int pageIndex,final Handler handler,final int action) {
+    	mHeadProgress.setVisibility(ProgressBar.VISIBLE);
+		new Thread(){
+			public void run() {
+				Message msg = new Message();
+				boolean isRefresh = false;
+				if(action == UIHelper.LISTVIEW_ACTION_REFRESH || action == UIHelper.LISTVIEW_ACTION_SCROLL)
+					isRefresh = true;
+				try {					
+					MediaList media = new MediaList(appContext);
+					List<MovieInfo> videoList = media.getVideoListByPage(pageIndex * AppContext.PAGE_SIZE, AppContext.PAGE_SIZE);
+					msg.what = videoList.size();
+					msg.obj = videoList;
+				} catch (Exception e) {
+					e.printStackTrace();
+					msg.what = -1;
+					msg.obj = e;
+				}
+				msg.arg1 = action;
+				msg.arg2 = UIHelper.LISTVIEW_DATATYPE_LOCAL_VIDEO;
+                if(curVideoCatalog == catalog)
+                	handler.sendMessage(msg);
+			}
+		}.start();
+    }
     
     @Override
     public void onResume() {

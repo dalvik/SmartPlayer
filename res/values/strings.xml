@@ -109,6 +109,13 @@
     <string name="set_wall_paper_menu">设为壁纸</string>
     <string name="set_wall_paper_menu_toast">设为壁纸成功</string>
     
+    <string name="video_foramt_name">格式：</string>
+    <string name="video_duration_name">时长：</string>
+	<!-- Do not translate. Duration format for duration < 1 hour -->
+    <string translatable="false" name="durationformatshort"><xliff:g id="format">%2$d:%5$02d</xliff:g></string>
+    <!-- Do not translate. Duration format for duration >= 1 hour -->
+    <string translatable="false" name="durationformatlong"><xliff:g id="format">%1$d:%3$02d:%5$02d</xliff:g></string>
+       
     <!-- welcome   -->
     <string name="welcome_top_tips_str">卓维影音</string>
     <string name="welcome_bottom_tips_str">http://www.drovik.com</string>

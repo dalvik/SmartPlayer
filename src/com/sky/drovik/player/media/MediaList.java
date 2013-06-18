@@ -24,7 +24,9 @@ public class MediaList {
 			MediaStore.Video.Media.DATA,
 			MediaStore.Video.Media.SIZE,
 			MediaStore.Video.Media.MIME_TYPE, 
-			MediaStore.Video.Media.TITLE
+			MediaStore.Video.Media.TITLE,
+			MediaStore.Video.Media.RESOLUTION,
+			MediaStore.Video.Media.DURATION
 			};
 	
 	private Cursor cursor;
@@ -38,7 +40,7 @@ public class MediaList {
 	public List<MovieInfo> getVideoListByPage(int index, int perPageNum) {
 		
 		ContentResolver crs =  context.getContentResolver();
-		cursor = crs.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, mediaColumns, null, null,  MediaStore.Video.Media.DATE_ADDED + " DESC ");// + " LIMIT " + (index * perPageNum) + " , "+ perPageNum);
+		cursor = crs.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, mediaColumns, null, null,  MediaStore.Video.Media.DATE_ADDED + " DESC " + " LIMIT " + index + " , "+ perPageNum);
 		List<MovieInfo> videoList = new ArrayList<MovieInfo>();
 		if(cursor != null && cursor.moveToFirst()){
 			do{
@@ -47,6 +49,8 @@ public class MediaList {
 				info.title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.TITLE));
 				info.size = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE));
 				info.path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));
+				info.resulation = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.RESOLUTION));
+				info.duration =  cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION));
 				//获取当前Video对应的Id，然后根据该ID获取其Thumb
 				int id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID));
 				String selection = MediaStore.Video.Thumbnails.VIDEO_ID +"=?";
@@ -61,6 +65,7 @@ public class MediaList {
 				}
 				info.setActivity(Uri.fromFile(new File(info.path)), info.mimeType, Intent.FLAG_ACTIVITY_NEW_TASK );
 				videoList.add(info);
+				info.starLevel = 5;
 				thumbCursor.close();
 			}while(cursor.moveToNext());
 			if(cursor != null) {

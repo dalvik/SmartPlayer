@@ -6,9 +6,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
+import com.sky.drovik.player.R;
+import com.sky.drovik.player.bitmapfun.ImageCache;
 import com.sky.drovik.player.pojo.MovieInfo;
 
 public class ImageLoaderTask extends AsyncTask<MovieInfo, Void, Bitmap> {
@@ -19,8 +20,11 @@ public class ImageLoaderTask extends AsyncTask<MovieInfo, Void, Bitmap> {
 
 	private Context context;
 	
-	public ImageLoaderTask(Context context, ImageView imageView) {
+	private ImageCache mImageCache;
+	
+	public ImageLoaderTask(Context context, ImageView imageView,ImageCache mImageCache) {
 		this.context = context;
+		this.mImageCache = mImageCache;
 		imageViewReference = new WeakReference<ImageView>(imageView);
 	}
 
@@ -41,21 +45,20 @@ public class ImageLoaderTask extends AsyncTask<MovieInfo, Void, Bitmap> {
 
 	@Override
 	protected void onPostExecute(Bitmap bitmap) {
-		if(bitmap == null) {
-			return;
-		}
 		if (isCancelled()) {
 			bitmap = null;
 		}
+		
 		if (imageViewReference != null) {
 			ImageView imageView = imageViewReference.get();
 			if (imageView != null) {
-				//int width = bitmap.getWidth(); // 获取真实宽高
-				//int height = bitmap.getHeight();
-				LayoutParams lp = imageView.getLayoutParams();
-				//lp.height = (height * MovieList.itemWidth) / width;//调整高度
-				imageView.setLayoutParams(lp);
-				imageView.setImageBitmap(bitmap);
+				
+				if(bitmap != null) {
+					imageView.setImageBitmap(bitmap);
+					mImageCache.addBitmapToCache(imageInfo.thumbnailPath, bitmap);
+				} else {
+					imageView.setBackgroundResource(R.drawable.ic_launcher);
+				}
 			}
 		}
 	}

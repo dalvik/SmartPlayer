@@ -256,8 +256,8 @@ public class MovieList extends Activity implements OnClickListener, OnChildClick
 		imageViewItem.setOnClickListener(this);
 		imageInfo.imageView = imageViewItem;
 		if(imageInfo.thumbnailPath != null && imageInfo.magic_id != 0) {
-			ImageLoaderTask imageLoaderTask = new ImageLoaderTask(this, imageViewItem);
-			imageLoaderTask.execute(imageInfo);
+			//ImageLoaderTask imageLoaderTask = new ImageLoaderTask(this, imageViewItem);
+		//	imageLoaderTask.execute(imageInfo);
 		}
 	}
 

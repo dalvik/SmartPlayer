@@ -25,6 +25,15 @@ import android.widget.ImageView;
  * and an icon.
  */
 public class MovieInfo {
+	
+	public static final int CATALOG_LOCAL_VIDEO = 0;
+	
+	public static final int CATALOG_MOVIE_VIDEO = 1;
+	
+	public static final int CATALOG_RECREATION_VIDEO = 2;
+	
+	public static final int CATALOG_OTHER_VIDEO = 3;
+	
     /**
      * The application name.
      */
@@ -45,11 +54,17 @@ public class MovieInfo {
     
     public String size = "";
     
+    public long duration = 0;
+    
+    public String resulation = "";
+    
     public String thumbnailPath = "";
     
     public ImageView imageView;
     
     public long magic_id;
+    
+    public int starLevel = 0;
     
     /**
      * When set to true, indicates that the icon has been resized.
@@ -78,9 +93,7 @@ public class MovieInfo {
         }
 
         MovieInfo that = (MovieInfo) o;
-        return title.equals(that.title) &&
-                intent.getComponent().getClassName().equals(
-                        that.intent.getComponent().getClassName());
+        return title.equals(that.title) && thumbnailPath.equals(that.thumbnailPath);
     }
 
     @Override
@@ -96,8 +109,10 @@ public class MovieInfo {
 	public String toString() {
 		return "MovieInfo [title=" + title + ", intent=" + intent + ", path="
 				+ path + ", mimeType=" + mimeType + ", size=" + size
+				+ ", duration=" + duration + ", resulation=" + resulation
 				+ ", thumbnailPath=" + thumbnailPath + ", imageView="
-				+ imageView + ", filtered=" + filtered + "]";
+				+ imageView + ", magic_id=" + magic_id + ", filtered="
+				+ filtered + "]";
 	}
 
     

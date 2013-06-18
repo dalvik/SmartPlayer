@@ -72,7 +72,7 @@ public class BitmapCache {
 	 */
 	public Bitmap getBitmap(Context context, MovieInfo imageInfo) {
 		String fileName = imageInfo.thumbnailPath;
-		if(BuildConfig.DEBUG && DEBUG) {
+		if(BuildConfig.DEBUG && !DEBUG) {
 			Log.d(TAG, "### file name of thumbnail = " + fileName);
 		}
 		Bitmap bitmapImage = null;
@@ -85,7 +85,6 @@ public class BitmapCache {
 		// 并保存对这个新建实例的软引用
 		if (bitmapImage == null) {
 			Bitmap bitmap = MediaStore.Video.Thumbnails.getThumbnail(context.getContentResolver(), imageInfo.magic_id, MediaStore.Video.Thumbnails.MICRO_KIND, null);
-			//Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(filename, android.provider.MediaStore.Video.Thumbnails.MICRO_KIND);
 			if(bitmap != null) {
 				bitmapImage = BitmapUtil.getRoundedCornerBitmap(bitmap, 10.0f);
 				this.addCacheBitmap(bitmapImage, fileName);

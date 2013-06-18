@@ -146,6 +146,7 @@ public class ImageResizer extends ImageWorker {
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
+        System.out.println(filename + "---------");
         return BitmapFactory.decodeFile(filename, options);
     }
 

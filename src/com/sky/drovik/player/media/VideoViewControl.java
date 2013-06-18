@@ -93,7 +93,7 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		mFfglSurfaceView = (FFGLSurfaceView) rootView.findViewById(R.id.glsurface_video_view);
 		mProgressView = rootView.findViewById(Res.id.progress_indicator);
 		mUri = videoUri;
-	/*	mVideoSurfaceView.setOnErrorListener(this);
+/*		mVideoSurfaceView.setOnErrorListener(this);
 		mVideoSurfaceView.setOnCompletionListener(this);
 		mVideoSurfaceView.setMediaController(new VideoController(context), rootView, false);
 		mVideoSurfaceView.setVideoURI(mUri);
@@ -105,8 +105,7 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		mVideoSurfaceView.start();
 */
 
-/**/
-		playVieoWithFFmpeg();
+		playVieoWithFFmpeg();/**/
 	}
 
 	public void onPause() {
@@ -189,6 +188,14 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 			mFfglSurfaceView.requestFocus();
 			mFfglSurfaceView.setUpRender();
 			mFfglSurfaceView.start();
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					Looper.prepare();
+					int i = JniUtils.display();
+					onCompletion();
+				}
+			}).start();
 		}
 		///int[] resulation = JniUtils.openVideoFile(mUri.getPath()); // "/mnt/sdcard/video.mp4"
 		/*int res = 0;
