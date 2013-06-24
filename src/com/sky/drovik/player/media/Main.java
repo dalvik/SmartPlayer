@@ -11,6 +11,7 @@ import net.youmi.android.appoffers.YoumiOffersManager;
 import net.youmi.android.appoffers.YoumiPointsManager;
 import net.youmi.push.android.YoumiPush;
 import android.annotation.TargetApi;
+import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -19,6 +20,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
@@ -183,11 +185,12 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if(isCheck) {
+		//remove youmi
+		/*if(isCheck) {
 			YoumiOffersManager.init(this, "d56c188174986b81", "07603ef9797423c0");
 			YoumiPointsManager.setUserID(this.getPackageName());
 			YoumiPush.startYoumiPush(this, "d56c188174986b81", "07603ef9797423c0", false);
-		}
+		}*/
 		setContentView(R.layout.layout_main);
 		appContext = (AppContext)getApplication();
 		try {
@@ -212,7 +215,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
         	boolean flag = intent.getBooleanExtra("check_update", false);
         	UpdateManager.getUpdateManager().checkAppUpdate(this, flag);
         }
-        if(!isCheck) {
+        if(isCheck) {
         	frameBeautyButton.setVisibility(View.INVISIBLE);
         	frameSceneryButton.setVisibility(View.INVISIBLE);
         	frameOtherButton.setVisibility(View.INVISIBLE);
@@ -589,11 +592,10 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
                 	photoIndex = position - 1;
                 	BeautyImage beautyImage = (BeautyImage) beautyImageListViewData.get(position-1);
                 	curPhotoName = beautyImage.getName();
-                	if(beautyImage.getId()>0 && queryPoints(appContext)<= 0 && !beautyImage.getChannel().contains(channelId)) {
-                		StatService.onEvent(Main.this, "主界面", "打开相册 " + curPhotoName+ " 注册框");
+                	/*if(beautyImage.getId()>0 && queryPoints(appContext)<= 0 && !beautyImage.getChannel().contains(channelId)) {
                 		showErrDialog();//id==0表示审核 >0 注册  没有包含channel的话 也表示需要注册了。所以通过审核以后需要将channel值0
                 		return;
-                	}
+                	}*/
                 	i.putExtra(ImageDetailActivity.LIST_SIZE, beautyImage.getSrcSize());
                 	//new add when add imageflinggallery
                 	i.putExtra(FlingGalleryActivity.IMAGE_SRC_LIST, beautyImage.getSrcArr());//文件地址列表
@@ -699,10 +701,10 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
           		}
           		BaseImage sceneryBaseImage = sceneryImageListViewData.get(position-1);
           		curPhotoName = sceneryBaseImage.getName();
-          		if(sceneryBaseImage.getId()>0 && queryPoints(appContext)<= 0 && !sceneryBaseImage.getChannel().contains(channelId)) {
+          		/*if(sceneryBaseImage.getId()>0 && queryPoints(appContext)<= 0 && !sceneryBaseImage.getChannel().contains(channelId)) {
             		showErrDialog();
             		return;
-            	}
+            	}*/
         		final Intent i = new Intent(appContext, ImageDetailActivity.class);
                 i.putExtra(ImageDetailActivity.EXTRA_IMAGE, position-1);
                 i.putExtra(ImageDetailActivity.LIST_SIZE, sceneryImageListViewData.size());
@@ -791,10 +793,10 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
                 	photoIndex = position - 1;
                 	BeautyImage beautyImage = (BeautyImage) otherImageListViewData.get(position-1);
                 	curPhotoName = beautyImage.getName();
-                	if(beautyImage.getId()>0 && queryPoints(appContext)<= 0 && !beautyImage.getChannel().contains(channelId)) {
+                	/*if(beautyImage.getId()>0 && queryPoints(appContext)<= 0 && !beautyImage.getChannel().contains(channelId)) {
                 		showErrDialog();
                 		return;
-                	}
+                	}*/
                 	i.putExtra(ImageDetailActivity.LIST_SIZE, beautyImage.getSrcSize());
                 } else {
                 	photoIndex = position - 1;
@@ -879,6 +881,12 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
           			return;
           		}
           		if(position - 1>=0 && position - 1 < localVideoListViewData.size()) {
+          			ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+          			ConfigurationInfo configurationInfo = am.getDeviceConfigurationInfo();
+          			if(configurationInfo.reqGlEsVersion <0x20000) {
+          				ToastUtils.showToast(Main.this, R.string.drovik_play_ffmpeg_lower_system_version_str);
+          				return;
+					}
                 	photoIndex = position - 1;
                 	MovieInfo info = (MovieInfo) localVideoListViewData.get(position-1);
                 	startActivity(info.intent);

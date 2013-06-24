@@ -193,7 +193,7 @@ public class VideoController extends FrameLayout{
     
     private int setProgress() {
     	int position = 0;
-    	if(isFFmpeg) {
+    	if(isFFmpeg) {//TODO
     		
     	}else {
     		if (mPlayer == null || mDragging) {
@@ -253,7 +253,11 @@ public class VideoController extends FrameLayout{
         } else if (keyCode == KeyEvent.KEYCODE_MEDIA_STOP
                 || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
         	if(isFFmpeg) {
-        		
+        		if (uniqueDown && mPlayer.isPlaying()) {
+        			mPlayer.pause();
+        			updatePausePlay();
+        			show(sDefaultTimeout);
+        		}
         	}else {
         		if (uniqueDown && mPlayer.isPlaying()) {
         			mPlayer.pause();
@@ -335,12 +339,16 @@ public class VideoController extends FrameLayout{
         	return;
         }
         if(isFFmpeg) {
-        	
+        	if (mPlayer.isPlaying()) {
+        		mPauseButton.setImageResource(R.drawable.movie_ctrlbar_btn_pause_selector);
+        	} else {
+        		mPauseButton.setImageResource(R.drawable.movie_ctrlbar_btn_play_selector);
+        	}
         }else{
         	if (mPlayer.isPlaying()) {
-        		mPauseButton.setImageResource(R.drawable.ic_media_pause);
+        		mPauseButton.setImageResource(R.drawable.movie_ctrlbar_btn_pause_selector);
         	} else {
-        		mPauseButton.setImageResource(R.drawable.ic_media_play);
+        		mPauseButton.setImageResource(R.drawable.movie_ctrlbar_btn_play_selector);
         	}
         }
     }

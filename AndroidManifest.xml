@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sky.drovik.player"
-    android:versionCode="300"
-    android:versionName="v3.0" >
+    android:versionCode="301"
+    android:versionName="v3.1" >
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -131,7 +131,9 @@
 
        <service android:name="com.sky.drovik.player.service.SmartPlayerService"/>
         
-       <!-- youmi push -->
+       <!-- youmi push start -->
+       <!-- 
+       
        <service android:name="net.youmi.push.android.YoumiService"></service>      
        <activity android:name="net.youmi.push.android.YoumiActivity"></activity>
        <receiver android:name="net.youmi.push.android.YoumiReceiver">
@@ -147,6 +149,20 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
+        
+        <activity android:name="net.youmi.android.appoffers.YoumiOffersActivity"
+				  android:configChanges="keyboard|keyboardHidden|orientation"/>
+        
+        <meta-data android:name="YOUMI_CHANNEL" android:value="10120"/>
+         -->
+        <!--
+        	ym 0
+        	91 10110
+        	gfan 10020 
+			hiapk  10030
+			eoe 10120
+         -->
+         <!-- youmi push end -->
         
         <!-- 从百度网站获取的APP KEY -->
 		<meta-data android:name="BaiduMobAd_STAT_ID" android:value="79da89a725" />
@@ -166,17 +182,6 @@
 		<!-- 是否获取基站位置信息 -->
 		<meta-data android:name="BaiduMobAd_CELL_LOCATION" android:value="true" />
 		
-        <activity android:name="net.youmi.android.appoffers.YoumiOffersActivity"
-				  android:configChanges="keyboard|keyboardHidden|orientation"/>
-        
-        <meta-data android:name="YOUMI_CHANNEL" android:value="10120"/>
-        <!--
-        	ym 0
-        	91 10110
-        	gfan 10020 
-			hiapk  10030
-			eoe 10120
-         -->
     </application>
 
 </manifest>

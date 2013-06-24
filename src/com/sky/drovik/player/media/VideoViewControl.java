@@ -19,13 +19,11 @@ package com.sky.drovik.player.media;
 import java.util.Map;
 
 import net.youmi.android.appoffers.CheckStatusNotifier;
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.pm.ConfigurationInfo;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -82,6 +80,8 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 
 	private static final boolean DEBUG = true;
 
+	private boolean ifFfmpeg = false;
+	
 	Handler mHandler = new Handler();
 
 	public VideoViewControl(RelativeLayout rootView, Context context,
@@ -93,9 +93,10 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		mFfglSurfaceView = (FFGLSurfaceView) rootView.findViewById(R.id.glsurface_video_view);
 		mProgressView = rootView.findViewById(Res.id.progress_indicator);
 		mUri = videoUri;
-/*		mVideoSurfaceView.setOnErrorListener(this);
+		ifFfmpeg = false;
+		mVideoSurfaceView.setOnErrorListener(this);
 		mVideoSurfaceView.setOnCompletionListener(this);
-		mVideoSurfaceView.setMediaController(new VideoController(context), rootView, false);
+		mVideoSurfaceView.setMediaController(new VideoController(context), rootView, ifFfmpeg);
 		mVideoSurfaceView.setVideoURI(mUri);
 		mVideoSurfaceView.requestFocus();
 
@@ -103,9 +104,9 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		i.putExtra(CMDNAME, CMDPAUSE);
 		context.sendBroadcast(i);
 		mVideoSurfaceView.start();
-*/
-
-		playVieoWithFFmpeg();/**/
+/*	
+		ifFfmpeg = true;
+		playVieoWithFFmpeg();*/
 	}
 
 	public void onPause() {
@@ -118,10 +119,10 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 	}
 
 	public boolean onError(MediaPlayer player, int arg1, int arg2) {
+		ifFfmpeg = true;
 		mHandler.removeCallbacksAndMessages(null);
 		mProgressView.setVisibility(View.GONE);
 		// »ñÈ¡×¢²á×´Ì¬ Î´×¢²áÌáÊ¾×¢²á ÒÑ×¢²á ½âÂë
-		StatService.onEvent(context, "ÊÓÆµ²¥·ÅÊ§°Ü", mUri.getPath());
 		foctory = new DrovikRegisterFactory();
 		showRegisterDialog(foctory.isRegister(context));
 		//onCompletion();
@@ -136,6 +137,9 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 
 	public void onCompletion() {
 		System.out.println("onCompletion");
+		if(ifFfmpeg) {
+			JniUtils.close();
+		}
 	}
 
 	public void onPlayError() {
@@ -149,7 +153,7 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 				.getString(Res.string.drovik_play_error_developer_str)
 				: context
 						.getString(Res.string.drovik_play_error_unsupport_format_str));
-		if (status) {// no register
+		if (!status) {// no register
 			builder.setPositiveButton(Res.string.drovik_play_goto_regester_str,
 					new OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
@@ -178,7 +182,7 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 	}
 
 	private void playVieoWithFFmpeg() {
-		mFfglSurfaceView.setMediaController(new VideoController(context), rootView, true);
+		mFfglSurfaceView.setMediaController(new VideoController(context), rootView, ifFfmpeg);
 		int state = mFfglSurfaceView.setVideoURI(mUri);
 		if(state != -1) {
 			mVideoSurfaceView.setVisibility(View.GONE);
@@ -193,6 +197,7 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 				public void run() {
 					Looper.prepare();
 					int i = JniUtils.display();
+					System.out.println("display = " + i);
 					onCompletion();
 				}
 			}).start();
@@ -343,8 +348,10 @@ public class VideoViewControl implements MediaPlayer.OnErrorListener,
 		}
 	}
 	
-	//public static void refresh() {
-		//mFfglSurfaceView.invalid();
-	//}
+	public static void refresh() {
+		/*if(mFfglSurfaceView != null) {
+			mFfglSurfaceView.requestRender();//.test();
+		}*/
+	}
 
 }

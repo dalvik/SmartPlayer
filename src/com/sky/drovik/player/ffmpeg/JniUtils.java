@@ -34,13 +34,7 @@ public class JniUtils {
 	
 	public static native int display();//display video view
 	
-	public static native boolean canPlay();
-	
 	public static native boolean isPlaying();
-	
-	public static native int setPlay();
-	
-	public static native int setStop();
 	
 	public static native boolean canPause();
 	

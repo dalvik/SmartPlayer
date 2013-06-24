@@ -22,10 +22,10 @@ public class VideoActivity extends Activity {
 		setContentView(R.layout.layout_video_view);
 		ActivityManager am =(ActivityManager) getSystemService(Context.ACTIVITY_SERVICE); 
 		ConfigurationInfo info = am.getDeviceConfigurationInfo();     
-		final boolean supportsEs2 = info.reqGlEsVersion >= 0x20000;// || Build.FINGERPRINT.startsWith("generic");//.FINGERPRINT.startsWith(°∞generic°±);
-		System.out.println("supportsEs2 = " + supportsEs2);
+		//final boolean supportsEs2 = info.reqGlEsVersion >= 0x20000;// || Build.FINGERPRINT.startsWith("generic");//.FINGERPRINT.startsWith(°∞generic°±);
+		//System.out.println("supportsEs2 = " + supportsEs2);
 		//ºŸ»Á «opengles 1.1 info.reqGlEsVersion= 0x00010001(65537)
-		System.out.println(info.reqGlEsVersion + " " + info.toString());
+		//System.out.println(info.reqGlEsVersion + " " + info.toString());
 		RelativeLayout rootView = (RelativeLayout) findViewById(Res.id.root);
 		Intent intent = getIntent();
 		videoViewControl = new VideoViewControl(rootView, this,
@@ -45,10 +45,11 @@ public class VideoActivity extends Activity {
 	}
 	
 	public void callBackRefresh(int msg) {
+		/*VideoViewControl.refresh();
 		if(msg == 2) {
 			System.out.println("video play over!");
 			videoViewControl.onCompletion();
 			VideoActivity.this.finish();
-		}
+		}*/
 	}
 }

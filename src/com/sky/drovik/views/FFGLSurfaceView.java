@@ -77,9 +77,8 @@ public class FFGLSurfaceView extends GLSurfaceView implements VideoPlayerControl
 
 	@Override
 	protected void onDetachedFromWindow() {
-		super.onDetachedFromWindow();
 		mCurrentState = STATE_IDLE;
-		JniUtils.ffmpegGLClose();
+		//JniUtils.ffmpegGLClose();
 	}
 	
     public void setMediaController(VideoController videoController, RelativeLayout view, boolean isFFmpeg) {
@@ -121,7 +120,7 @@ public class FFGLSurfaceView extends GLSurfaceView implements VideoPlayerControl
 	
 	private void attachMediaController() {
 		if (mVideoController != null) {
-			//View anchorView = this.getParent() instanceof View ? (View)this.getParent() : this;
+			mVideoController.setMediaPlayer(this);
 			if(rootView!=null){
 				mVideoController.setAnchorView(rootView);
 			}

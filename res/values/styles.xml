@@ -121,4 +121,10 @@
         <item name="android:windowEnterAnimation">@anim/translucent_zoom_out</item>
         <item name="android:windowExitAnimation">@anim/translucent_zoom_exit</item>
     </style>
+    
+    <style name="video_bottom_button_style">
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_width">73.29999dip</item>
+        <item name="android:layout_height">fill_parent</item>
+    </style>
 </resources>
