@@ -7,12 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.youmi.android.appoffers.CheckStatusNotifier;
-import net.youmi.android.appoffers.EarnedPointsNotifier;
-import net.youmi.android.appoffers.EarnedPointsOrder;
-import net.youmi.android.appoffers.YoumiOffersManager;
-import net.youmi.android.appoffers.YoumiPointsManager;
-import net.youmi.push.android.YoumiPush;
 import android.annotation.TargetApi;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
@@ -87,7 +81,7 @@ import com.sky.drovik.widget.PullToRefreshListView;
 import com.sky.drovik.widget.PullToRefreshListView.OnRefreshListener;
 import com.sky.drovik.widget.ScrollLayout;
 
-public class Main extends FragmentActivity implements EarnedPointsNotifier, CheckStatusNotifier {
+public class Main extends FragmentActivity {
 
 	private String TAG = "Main";
 	
@@ -235,9 +229,6 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if(isCheck) {
-			YoumiOffersManager.init(this, "d56c188174986b81", "07603ef9797423c0");
-			YoumiPointsManager.setUserID(this.getPackageName());
-			YoumiPush.startYoumiPush(this, "d56c188174986b81", "07603ef9797423c0", false);
 		}
 		setContentView(R.layout.layout_main);
 		appContext = (AppContext)getApplication();
@@ -1467,58 +1458,9 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
         otherImageListViewData.clear();
     }
     
+ 
     
-    @Override
-	public void onEarnedPoints(Context context,
-			List pointsList) {
-		try {
-			if (pointsList != null) {
-				for (int i = 0; i < pointsList.size(); i++) {
-					storePoints(context, (EarnedPointsOrder) pointsList.get(i));
-					//recordOrder(context, (EarnedPointsOrder) pointsList.get(i));
-				}
-			} else {
-				infoMsg("onPullPoints:pointsList is null");
-			}
-		} catch (Exception e) {
-			if(BuildConfig.DEBUG && DEBUG) {
-				Log.e(TAG, "### onEarnedPoints " + e.getLocalizedMessage());
-			}
-		}
-	}
-    
-    /**
-	 * 存储积分
-	 * @param context
-	 * @param order
-	 */
-	private void storePoints(Context context, EarnedPointsOrder order) {
-		try {
-			if (order != null) {
-				if (order.getPoints() > 0) {
-					SharedPreferences settings = context.getSharedPreferences(Main.class.getName(), Context.MODE_PRIVATE);
-					int p = settings.getInt(curPhotoName, 0);
-					p += order.getPoints();
-					settings.edit().putInt(curPhotoName, p).commit();
-					if(BuildConfig.DEBUG && DEBUG) {
-						Log.e(TAG, "### store points = " + p );
-					}
-					/*if(p<100) {
-						Toast.makeText(context, context.getString(R.string.drovik_play_regester_uncommplete_str, (100-p)), Toast.LENGTH_SHORT).show();
-					}else {
-						ToastUtils.showToast(context, R.string.drovik_play_regester_success_str);
-					}*/
-					//ToastUtils.showToast(context, R.string.drovik_play_regester_success_str);
-					Toast.makeText(context, context.getString(R.string.drovik_play_earncore_success_str, curPhotoName), Toast.LENGTH_SHORT).show();
-					StatService.onEvent(Main.this, "主界面", "成功注册 " + curPhotoName);
-				}
-			}
-		} catch (Exception e) {
-			if(BuildConfig.DEBUG && DEBUG) {
-				Log.e(TAG, "### storePoints " + e.getLocalizedMessage());
-			}
-		}
-	}
+     
 	
 	/**
 	 * 查询积分
@@ -1543,7 +1485,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
     	builder.setPositiveButton(Res.string.drovik_no_authority_sure_button_str, new OnClickListener() {
     		public void onClick(DialogInterface dialog, int which) {
     			if(!isDeviceInvalid) {
-    				YoumiOffersManager.showOffers(Main.this, YoumiOffersManager.TYPE_REWARD_OFFERS, Main.this);
+    				//YoumiOffersManager.showOffers(Main.this, YoumiOffersManager.TYPE_REWARD_OFFERS, Main.this);
     			} else {
     				ToastUtils.showToast(appContext, Res.string.drovik_play_invalid_device_str);
     			}
@@ -1556,20 +1498,7 @@ public class Main extends FragmentActivity implements EarnedPointsNotifier, Chec
         builder.show();
     }
 	
-	@Override
-	public void onCheckStatusConnectionFailed(Context arg0) {
-		
-	}
-	
-	@Override
-	public void onCheckStatusResponse(Context context, boolean isAppInvalid,
-			boolean isInTestMode, boolean isDeviceInvalid) {
-		this.isDeviceInvalid = isDeviceInvalid;
-		if(BuildConfig.DEBUG && DEBUG) {
-			Log.d(TAG, "isAppInvalid = " + isAppInvalid + "  isInTestMode = " + isInTestMode + "  isDeviceInvalid = " + isDeviceInvalid);
-		}
-	}
-	
+	 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {

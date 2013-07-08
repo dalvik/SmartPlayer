@@ -16,9 +16,6 @@
 
 package com.sky.drovik.player.media;
 
-import java.io.File;
-
-import net.youmi.android.appoffers.CheckStatusNotifier;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -54,7 +51,7 @@ import com.sky.drovik.player.R;
 import com.sky.drovik.player.app.Res;
 import com.sky.drovik.player.ffmpeg.JniUtils;
 
-public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener , CheckStatusNotifier {
+public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
 
     @SuppressWarnings("unused")
     private static final String TAG = "MovieViewControl";
@@ -187,7 +184,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
             mProgressView.setVisibility(View.GONE);
         }
 
-        mVideoView.setOnErrorListener(this);
+        /*mVideoView.setOnErrorListener(this);
         mVideoView.setOnCompletionListener(this);
         mVideoView.setVideoURI(mUri);
         mVideoView.setMediaController(new MyMediaController(context));
@@ -223,8 +220,8 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
             builder.show();
         } else {
             //mVideoView.start();
-        	playVieoWithFFmpeg();
-        }
+        }*/
+        playVieoWithFFmpeg();
     }
 
     private static boolean uriSupportsBookmarks(Uri uri) {
@@ -366,20 +363,22 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     	int res = JniUtils.openVideoFile(mUri.getPath()); //"/mnt/sdcard/video.mp4"
     	if(res == JniUtils.open_file_success) {
     		System.out.println("res = " + res );
-    		int[] resulation = JniUtils.getVideoResolution(); 
-    		final Bitmap mBitmap = Bitmap.createBitmap(resulation[0],  resulation[1], Bitmap.Config.ARGB_8888);
+    		//int[] resulation = JniUtils.getVideoResolution(); 
+    		//final Bitmap mBitmap = Bitmap.createBitmap(resulation[0],  resulation[1], Bitmap.Config.ARGB_8888);
+    		final Bitmap mBitmap = Bitmap.createBitmap(512, 384, Bitmap.Config.ARGB_8888);
     		mVideoView.setVisibility(View.GONE);
     		videoImageView.setVisibility(View.VISIBLE);
     		videoImageView.setImageBitmap(mBitmap);
-    		System.out.println(resulation[0] +  " --- " + resulation[1]); 
-    		int den = resulation[2]; 
-    		int num = resulation[3]; 
-    		final int frame_rate = den/num;
+    		//System.out.println(resulation[0] +  " --- " + resulation[1]); 
+    		//int den = resulation[2]; 
+    		//int num = resulation[3]; 
+    		//final int frame_rate = den/num;
     		new Thread(new Runnable() {
     			@Override 
     			public void run() { 
     				Looper.prepare();
-    				int i = JniUtils.decodeMedia(mBitmap);
+    				int i = JniUtils.display(mBitmap);
+    				System.out.println("i=" + i);
     				/*while((i===0) { 
     					try {
     						Thread.sleep(frame_rate); 
@@ -389,7 +388,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     						e.printStackTrace();
     					}
     				}*/
-    				JniUtils.close();
+    				//JniUtils.close();
     				onCompletion();
     			}
     		}).start();
@@ -437,19 +436,6 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     	}
     }
     
-    @Override
-	public void onCheckStatusConnectionFailed(Context arg0) {
-		
-	}
-	
-	@Override
-	public void onCheckStatusResponse(Context context, boolean isAppInvalid,
-			boolean isInTestMode, boolean isDeviceInvalid) {
-		this.isDeviceInvalid = isDeviceInvalid;
-		if(BuildConfig.DEBUG && DEBUG) {
-			Log.d(TAG, "isAppInvalid = " + isAppInvalid + "  isInTestMode = " + isInTestMode + "  isDeviceInvalid = " + isDeviceInvalid);
-		}
-	}
 
 	public static void refresh() {
 		myHandler.sendEmptyMessage(1);

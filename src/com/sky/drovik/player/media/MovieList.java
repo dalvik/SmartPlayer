@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.youmi.android.appoffers.YoumiOffersManager;
-import net.youmi.android.appoffers.YoumiPointsManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -103,8 +101,6 @@ public class MovieList extends Activity implements OnClickListener, OnChildClick
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		YoumiOffersManager.init(this, "d56c188174986b81", "07603ef9797423c0");
-		YoumiPointsManager.setUserID(this.getPackageName());
 		setContentView(R.layout.layout_movie_list);
 		context = this;
 		LinearLayout layout = (LinearLayout) findViewById(R.id.container);
