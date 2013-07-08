@@ -16,9 +16,6 @@
 
 package com.sky.drovik.player.media;
 
-import java.io.File;
-
-import net.youmi.android.appoffers.CheckStatusNotifier;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -54,7 +51,7 @@ import com.sky.drovik.player.R;
 import com.sky.drovik.player.app.Res;
 import com.sky.drovik.player.ffmpeg.JniUtils;
 
-public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener , CheckStatusNotifier {
+public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener  {//, CheckStatusNotifier
 
     @SuppressWarnings("unused")
     private static final String TAG = "MovieViewControl";
@@ -370,7 +367,9 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     }
     
     private void playVieoWithFFmpeg() {
-    	int[] resulation = JniUtils.openVideoFile(mUri.getPath()); //"/mnt/sdcard/video.mp4"
+    	int re = JniUtils.openVideoFile(mUri.getPath());
+    	System.out.println("res==== = " + re);
+    	int[] resulation = {1,2,3,};//JniUtils.openVideoFile(mUri.getPath()); //"/mnt/sdcard/video.mp4"
     	int res = 0;
     	if(res == JniUtils.open_file_success) {
     		System.out.println("res = " + res );
@@ -448,7 +447,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
     	}
     }
     
-    @Override
+   /* @Override
 	public void onCheckStatusConnectionFailed(Context arg0) {
 		
 	}
@@ -460,7 +459,7 @@ public class MovieViewControl implements MediaPlayer.OnErrorListener, MediaPlaye
 		if(BuildConfig.DEBUG && DEBUG) {
 			Log.d(TAG, "isAppInvalid = " + isAppInvalid + "  isInTestMode = " + isInTestMode + "  isDeviceInvalid = " + isDeviceInvalid);
 		}
-	}
+	}*/
 
 	public static void refresh(int msg) {
 		myHandler.sendEmptyMessage(msg);

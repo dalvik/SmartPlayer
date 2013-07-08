@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.youmi.android.appoffers.YoumiOffersManager;
-import net.youmi.android.appoffers.YoumiPointsManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -40,7 +38,6 @@ import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.app.Res;
 import com.sky.drovik.player.engine.HistoryListAdpater;
-import com.sky.drovik.player.engine.ImageLoaderTask;
 import com.sky.drovik.player.pojo.FileUtil;
 import com.sky.drovik.player.pojo.HisInfo;
 import com.sky.drovik.player.pojo.MovieInfo;
@@ -103,8 +100,8 @@ public class MovieList extends Activity implements OnClickListener, OnChildClick
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		YoumiOffersManager.init(this, "d56c188174986b81", "07603ef9797423c0");
-		YoumiPointsManager.setUserID(this.getPackageName());
+		//YoumiOffersManager.init(this, "d56c188174986b81", "07603ef9797423c0");
+		//YoumiPointsManager.setUserID(this.getPackageName());
 		setContentView(R.layout.layout_movie_list);
 		context = this;
 		LinearLayout layout = (LinearLayout) findViewById(R.id.container);

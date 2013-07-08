@@ -109,13 +109,15 @@ public class FFGLSurfaceView extends GLSurfaceView implements VideoPlayerControl
 		Intent i = new Intent("com.android.music.musicservicecommand");
 		i.putExtra("command", "pause");
 		mContext.sendBroadcast(i);
-		int[] resulation = JniUtils.openVideoFile(mUri.getPath());
-		if(resulation[0]>0) {
+		int a = JniUtils.openVideoFile(mUri.getPath());
+		System.out.println("openVideoFile ----------- " + a);
+		int[] resulation ={1,2,3};
+		/*if(resulation[0]>0) {
 			attachMediaController();
 			mCurrentState = STATE_PREPARING;
 		}else{
 			mCurrentState = STATE_ERROR;
-		}
+		}*/
 	}
 	
 	private void attachMediaController() {

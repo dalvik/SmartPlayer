@@ -2,20 +2,17 @@ package com.sky.drovik.factory;
 
 import java.util.List;
 
-import net.youmi.android.appoffers.EarnedPointsNotifier;
-import net.youmi.android.appoffers.EarnedPointsOrder;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.drovik.utils.ToastUtils;
 import com.sky.drovik.player.BuildConfig;
 import com.sky.drovik.player.R;
 import com.sky.drovik.player.media.MovieList;
 
-public class MyPointsManager implements EarnedPointsNotifier {
+public class MyPointsManager {//implements EarnedPointsNotifier 
 
 	//private static final String KEY_FILE_POINTS="Points";
 	public static final String KEY_POINTS="BEYING";
@@ -36,7 +33,7 @@ public class MyPointsManager implements EarnedPointsNotifier {
 		return instance;
 	}
 
-	@Override
+	/*@Override
 	public void onEarnedPoints(Context context,
 			List pointsList) {
 		try {
@@ -53,7 +50,7 @@ public class MyPointsManager implements EarnedPointsNotifier {
 				Log.e(TAG, "### onEarnedPoints " + e.getLocalizedMessage());
 			}
 		}
-	}
+	}*/
 
 	/**
 	 * ²éÑ¯»ý·Ö
@@ -114,7 +111,7 @@ public class MyPointsManager implements EarnedPointsNotifier {
 	 * @param context
 	 * @param order
 	 */
-	private void storePoints(Context context, EarnedPointsOrder order) {
+	/*private void storePoints(Context context, EarnedPointsOrder order) {
 		try {
 			if (order != null) {
 				if (order.getPoints() > 0) {
@@ -126,11 +123,11 @@ public class MyPointsManager implements EarnedPointsNotifier {
 						Log.e(TAG, "### store points = " + p );
 					}
 					ToastUtils.showToast(context, R.string.drovik_play_regester_success_str);
-					/*if(p<100) {
+					if(p<100) {
 						Toast.makeText(context, context.getString(R.string.drovik_play_regester_uncommplete_str, (100-p)), Toast.LENGTH_SHORT).show();
 					}else {
 						ToastUtils.showToast(context, R.string.drovik_play_regester_success_str);
-					}*/
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -178,7 +175,7 @@ public class MyPointsManager implements EarnedPointsNotifier {
 			// TODO: handle exception
 		}
 
-	}
+	}*/
 
 	private void errMsg(String msg) {
 		Log.e("MyPointsManager", msg);

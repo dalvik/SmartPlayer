@@ -26,7 +26,7 @@ public class JniUtils {
 	private JniUtils() {
 	}
 
-	public static native int[] openVideoFile(String fileName);
+	public static native int openVideoFile(String fileName);
 	
 	public static native int[] getVideoResolution();
 

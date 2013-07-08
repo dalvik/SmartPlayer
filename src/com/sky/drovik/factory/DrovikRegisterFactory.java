@@ -1,6 +1,5 @@
 package com.sky.drovik.factory;
 
-import net.youmi.android.appoffers.YoumiOffersManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -19,7 +18,7 @@ public class DrovikRegisterFactory extends IRegisterFoctory {
 	@Override
 	public void gotoRegister(Context context) {
 		context.getPackageName();
-		YoumiOffersManager.showOffers(context, YoumiOffersManager.TYPE_REWARD_OFFERS, MyPointsManager.getInstance());
+		//YoumiOffersManager.showOffers(context, YoumiOffersManager.TYPE_REWARD_OFFERS, MyPointsManager.getInstance());
 		//YoumiOffersManager.showOffers(context, YoumiOffersManager.TYPE_REWARDLESS_APPLIST, MyPointsManager.getInstance());
 	}
 
